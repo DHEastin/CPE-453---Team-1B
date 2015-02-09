@@ -1,0 +1,12 @@
+#ifndef MAP_OBJECT_GLOBAL_H
+#define MAP_OBJECT_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(MAP_OBJECT_LIBRARY)
+#  define MAP_OBJECTSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define MAP_OBJECTSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // MAP_OBJECT_GLOBAL_H
