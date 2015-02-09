@@ -2,7 +2,7 @@
 #define MAP_OBJECT_H
 
 #include "map_object_global.h"
-#include <QString>
+#include <string>
 
 class MAP_OBJECTSHARED_EXPORT Map_Object
 {
@@ -23,7 +23,7 @@ public:
 
     struct node     //struct type to hold information for each node
     {
-        QString     node_name;
+        std::string     node_name;
         node_type   type = null;
         int         length = 0;
                                             //linked node usage determined by current node_type
