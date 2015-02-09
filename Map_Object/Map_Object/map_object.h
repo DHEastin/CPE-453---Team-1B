@@ -17,6 +17,7 @@ public:
         track,
         two_switch,
         cross,
+        dead_end,       //will only use connectionA
         null
     };
 
