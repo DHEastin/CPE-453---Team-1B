@@ -58,9 +58,14 @@ void dijkstra(int source) {
 
 int main()
 {
+	//Starting position
     int source = 3;
+
+	//Destination
     int dest = 4;
+
     reset();
+	//addedge(Node1, Node2, Weight, false);
     addedge(0, 1, 5, false);
     addedge(0, 2, 9, false);
     addedge(0, 3, 4, false);
