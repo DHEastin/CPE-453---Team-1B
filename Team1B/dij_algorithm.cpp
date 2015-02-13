@@ -29,6 +29,7 @@ double inf = std::numeric_limits<double>::infinity();
 typedef int vertex_t;
 typedef double weight_t;
 
+//String values used in output to ui
 QString s;
 QString s2;
 
@@ -111,13 +112,12 @@ std::list<vertex_t> DijkstraGetShortestPathTo(
     return path;
 }
 
+//Dialog:: was added to iterface with Qt dialog.cpp
 void Dialog::dij_mainprogram()
-//int main()
 {
-    QString s2;
-    int count = 0;
-    //Range set in dialog.cpp
+    int count = 0;//count is used to output only one line of paths/distance
 
+    //Range of spinboxes set in dialog.cpp
     //Starting position
     start = ui->sourceBox->value();
 
@@ -127,6 +127,7 @@ void Dialog::dij_mainprogram()
     adjacency_map_t adjacency_map;
     std::vector<std::string> vertex_names;
 
+    //Current path setup will be changing this to pull from SQL Server
     vertex_names.push_back("Harrisburg");   // 0
     vertex_names.push_back("Baltimore");    // 1
     vertex_names.push_back("Washington");   // 2
@@ -150,7 +151,6 @@ void Dialog::dij_mainprogram()
     adjacency_map[5].push_back(edge(6,  91.63));
     adjacency_map[6].push_back(edge(3,  97.24));
     adjacency_map[6].push_back(edge(5,  87.94));
-
 
     std::map<vertex_t, weight_t> min_distance;
     std::map<vertex_t, vertex_t> previous;
@@ -181,6 +181,7 @@ void Dialog::dij_mainprogram()
             std::cout << "Path: ";
             for( ; path_iter != path.end(); path_iter++)
             {
+                //Below statements are used to add arrows between destinations and no arrow on last node
                 QString s3;
                 if(*path_iter == dest)
                 {
@@ -192,14 +193,14 @@ void Dialog::dij_mainprogram()
                 s3 = QString("%1 -> ").arg(QString::fromStdString(vertex_names[*path_iter]));
                 std::cout << vertex_names[*path_iter] << " ->";
                 }
-                s2.append(s3);
+                s2.append(s3);//Appends text to path showing the full path
                 ui->pathEdit->setText(s2);
                 std::cout << std::endl;
 
             }
             std::cout << std::endl;
            }
-           count++;
+           count++;//Increments count by 1 to prevent more than one line of outputs
         }
     }
 }
