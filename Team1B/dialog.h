@@ -24,6 +24,8 @@ private:
 
 private slots:
     void dij_mainprogram(); // Main program in dij_algorithm.cpp
+    void RESETVALUE();
+
 };
 
 #endif // DIALOG_H

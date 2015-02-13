@@ -170,29 +170,36 @@ void Dialog::dij_mainprogram()
            {
 
             s = QString("Distance from vertex %1 to %2 is: %3").arg(start).arg(dest).arg(min_distance[v]);
-            ui->lineEdit->setText(s);
+            ui->distanceEdit->setText(s);
 
             std::cout << "Distance to " << vertex_names[v] << ": " << min_distance[v] << std::endl;
             std::list<vertex_t> path =
                 DijkstraGetShortestPathTo(v, previous);
             std::list<vertex_t>::iterator path_iter = path.begin();
-            ui->lineEdit_2->setText(s2);
             s2 = QString("Path: ");
-            ui->lineEdit_2->setText(s2);
+            ui->pathEdit->setText(s2);
             std::cout << "Path: ";
             for( ; path_iter != path.end(); path_iter++)
             {
-                QString s3 = QString("%1 ").arg(QString::fromStdString(vertex_names[*path_iter]));
+                QString s3;
+                if(*path_iter == dest)
+                {
+                    s3 = QString("%1 ").arg(QString::fromStdString(vertex_names[*path_iter]));
+                    std::cout << vertex_names[*path_iter] << " ";
+                }
+                else
+                {
+                s3 = QString("%1 -> ").arg(QString::fromStdString(vertex_names[*path_iter]));
+                std::cout << vertex_names[*path_iter] << " ->";
+                }
                 s2.append(s3);
-                ui->lineEdit_2->setText(s2);
-                std::cout << vertex_names[*path_iter] << " ";
+                ui->pathEdit->setText(s2);
+                std::cout << std::endl;
+
             }
             std::cout << std::endl;
-            ui->lineEdit_2->setText(s2);
            }
            count++;
         }
     }
-    //system("pause");
-    //return 0;
 }
