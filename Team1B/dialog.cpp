@@ -7,8 +7,8 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);    
 
-    ui->sourceBox->setRange(0,6);
-    ui->destBox->setRange(0,6);
+    ui->sourceBox->setRange(0,46);
+    ui->destBox->setRange(0,46);
     connect(ui->startButton,SIGNAL(clicked()),this,SLOT(dij_mainprogram()));
     connect(ui->clearButton,SIGNAL(clicked()),this,SLOT(RESETVALUE()));
     connect(ui->clearButton,SIGNAL(clicked()),this,SLOT(RESETVALUE()));
