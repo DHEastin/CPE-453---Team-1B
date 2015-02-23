@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     db.setDatabaseName(":memory:");
     if (!db.open())
     {
-        qDebug() << "fuck";
+        qDebug() << "Error";
     }
 
     db.open();

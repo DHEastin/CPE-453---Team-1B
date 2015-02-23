@@ -25,6 +25,12 @@ private:
 private slots:
     void dij_mainprogram(); // Main program in dij_algorithm.cpp
     void RESETVALUE();
+    void train_info();
+    void switch_info();
+    void path_info();
+    void trottle_info();
+    void sql_query();
+    void create_sqltables();
 
 };
 

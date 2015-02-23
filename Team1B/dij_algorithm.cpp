@@ -175,10 +175,10 @@ void Dialog::dij_mainprogram()
     adjacency_map[11].push_back(edge(9,   5));
     adjacency_map[11].push_back(edge(13,  5));
     adjacency_map[13].push_back(edge(11,  5));
+    adjacency_map[16].push_back(edge(17,  5));
+    adjacency_map[17].push_back(edge(16,  5));
     adjacency_map[15].push_back(edge(16,  5));
     adjacency_map[16].push_back(edge(15,  5));
-    adjacency_map[14].push_back(edge(16,  5));
-    adjacency_map[16].push_back(edge(14,  5));
 
     //Switch Connections
     //If switch is 0 Track is set for straight
@@ -224,15 +224,15 @@ void Dialog::dij_mainprogram()
         adjacency_map[3].push_back(edge(15, 5)); //Switch 84
     }
 
-    //Stand true regardless of switch status
-    adjacency_map[1].push_back(edge(7,  15)); //Switch 1
-    adjacency_map[7].push_back(edge(1,  15)); //Switch 1
-    adjacency_map[2].push_back(edge(7,  15)); //Switch 2
-    adjacency_map[7].push_back(edge(2,  15)); //Switch 2
-    adjacency_map[3].push_back(edge(14, 15)); //Switch 3
-    adjacency_map[14].push_back(edge(3, 15)); //Switch 3
-    adjacency_map[4].push_back(edge(14, 15)); //Switch 4
-    adjacency_map[14].push_back(edge(4, 15)); //Switch 4
+    //Stand true regardless of switch status (Back part of Switch)
+    adjacency_map[0].push_back(edge(7,  15)); //Switch 1
+    adjacency_map[7].push_back(edge(0,  15)); //Switch 1
+    adjacency_map[1].push_back(edge(7,  15)); //Switch 2
+    adjacency_map[7].push_back(edge(1,  15)); //Switch 2
+    adjacency_map[2].push_back(edge(14, 15)); //Switch 3
+    adjacency_map[14].push_back(edge(2, 15)); //Switch 3
+    adjacency_map[3].push_back(edge(14, 15)); //Switch 4
+    adjacency_map[14].push_back(edge(3, 15)); //Switch 4
 
     std::map<vertex_t, weight_t> min_distance;
     std::map<vertex_t, vertex_t> previous;
