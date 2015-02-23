@@ -19,7 +19,7 @@ public:
  * indicate it is all the same track peice. Switches will have _A and _B nodes
  * so that they can either be one in two out, or two in, one out. Each normal track
  * piece will have _A and _B nodes to so the peice will be treated as unidirectional
- * i.e. one in, one out, to prevent the train from making an assumed uturn without
+ * i.e. one in, one out, to prevent the train from making an assumed uturn  without
  * changing direction. A cross piece will have all _A, _B, _C, and _D. This is so it
  * can represent one node, with unidirectional paths, that won't allow phsyically
  * impossible turns. _A and _B should be the same physical part, and _C and _D are

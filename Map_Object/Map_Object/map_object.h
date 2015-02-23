@@ -10,7 +10,7 @@ class MAP_OBJECTSHARED_EXPORT Map_Object
 public:
     Map_Object();
     struct node;
-    enum node_type;
+    //enum node_type;
 
     enum node_type      //Enumeration type to track node type
     {
