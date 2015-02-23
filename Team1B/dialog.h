@@ -4,6 +4,11 @@
 #include <QDialog>
 #include <QSpinBox>
 #include <QString>
+#include <QtSql/QSqlTableModel>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlDatabase>
+#include <QTableView>
+#include <QVector>
 
 namespace Ui {
 class Dialog;
@@ -17,6 +22,14 @@ public:
     explicit Dialog(QWidget *parent = 0);
     int start; //global variable for Starting Point
     int dest; //global variable for Destination
+    void initializeModel(QSqlTableModel *model);
+     QTableView *createView(QSqlTableModel *model, const QString &title = "");
+     QSqlTableModel *table1;
+     QSqlQuery q,j,k,l;
+     QSqlQueryModel *model;
+     QTableView *view;
+     QSqlDatabase db;
+     std::vector<std::string> vertex_names;
     ~Dialog();
 
 private:
@@ -28,9 +41,10 @@ private slots:
     void train_info();
     void switch_info();
     void path_info();
-    void trottle_info();
+    void throttle_info();
     void sql_query();
     void create_sqltables();
+    void sqlserver_connect();
 
 };
 

@@ -16,7 +16,7 @@
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>0</x>
      <y>0</y>
      <width>491</width>
      <height>381</height>
@@ -35,6 +35,19 @@
     <attribute name="title">
      <string>Testing Algorithm</string>
     </attribute>
+    <widget class="QCheckBox" name="localBox">
+     <property name="geometry">
+      <rect>
+       <x>360</x>
+       <y>10</y>
+       <width>101</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Local Variables</string>
+     </property>
+    </widget>
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
@@ -295,8 +308,8 @@
     <widget class="QPushButton" name="queryButton">
      <property name="geometry">
       <rect>
-       <x>290</x>
-       <y>60</y>
+       <x>220</x>
+       <y>50</y>
        <width>91</width>
        <height>23</height>
       </rect>
@@ -327,8 +340,8 @@
     <widget class="QPushButton" name="createtablesButton">
      <property name="geometry">
       <rect>
-       <x>150</x>
-       <y>60</y>
+       <x>70</x>
+       <y>110</y>
        <width>131</width>
        <height>23</height>
       </rect>
@@ -337,12 +350,25 @@
       <string>Create Tables in Memory</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="server_connectButton">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>140</y>
+       <width>131</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Connect to SQL Server</string>
+     </property>
+    </widget>
     <widget class="QWidget" name="">
      <property name="geometry">
       <rect>
-       <x>260</x>
-       <y>120</y>
-       <width>111</width>
+       <x>270</x>
+       <y>150</y>
+       <width>117</width>
        <height>131</height>
       </rect>
      </property>
@@ -385,9 +411,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="trottle_infoButton">
+       <widget class="QPushButton" name="throttle_infoButton">
         <property name="text">
-         <string>View trottleInfoTable</string>
+         <string>View throttleInfoTable</string>
         </property>
        </widget>
       </item>
@@ -396,8 +422,8 @@
     <widget class="QWidget" name="">
      <property name="geometry">
       <rect>
-       <x>60</x>
-       <y>120</y>
+       <x>80</x>
+       <y>180</y>
        <width>111</width>
        <height>101</height>
       </rect>
@@ -433,12 +459,12 @@
         </item>
         <item>
          <property name="text">
-          <string>switchTable</string>
+          <string>switchInfoTable</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>trottleTable</string>
+          <string>throttleInfoTable</string>
          </property>
         </item>
        </widget>
