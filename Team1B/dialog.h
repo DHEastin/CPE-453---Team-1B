@@ -25,7 +25,7 @@ public:
     void initializeModel(QSqlTableModel *model);
      QTableView *createView(QSqlTableModel *model, const QString &title = "");
      QSqlTableModel *table1;
-     QSqlQuery q,j,k,l;
+     QSqlQuery q,j,k,l,m,n;
      QSqlQueryModel *model;
      QTableView *view;
      QSqlDatabase db;
@@ -42,9 +42,12 @@ private slots:
     void switch_info();
     void path_info();
     void throttle_info();
+    void track_info();
+    void track_listing();
     void sql_query();
     void create_sqltables();
     void sqlserver_connect();
+    void swapNUM();
 
 };
 

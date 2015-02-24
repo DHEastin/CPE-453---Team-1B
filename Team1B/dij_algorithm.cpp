@@ -122,65 +122,14 @@ void Dialog::dij_mainprogram()
     //Starting position
     start = ui->sourceBox->value();
 
-    int SwitchStatus_switch1 = 0;
-    int SwitchStatus_switch2 = 0;
-    int SwitchStatus_switch3 = 0;
-    int SwitchStatus_switch4 = 0;
-
-
     //Destination
     dest = ui->destBox->value();
 
     adjacency_map_t adjacency_map;
     //std::vector<std::string> vertex_names;
 
-    if (ui->localBox->isChecked())
-    {
-        vertex_names.push_back("Switch 1");      // 0
-        vertex_names.push_back("Switch 2");      // 1
-        vertex_names.push_back("Switch 3");      // 2
-        vertex_names.push_back("Switch 4");      // 3
-        vertex_names.push_back("Track 1");       // 4
-        vertex_names.push_back("Track 2");       // 5
-        vertex_names.push_back("Track 3");       // 6
-        vertex_names.push_back("Track 4");       // 7
-        vertex_names.push_back("Track 5");       // 8
-        vertex_names.push_back("Track 6");       // 9
-        vertex_names.push_back("Track 7");       // 10
-        vertex_names.push_back("Track 8");       // 11
-        vertex_names.push_back("Track 9");       // 12
-        vertex_names.push_back("Track 10");      // 13
-        vertex_names.push_back("Track 11");      // 14
-        vertex_names.push_back("Track 12");      // 15
-        vertex_names.push_back("Track 13");      // 16
-        vertex_names.push_back("Track 14");      // 17
-
-
-        //THE FOLLOWING MAPPING IS THE CENTER OF THE CPE453 TRACK SECTION
-        //THE DISTANCES ARE88WRONG, I WILL CORRECT WHEN DATA IS AVAILABLE
-
-        //Track Connections
-        adjacency_map[5].push_back(edge(4,    5));
-        adjacency_map[4].push_back(edge(5,    5));
-        adjacency_map[5].push_back(edge(6,    5));
-        adjacency_map[6].push_back(edge(5,    5));
-        adjacency_map[8].push_back(edge(10,   5));
-        adjacency_map[10].push_back(edge(8,   5));
-        adjacency_map[10].push_back(edge(12,  5));
-        adjacency_map[12].push_back(edge(10,  5));
-        adjacency_map[9].push_back(edge(11,   5));
-        adjacency_map[11].push_back(edge(9,   5));
-        adjacency_map[11].push_back(edge(13,  5));
-        adjacency_map[13].push_back(edge(11,  5));
-        adjacency_map[16].push_back(edge(17,  5));
-        adjacency_map[17].push_back(edge(16,  5));
-        adjacency_map[15].push_back(edge(16,  5));
-        adjacency_map[16].push_back(edge(15,  5));
-    }
-    else
-    {
-
-    //0 = Straight 1 = Switched
+//Populate switches
+/*-------------------------------------------------------------------*/
     QString s = QString("SELECT Switch,Position from %3").arg("switchInfoTable");
     q = db.exec(s);
 
@@ -191,111 +140,38 @@ for(;q.next() == 1;) //If it is 1 it contains data
     //QString ss2 = q.value(1).toChar();
     //qDebug() << "(" << ss1 << ", " << ss2 << ")";
     qDebug() << "(" << ss1 << ")";
-    vertex_names.push_back(ss1.toStdString());
+    //vertex_names.push_back(ss1.toStdString());
 }
+/*-------------------------------------------------------------------*/
 
+//Reads track ids and names for showing the path
+/*-------------------------------------------------------------------*/
+QString t2 = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+q = db.exec(t2);
 
-    //while (q.next()){
-    //QString ss1 = q.value(0).toString();
-    //QString ss2 = q.value(1).toString();
-    //qDebug() << "(" << ss1 << ", " << ss2 << ")";}
+for(;q.next() == 1;) //If it is 1 it contains data
+{
+    QString ss4 = q.value(1).toString();
+    //qDebug() << "(" << ss1 <<","<< ss2 <<","<< ss3 << ")";
+    vertex_names.push_back(ss4.toStdString());
+}
+/*-------------------------------------------------------------------*/
 
-    //std::cout<<q.value(0).toString()<<std::endl;
+//Reads data for each track and how its connected along with its weight
+QString t = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+q = db.exec(t);
 
-    //Current path setup will be changing this to pull from SQL Server
-
-    //Static labels to test algorithm
-    //vertex_names.push_back("Switch 1");      // 0
-    //vertex_names.push_back("Switch 2");      // 1
-    //vertex_names.push_back("Switch 3");      // 2
-    //vertex_names.push_back("Switch 4");      // 3
-    vertex_names.push_back("Track 1");       // 4
-    vertex_names.push_back("Track 2");       // 5
-    vertex_names.push_back("Track 3");       // 6
-    vertex_names.push_back("Track 4");       // 7
-    vertex_names.push_back("Track 5");       // 8
-    vertex_names.push_back("Track 6");       // 9
-    vertex_names.push_back("Track 7");       // 10
-    vertex_names.push_back("Track 8");       // 11
-    vertex_names.push_back("Track 9");       // 12
-    vertex_names.push_back("Track 10");      // 13
-    vertex_names.push_back("Track 11");      // 14
-    vertex_names.push_back("Track 12");      // 15
-    vertex_names.push_back("Track 13");      // 16
-    vertex_names.push_back("Track 14");      // 17
-
-    //Track Connections
-    adjacency_map[5].push_back(edge(4,    5));
-    adjacency_map[4].push_back(edge(5,    5));
-    adjacency_map[5].push_back(edge(6,    5));
-    adjacency_map[6].push_back(edge(5,    5));
-    adjacency_map[8].push_back(edge(10,   5));
-    adjacency_map[10].push_back(edge(8,   5));
-    adjacency_map[10].push_back(edge(12,  5));
-    adjacency_map[12].push_back(edge(10,  5));
-    adjacency_map[9].push_back(edge(11,   5));
-    adjacency_map[11].push_back(edge(9,   5));
-    adjacency_map[11].push_back(edge(13,  5));
-    adjacency_map[13].push_back(edge(11,  5));
-    adjacency_map[16].push_back(edge(17,  5));
-    adjacency_map[17].push_back(edge(16,  5));
-    adjacency_map[15].push_back(edge(16,  5));
-    adjacency_map[16].push_back(edge(15,  5));
-
-    }
-    //Switch Connections
-    //If switch is 0 Track is set for straight
-    //If switch is 1 Track is switched
-    if(SwitchStatus_switch1 == 0)
-    {
-        adjacency_map[6].push_back(edge(0,  5)); //Switch 14
-        adjacency_map[0].push_back(edge(6,  5)); //Switch 14
-    }
-    else
-    {
-        adjacency_map[4].push_back(edge(0,  5)); //Switch 14
-        adjacency_map[0].push_back(edge(4,  5)); //Switch 14
-    }
-    if(SwitchStatus_switch2 == 0)
-    {
-        adjacency_map[1].push_back(edge(8,  5)); //Switch 43
-        adjacency_map[8].push_back(edge(1,  5)); //Switch 43
-    }
-    else
-    {
-        adjacency_map[1].push_back(edge(9,  5)); //Switch 43
-        adjacency_map[9].push_back(edge(1,  5)); //Switch 43
-    }
-    if(SwitchStatus_switch3 == 0)
-    {
-        adjacency_map[2].push_back(edge(12, 5)); //Switch 52
-        adjacency_map[12].push_back(edge(2, 5)); //Switch 52
-    }
-    else
-    {
-        adjacency_map[2].push_back(edge(13, 5)); //Switch 52
-        adjacency_map[13].push_back(edge(2, 5)); //Switch 52
-    }
-    if(SwitchStatus_switch4 == 0)
-    {
-        adjacency_map[17].push_back(edge(3, 5)); //Switch 84
-        adjacency_map[3].push_back(edge(17, 5)); //Switch 84
-    }
-    else
-    {
-        adjacency_map[15].push_back(edge(3, 5)); //Switch 84
-        adjacency_map[3].push_back(edge(15, 5)); //Switch 84
-    }
-
-    //Stand true regardless of switch status (Back part of Switch)
-    adjacency_map[0].push_back(edge(7,  15)); //Switch 1
-    adjacency_map[7].push_back(edge(0,  15)); //Switch 1
-    adjacency_map[1].push_back(edge(7,  15)); //Switch 2
-    adjacency_map[7].push_back(edge(1,  15)); //Switch 2
-    adjacency_map[2].push_back(edge(14, 15)); //Switch 3
-    adjacency_map[14].push_back(edge(2, 15)); //Switch 3
-    adjacency_map[3].push_back(edge(14, 15)); //Switch 4
-    adjacency_map[14].push_back(edge(3, 15)); //Switch 4
+//For each swich in trackInfoTable execute the following:
+/*-------------------------------------------------------------------*/
+for(;q.next() == 1;) //If it is 1 it contains data
+{
+int ss1 = q.value(0).toInt();
+int ss2 = q.value(1).toInt();
+int ss3 = q.value(2).toInt();
+adjacency_map[ss1].push_back(edge(ss2,  ss3));
+adjacency_map[ss2].push_back(edge(ss1,  ss3));
+}
+/*-------------------------------------------------------------------*/
 
     std::map<vertex_t, weight_t> min_distance;
     std::map<vertex_t, vertex_t> previous;
