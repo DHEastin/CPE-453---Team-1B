@@ -42,6 +42,7 @@ struct edge {
 };
 
 typedef std::map<vertex_t, std::list<edge> > adjacency_map_t;
+adjacency_map_t adjacency_map;
 
 template <typename T1, typename T2>
 struct pair_first_less
@@ -113,10 +114,99 @@ std::list<vertex_t> DijkstraGetShortestPathTo(
     return path;
 }
 
-//Dialog:: was added to iterface with Qt dialog.cpp
-void Dialog::dij_mainprogram()
+void Dialog::dij_mainprogram() //Main Program
 {
-    int count = 0;//count is used to output only one line of paths/distance
+     adjacency_map.clear(); //Clears ajacency_map
+     CHECKER = 0;
+
+    //Populate switches
+    /*-------------------------------------------------------------------*/
+        QString s = QString("SELECT Switch,Position from %3").arg("switchInfoTable");
+        q = db.exec(s);
+
+    //For each swich in switchInfoTable execute the following:
+    for(;q.next() == 1;) //If it is 1 it contains data
+    {
+        //QString ss1 = q.value(0).toString();
+        //QString ss2 = q.value(1).toChar();
+        //qDebug() << "(" << ss1 << ", " << ss2 << ")";
+        //qDebug() << "(" << ss1 << ")";
+        //vertex_names.push_back(ss1.toStdString());
+    }
+    /*-------------------------------------------------------------------*/
+
+    //Reads track ids and names for showing the path
+    /*-------------------------------------------------------------------*/
+    QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+    q = db.exec(t);
+
+    for(;q.next() == 1;) //If it is 1 it contains data
+    {
+        QString ss4 = q.value(1).toString();
+        //qDebug() << "(" << ss1 <<","<< ss2 <<","<< ss3 << ")";
+        vertex_names.push_back(ss4.toStdString());
+    }
+    /*-------------------------------------------------------------------*/
+
+    //Reads data for each track and how its connected along with its weight
+    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    q = db.exec(t2);
+
+    //For each swich in trackInfoTable execute the following:
+    /*-------------------------------------------------------------------*/
+    for(;q.next() == 1;) //If it is 1 it contains data
+    {
+    int ss1 = q.value(0).toInt();
+    int ss2 = q.value(1).toInt();
+    int ss3 = q.value(2).toInt();
+    adjacency_map[ss1].push_back(edge(ss2,  ss3));
+    //qDebug() <<ss1<<",{"<<ss2<<","<<ss3<<"}";
+    //adjacency_map[ss2].push_back(edge(ss1,  ss3));
+    //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
+    }
+    /*-------------------------------------------------------------------*/
+
+    dij_main();//Call algorithm function
+
+    if (CHECKER == 1)//Use for checking purposes
+    {
+    adjacency_map.clear(); //Clears ajacency_map must be done to allow opposite direction of travel
+    CHECKER = 0;
+    //Reads data for each track and how its connected along with its weight
+    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    q = db.exec(t3);
+
+    //For each swich in trackInfoTable execute the following:
+    /*-------------------------------------------------------------------*/
+    for(;q.next() == 1;) //If it is 1 it contains data
+    {
+    int ss1 = q.value(0).toInt();
+    int ss2 = q.value(1).toInt();
+    int ss3 = q.value(2).toInt();
+    adjacency_map[ss2].push_back(edge(ss1,  ss3));
+    //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
+    }
+    /*-------------------------------------------------------------------*/
+
+    dij_main();//Call algorithm function
+
+    if(CHECKER == 1)//Use for checking purposes
+    {
+        count = 0;
+        CHECKER = 0;
+        s = QString("Distance from vertex %1 to %2 is: %3").arg(start).arg(dest).arg("NULL-No Path Exists!");
+        ui->distanceEdit->setText(s);
+        std::cout << "No Path Exists or switch is not correctly switched!"<< std::endl;
+        s2 = QString("Path: No Path Exists or switch is not correctly switched!");
+        ui->pathEdit->setText(s2);
+    }
+    }
+}
+
+//Dialog:: was added to iterface with Qt dialog.cpp
+void Dialog::dij_main()
+{
+    count = 0;//count is used to output only one line of paths/distance
 
     //Range of spinboxes set in dialog.cpp
     //Starting position
@@ -125,54 +215,6 @@ void Dialog::dij_mainprogram()
     //Destination
     dest = ui->destBox->value();
 
-    adjacency_map_t adjacency_map;
-    //std::vector<std::string> vertex_names;
-
-//Populate switches
-/*-------------------------------------------------------------------*/
-    QString s = QString("SELECT Switch,Position from %3").arg("switchInfoTable");
-    q = db.exec(s);
-
-//For each swich in switchInfoTable execute the following:
-for(;q.next() == 1;) //If it is 1 it contains data
-{
-    QString ss1 = q.value(0).toString();
-    //QString ss2 = q.value(1).toChar();
-    //qDebug() << "(" << ss1 << ", " << ss2 << ")";
-    qDebug() << "(" << ss1 << ")";
-    //vertex_names.push_back(ss1.toStdString());
-}
-/*-------------------------------------------------------------------*/
-
-//Reads track ids and names for showing the path
-/*-------------------------------------------------------------------*/
-QString t2 = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
-q = db.exec(t2);
-
-for(;q.next() == 1;) //If it is 1 it contains data
-{
-    QString ss4 = q.value(1).toString();
-    //qDebug() << "(" << ss1 <<","<< ss2 <<","<< ss3 << ")";
-    vertex_names.push_back(ss4.toStdString());
-}
-/*-------------------------------------------------------------------*/
-
-//Reads data for each track and how its connected along with its weight
-QString t = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
-q = db.exec(t);
-
-//For each swich in trackInfoTable execute the following:
-/*-------------------------------------------------------------------*/
-for(;q.next() == 1;) //If it is 1 it contains data
-{
-int ss1 = q.value(0).toInt();
-int ss2 = q.value(1).toInt();
-int ss3 = q.value(2).toInt();
-adjacency_map[ss1].push_back(edge(ss2,  ss3));
-adjacency_map[ss2].push_back(edge(ss1,  ss3));
-}
-/*-------------------------------------------------------------------*/
-
     std::map<vertex_t, weight_t> min_distance;
     std::map<vertex_t, vertex_t> previous;
 
@@ -180,9 +222,8 @@ adjacency_map[ss2].push_back(edge(ss1,  ss3));
     DijkstraComputePaths(start, adjacency_map, min_distance, previous);
     for (adjacency_map_t::iterator vertex_iter = adjacency_map.begin();
          vertex_iter != adjacency_map.end();
-         vertex_iter++)
+         vertex_iter++)    
     {
-
         vertex_t v = vertex_iter->first;
 
         if (v == dest)
@@ -191,21 +232,20 @@ adjacency_map[ss2].push_back(edge(ss1,  ss3));
            {
             if (min_distance[v] == inf)
             {
-            s = QString("Distance from vertex %1 to %2 is: %3").arg(start).arg(dest).arg("NULL-No Path Exists!");
-            ui->distanceEdit->setText(s);
-            std::cout << "No Path Exists or switch is not correctly switched!"<< std::endl;
-            s2 = QString("Path: No Path Exists or switch is not correctly switched!");
-            ui->pathEdit->setText(s2);
+            CHECKER = 1;
             }
             else
             {
+            CHECKER = 0;
             s = QString("Distance from vertex %1 to %2 is: %3").arg(start).arg(dest).arg(min_distance[v]);
+            ui->distanceEdit->clear();
             ui->distanceEdit->setText(s);
             std::cout << "Distance to " << vertex_names[v] << ": " << min_distance[v] << std::endl;
             std::list<vertex_t> path =
                 DijkstraGetShortestPathTo(v, previous);
             std::list<vertex_t>::iterator path_iter = path.begin();
             s2 = QString("Path: ");
+            ui->pathEdit->clear();
             ui->pathEdit->setText(s2);
             std::cout << "Path: ";
             for( ; path_iter != path.end(); path_iter++)

@@ -22,6 +22,8 @@ public:
     explicit Dialog(QWidget *parent = 0);
     int start; //global variable for Starting Point
     int dest; //global variable for Destination
+    int CHECKER;//algorithm file variable
+    int count;//algorithm file variable
     void initializeModel(QSqlTableModel *model);
      QTableView *createView(QSqlTableModel *model, const QString &title = "");
      QSqlTableModel *table1;
@@ -36,7 +38,8 @@ private:
     Ui::Dialog *ui;
 
 private slots:
-    void dij_mainprogram(); // Main program in dij_algorithm.cpp
+    void dij_main(); // Main program in dij_algorithm.cpp
+    void dij_mainprogram(); // Algorithm part of program in dij_algorithm.cpp
     void RESETVALUE();
     void train_info();
     void switch_info();
