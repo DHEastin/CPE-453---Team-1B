@@ -20,14 +20,9 @@ Dialog::Dialog(QWidget *parent) :
     connect(ui->clearButton,SIGNAL(clicked()),this,SLOT(RESETVALUE()));
     connect(ui->clearButton,SIGNAL(clicked()),ui->distanceEdit,SLOT(clear()));
     connect(ui->clearButton,SIGNAL(clicked()),ui->pathEdit,SLOT(clear()));
+    connect(ui->viewtableButton,SIGNAL(clicked()),this,SLOT(VIEWTABLE()));
 
     //Connect statements for SQL Testing
-    connect(ui->train_infoButton,SIGNAL(clicked()),this,SLOT(train_info()));
-    connect(ui->switch_infoButton,SIGNAL(clicked()),this,SLOT(switch_info()));
-    connect(ui->path_infoButton,SIGNAL(clicked()),this,SLOT(path_info()));
-    connect(ui->track_infoButton,SIGNAL(clicked()),this,SLOT(track_info()));
-    connect(ui->track_listingButton,SIGNAL(clicked()),this,SLOT(track_listing()));
-    connect(ui->throttle_infoButton,SIGNAL(clicked()),this,SLOT(throttle_info()));
     connect(ui->queryButton,SIGNAL(clicked()),this,SLOT(sql_query()));
     connect(ui->createtablesButton,SIGNAL(clicked()),this,SLOT(create_sqltables()));
     connect(ui->server_connectButton,SIGNAL(clicked()),this,SLOT(sqlserver_connect()));
@@ -63,64 +58,66 @@ Dialog::~Dialog()
     delete ui;
 }
 
+void Dialog::VIEWTABLE()
+{
+    const QString& VIEW = ui->listWidget->currentItem()->text();
+    if(VIEW=="trainInfoTable")
+    {
+        model = new QSqlQueryModel;
+        model->setQuery(k);
+        view = new QTableView;
+        view->setModel(model);
+        view->show();
+    }
+    else if(VIEW=="trackInfoTable")
+    {
+        model = new QSqlQueryModel;
+        model->setQuery(m);
+        view = new QTableView;
+        view->setModel(model);
+        view->show();
+    }
+    else if(VIEW=="tracklistingTable")
+    {
+        model = new QSqlQueryModel;
+        model->setQuery(n);
+        view = new QTableView;
+        view->setModel(model);
+        view->show();
+    }
+    else if(VIEW=="pathInfoTable")
+    {
+        model = new QSqlQueryModel;
+        model->setQuery(l);
+        view = new QTableView;
+        view->setModel(model);
+        view->show();
+    }
+    else if(VIEW=="switchInfoTable")
+    {
+        model = new QSqlQueryModel;
+        model->setQuery(q);
+        view = new QTableView;
+        view->setModel(model);
+        view->show();
+    }
+    else if(VIEW=="throttleInfoTable")
+    {
+        model = new QSqlQueryModel;
+        model->setQuery(j);
+        view = new QTableView;
+        view->setModel(model);
+        view->show();
+    }
+    else{}
+
+    //qDebug() << "currentItem: "<<VIEW;
+}
+
 void Dialog::RESETVALUE()
 {
     ui->sourceBox->setValue(0);
     ui->destBox->setValue(0);
-}
-
-void Dialog::train_info()
-{
-    model = new QSqlQueryModel;
-    model->setQuery(k);
-    view = new QTableView;
-    view->setModel(model);
-    view->show();
-}
-
-void Dialog::switch_info()
-{
-    model = new QSqlQueryModel;
-    model->setQuery(q);
-    view = new QTableView;
-    view->setModel(model);
-    view->show();
-}
-
-void Dialog::path_info()
-{
-    model = new QSqlQueryModel;
-    model->setQuery(l);
-    view = new QTableView;
-    view->setModel(model);
-    view->show();
-}
-
-void Dialog::throttle_info()
-{
-    model = new QSqlQueryModel;
-    model->setQuery(j);
-    view = new QTableView;
-    view->setModel(model);
-    view->show();
-}
-
-void Dialog::track_info()
-{
-    model = new QSqlQueryModel;
-    model->setQuery(m);
-    view = new QTableView;
-    view->setModel(model);
-    view->show();
-}
-
-void Dialog::track_listing()
-{
-    model = new QSqlQueryModel;
-    model->setQuery(n);
-    view = new QTableView;
-    view->setModel(model);
-    view->show();
 }
 
 void Dialog::sqlserver_connect()
@@ -163,7 +160,7 @@ void Dialog::create_sqltables()
     //Create Throttle_Info Table
     //CURRENTLY NOT IMPORTANT
      j.exec("CREATE TABLE throttleInfoTable (train TEXT, direction TEXT, throttle INT);");
-     j.exec("INSERT INTO throttleInfoTable (train, direction, throttle) VALUES ('Georgia Express', Forward', 7);");
+     j.exec("INSERT INTO throttleInfoTable (train, direction, throttle) VALUES ('Alabama Express', 'Backward', 1);");
      j.exec("INSERT INTO throttleInfoTable (train, direction, throttle) VALUES ('Alabama Express', 'Forward', 1);");
      j.exec("SELECT * FROM throttleInfoTable;");
 
@@ -187,6 +184,8 @@ void Dialog::create_sqltables()
       m.exec("CREATE TABLE trackInfoTable (currentnode INT, nextnode INT, weight INT);");
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (0,2,33);");//Left Side Middle Connect
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (0,3,33);");//Left Side Middle Connect
+      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (2,0,33);");//Left Side Middle Connect Flipped
+      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (3,0,33);");//Left Side Middle Connect Flipped
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (2,4,5);");//Switch 1 Bypass
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (3,4,5);");//Switch 1 Bypass
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (4,5,5);");//SW1 & SW2 Middle
@@ -205,6 +204,8 @@ void Dialog::create_sqltables()
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (15,17,5);");//Switch 4 Bypass
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (16,1,5);");//Right Side Middle Connect
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (17,1,5);");//Right Side Middle Connect
+      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (1,16,5);");//Right Side Middle Connect Flipped
+      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (1,17,5);");//Right Side Middle Connect Flipped
       m.exec("SELECT * FROM trackInfoTable;");
 
       //Create Path_Info Table

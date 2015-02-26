@@ -9,6 +9,7 @@
 #include <QtSql/QSqlDatabase>
 #include <QTableView>
 #include <QVector>
+#include <QListWidget>
 
 namespace Ui {
 class Dialog;
@@ -41,16 +42,11 @@ private slots:
     void dij_main(); // Main program in dij_algorithm.cpp
     void dij_mainprogram(); // Algorithm part of program in dij_algorithm.cpp
     void RESETVALUE();
-    void train_info();
-    void switch_info();
-    void path_info();
-    void throttle_info();
-    void track_info();
-    void track_listing();
     void sql_query();
     void create_sqltables();
     void sqlserver_connect();
     void swapNUM();
+    void VIEWTABLE();
 
 };
 

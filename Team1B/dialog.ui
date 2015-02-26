@@ -279,7 +279,7 @@
       <string>Connection to SQL Database</string>
      </property>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>110</x>
@@ -365,7 +365,7 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -419,77 +419,7 @@
     <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>120</y>
-       <width>117</width>
-       <height>189</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QLabel" name="label_10">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>View Tables</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="train_infoButton">
-        <property name="text">
-         <string>View trainInfoTable</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="track_infoButton">
-        <property name="text">
-         <string>View trackInfoTable</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="track_listingButton">
-        <property name="text">
-         <string>View tracklistingTable</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="path_infoButton">
-        <property name="text">
-         <string>View pathInfoTable</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="switch_infoButton">
-        <property name="text">
-         <string>View switchInfoTable</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="throttle_infoButton">
-        <property name="text">
-         <string>View throttleInfoTable</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="layoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
+       <x>130</x>
        <y>120</y>
        <width>171</width>
        <height>213</height>
@@ -546,6 +476,13 @@
         </item>
        </widget>
       </item>
+      <item>
+       <widget class="QPushButton" name="viewtableButton">
+        <property name="text">
+         <string>View Table</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
     <widget class="QLabel" name="statusLabel">
@@ -580,7 +517,7 @@
       <string>Waiting.....</string>
      </property>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>

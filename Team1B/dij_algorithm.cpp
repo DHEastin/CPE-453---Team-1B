@@ -160,9 +160,6 @@ void Dialog::dij_mainprogram() //Main Program
     int ss2 = q.value(1).toInt();
     int ss3 = q.value(2).toInt();
     adjacency_map[ss1].push_back(edge(ss2,  ss3));
-    //qDebug() <<ss1<<",{"<<ss2<<","<<ss3<<"}";
-    //adjacency_map[ss2].push_back(edge(ss1,  ss3));
-    //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
     }
     /*-------------------------------------------------------------------*/
 
