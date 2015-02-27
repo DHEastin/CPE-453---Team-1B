@@ -10,6 +10,9 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);    
 
+    ui->viewtableButton->setDisabled(1);
+    ui->viewtableButton->setText("Waiting for SQL Data");
+
     this->setWindowTitle("Testing_Framework");
 
     //Connect statements for Algorithm Testing
@@ -26,7 +29,6 @@ Dialog::Dialog(QWidget *parent) :
     connect(ui->queryButton,SIGNAL(clicked()),this,SLOT(sql_query()));
     connect(ui->createtablesButton,SIGNAL(clicked()),this,SLOT(create_sqltables()));
     connect(ui->server_connectButton,SIGNAL(clicked()),this,SLOT(sqlserver_connect()));
-
 }
 
 void Dialog::sql_query()
@@ -110,8 +112,6 @@ void Dialog::VIEWTABLE()
         view->show();
     }
     else{}
-
-    //qDebug() << "currentItem: "<<VIEW;
 }
 
 void Dialog::RESETVALUE()
@@ -122,7 +122,8 @@ void Dialog::RESETVALUE()
 
 void Dialog::sqlserver_connect()
 {
-
+    ui->viewtableButton->setDisabled(0);
+    ui->viewtableButton->setText("View Tables");
 }
 
 void Dialog::create_sqltables()
@@ -235,4 +236,6 @@ void Dialog::create_sqltables()
      ui->createtablesButton->setDisabled(1);
      ui->createtablesButton->setText("Tables in memory!");
      ui->status_update->setText("Tables loading in memory!");
+     ui->viewtableButton->setDisabled(0);
+     ui->viewtableButton->setText("View Tables");
 }
