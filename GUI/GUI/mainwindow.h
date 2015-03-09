@@ -23,6 +23,8 @@ private slots:
     void edit_train_dia();
     void del_train_dia();
     void sched_dia();
+    void make_map();
+    void check_sched();
 };
 
 #endif // MAINWINDOW_H

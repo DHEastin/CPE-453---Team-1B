@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     schedule_dialog.cpp \
-    train_dialog.cpp
+    train_dialog.cpp \
+    path_map.cpp
 
 HEADERS  += mainwindow.h \
     schedule_dialog.h \
-    train_dialog.h
+    train_dialog.h \
+    path_map.h
 
 FORMS    += mainwindow.ui \
     schedule_dialog.ui \

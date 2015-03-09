@@ -38,12 +38,17 @@ public:
     struct node
     {
         node_type   type = null;
-        int         length = 0;
+        //int         length = 0;
                                               //linked node usage determined by current node_type
         std::string connectionA = "NULL";     //normal track = inbound; two_switch = open; cross = path1
         std::string connectionB = "NULL";     //normal track = null; two_switch = null; cross = path1
         std::string connectionC = "NULL";     //normal track = outbound; two_switch = bypass; cross = path2
         std::string connectionD = "NULL";     //normal track = null; two_switch = outbound; cross = path2
+
+        float weightA = 0.0;
+        float weightB = 0.0;
+        float weightC = 0.0;
+        float weightD = 0.0;
     };
 };
 
