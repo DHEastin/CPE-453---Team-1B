@@ -33,6 +33,64 @@ Dialog::Dialog(QWidget *parent) :
 
 void Dialog::sql_query()
 {
+    //Connect to SQL Server
+    //QSqlTableModel model;
+    db = QSqlDatabase::addDatabase( "QSQLITE" ,"Local" );
+    db.setDatabaseName("Local");
+    db.setHostName("localhost");
+    db.setDatabaseName(":memory:");
+    if (!db.open())
+    {
+        qDebug() << "Error";
+    }
+
+    db.open();
+
+    rdb = QSqlDatabase::addDatabase( "QMYSQL", "Remote" );
+    rdb.setDatabaseName("Remote");
+    rdb.setHostName("pavelow.eng.uah.edu");
+    rdb.setPort(33158);
+    rdb.setDatabaseName("team4b");
+    rdb.setUserName("root");
+    rdb.setPassword("drabroig");
+    if (!rdb.open())
+    {
+        qDebug() << "Error";
+    }
+
+    rdb.open();
+
+    QString query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'title'";
+    q = db.exec(query);
+    k = db.exec(query);
+    m = db.exec(query);
+    n = db.exec(query);
+    q1 = rdb.exec(query);
+    k1 = rdb.exec(query);
+    m1 = rdb.exec(query);
+    n1 = rdb.exec(query);
+
+    //Create Path_Info Table
+    //Table holds track name and ID
+     n.exec("CREATE TABLE tracklistingTable (trackID INT, trackNAME TEXT);");
+
+    //Populate switches
+    /*-------------------------------------------------------------------*/
+        QString s = QString("SELECT Current from %3").arg("DS_Connectivity");
+        q1 = db.exec(s);
+        ii = 0;
+    for(;q1.next() == 1;) //If it is 1 it contains data
+    {
+        QString ss1 = q1.value(0).toString();
+        int ss2 = ii;
+        //qDebug() << "(" << ss1 << ", " << ss2 << ")";
+        QString ss = QString("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (%1,'%2');").arg(ss2).arg(ss1);
+        n.exec(ss);
+        ii++;
+    }
+    /*-------------------------------------------------------------------*/
+
+   n.exec("SELECT * FROM tracklistingTable;");
 
 }
 
@@ -124,6 +182,7 @@ void Dialog::sqlserver_connect()
 {
     ui->viewtableButton->setDisabled(0);
     ui->viewtableButton->setText("View Tables");
+    sql_query();
 }
 
 void Dialog::create_sqltables()
@@ -147,6 +206,65 @@ void Dialog::create_sqltables()
     j = db.exec(query);
     m = db.exec(query);
     n = db.exec(query);
+    o = db.exec(query);
+
+    //Create DS_Connectivity Table
+    //Table holds track name and ID
+    o.exec("CREATE TABLE DS_Connectivity (Current TEXT, NumberOfConnections INT, Connection1 TEXT, Connection2 TEXT, Connection3 TEXT);");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('1.1',2,'2.1','2.3','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('1.2',2,'2.16','2.15','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.1',2,'2.1','2.3','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.2',2,'2.1','2.3','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.3',3,'2.4','2.2','2.1');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.4',2,'2.3','2.5','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.5',3,'2.4','2.7','2.6');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.6',2,'2.5','2.8','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.7',2,'2.5','2.9','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.8',2,'2.6','2.10','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.9',2,'2.7','2.11','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.10',2,'2.8','2.12','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.11',2,'2.9','2.12','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.12',3,'2.13','2.11','2.10');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.13',2,'2.12','2.14','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.14',3,'2.13','2.15','2.16');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.15',2,'2.14','1.2','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.16',2,'2.14','1.2','Null');");
+    o.exec("SELECT * FROM DS_Connectivity;");
+
+    n.exec("CREATE TABLE tracklistingTable (trackID INT, trackNAME TEXT);");
+    int ii = 0;
+    /*-------------------------------------------------------------------*/
+        QString s3 = QString("SELECT Current from %3").arg("DS_Connectivity");
+        q = db.exec(s3);
+
+    //For each swich in switchInfoTable execute the following:
+    for(;q.next() == 1;) //If it is 1 it contains data
+    {
+        int ss1 = ii;
+        QString ss2 = q.value(0).toString();
+        QString ss = QString("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (%1,'%2');").arg(ss1).arg(ss2);
+        n.exec(ss);
+        ii++;
+    }
+    /*-------------------------------------------------------------------*/
+    n.exec("SELECT * FROM tracklistingTable;");
+
+    m.exec("CREATE TABLE trackInfoTable (currentnode INT, nextnode INT, weight INT);");
+    /*-------------------------------------------------------------------*/
+        QString s = QString("SELECT Switch,Position from %3").arg("switchInfoTable");
+        q = db.exec(s);
+
+    //For each swich in switchInfoTable execute the following:
+    for(;q.next() == 1;) //If it is 1 it contains data
+    {
+        //QString ss1 = q.value(0).toString();
+        //QString ss2 = q.value(1).toChar();
+        //qDebug() << "(" << ss1 << ", " << ss2 << ")";
+        //qDebug() << "(" << ss1 << ")";
+        //vertex_names.push_back(ss1.toStdString());
+    }
+    /*-------------------------------------------------------------------*/
+    m.exec("SELECT * FROM trackInfoTable;");
 
     //Create Switch_Info Table
     //Table list switches and Open/Closed status
@@ -182,7 +300,7 @@ void Dialog::create_sqltables()
      //Create Track_Info Table
      //Table shows how nodes are connected.
      //When reading from this, code was created to create the double sided connection
-      m.exec("CREATE TABLE trackInfoTable (currentnode INT, nextnode INT, weight INT);");
+
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (0,2,33);");//Left Side Middle Connect
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (0,3,33);");//Left Side Middle Connect
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (2,0,33);");//Left Side Middle Connect Flipped
@@ -207,30 +325,11 @@ void Dialog::create_sqltables()
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (17,1,5);");//Right Side Middle Connect
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (1,16,5);");//Right Side Middle Connect Flipped
       m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (1,17,5);");//Right Side Middle Connect Flipped
-      m.exec("SELECT * FROM trackInfoTable;");
 
-      //Create Path_Info Table
-      //Table holds track name and ID
-       n.exec("CREATE TABLE tracklistingTable (trackID INT, trackNAME TEXT);");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (0,'1-1');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (1,'1-2');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (2,'2-1');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (3,'2-2');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (4,'2-3');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (5,'2-4');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (6,'2-5');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (7,'2-6');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (8,'2-7');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (9,'2-8');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (10,'2-9');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (11,'2-10');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (12,'2-11');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (13,'2-12');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (14,'2-13');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (15,'2-14');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (16,'2-15');");
-       n.exec("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (17,'2-16');");
-       n.exec("SELECT * FROM tracklistingTable;");
+
+
+
+
 
      //This disables createtablesButton and updates text to update user on status.
      ui->createtablesButton->setDisabled(1);

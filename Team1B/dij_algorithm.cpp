@@ -1,4 +1,4 @@
-/* The authors of this work have released all rights to it and placed it
+/* Thhors of this work have released all rights to it and placed it
 in the public domain under the Creative Commons CC0 1.0 waiver
 (http://creativecommons.org/publicdomain/zero/1.0/).
 

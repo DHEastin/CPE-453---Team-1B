@@ -25,13 +25,14 @@ public:
     int dest; //global variable for Destination
     int CHECKER;//algorithm file variable
     int count;//algorithm file variable
+    int ii;
     void initializeModel(QSqlTableModel *model);
      QTableView *createView(QSqlTableModel *model, const QString &title = "");
      QSqlTableModel *table1;
-     QSqlQuery q,j,k,l,m,n;
+     QSqlQuery q,j,k,l,m,n,q1,k1,m1,n1,o;
      QSqlQueryModel *model;
      QTableView *view;
-     QSqlDatabase db;
+     QSqlDatabase db,rdb;
      std::vector<std::string> vertex_names;
     ~Dialog();
 
@@ -47,7 +48,6 @@ private slots:
     void sqlserver_connect();
     void swapNUM();
     void VIEWTABLE();
-
 };
 
 #endif // DIALOG_H
