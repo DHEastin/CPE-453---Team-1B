@@ -10,6 +10,7 @@
 #include <QTableView>
 #include <QVector>
 #include <QListWidget>
+#include <QComboBox>
 
 namespace Ui {
 class Dialog;
@@ -23,6 +24,8 @@ public:
     explicit Dialog(QWidget *parent = 0);
     int start; //global variable for Starting Point
     int dest; //global variable for Destination
+    QString destpick;
+    QString startpick;
     int CHECKER;//algorithm file variable
     int count;//algorithm file variable
     int ii;
@@ -30,10 +33,11 @@ public:
     int COL1;
     int COL2;
     int COL3;
+    int NumofConn;
     void initializeModel(QSqlTableModel *model);
      QTableView *createView(QSqlTableModel *model, const QString &title = "");
      QSqlTableModel *table1;
-     QSqlQuery q,j,k,l,m,n,q1,k1,m1,n1,o,p;
+     QSqlQuery q,j,k,l,m,n,q1,k1,m1,n1,o,p,INFO,INFO2,nn,mm,qq;
      QSqlQueryModel *model;
      QTableView *view;
      QSqlDatabase db,rdb;
@@ -46,12 +50,11 @@ private:
 private slots:
     void dij_main(); // Main program in dij_algorithm.cpp
     void dij_mainprogram(); // Algorithm part of program in dij_algorithm.cpp
-    void RESETVALUE();
     void sql_query();
     void create_sqltables();
     void sqlserver_connect();
-    void swapNUM();
     void VIEWTABLE();
+    void SWAP();
 };
 
 #endif // DIALOG_H

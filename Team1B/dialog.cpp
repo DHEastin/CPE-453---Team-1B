@@ -16,14 +16,9 @@ Dialog::Dialog(QWidget *parent) :
     this->setWindowTitle("Testing_Framework");
 
     //Connect statements for Algorithm Testing
-    ui->sourceBox->setRange(0,17);
-    ui->destBox->setRange(0,17);
-    connect(ui->swapButton,SIGNAL(clicked()),this,SLOT(swapNUM()));
     connect(ui->startButton,SIGNAL(clicked()),this,SLOT(dij_mainprogram()));
-    connect(ui->clearButton,SIGNAL(clicked()),this,SLOT(RESETVALUE()));
-    connect(ui->clearButton,SIGNAL(clicked()),ui->distanceEdit,SLOT(clear()));
-    connect(ui->clearButton,SIGNAL(clicked()),ui->pathEdit,SLOT(clear()));
     connect(ui->viewtableButton,SIGNAL(clicked()),this,SLOT(VIEWTABLE()));
+    connect(ui->swapButton,SIGNAL(clicked()),this,SLOT(SWAP()));
 
     //Connect statements for SQL Testing
     connect(ui->queryButton,SIGNAL(clicked()),this,SLOT(sql_query()));
@@ -93,16 +88,6 @@ void Dialog::sql_query()
    n.exec("SELECT * FROM tracklistingTable;");
 
 }
-
-void Dialog::swapNUM()
-{
-    int BEG = ui->sourceBox->value();
-    int END = ui->destBox->value();
-    int swap = BEG;
-    ui->sourceBox->setValue(END);
-    ui->destBox->setValue(swap);
-}
-
 QTableView *Dialog::createView(QSqlTableModel *model, const QString &title)
 {
     QTableView *view = new QTableView;
@@ -132,7 +117,7 @@ void Dialog::VIEWTABLE()
     else if(VIEW=="trackInfoTable")
     {
         model = new QSqlQueryModel;
-        model->setQuery(m);
+        model->setQuery(qq);
         view = new QTableView;
         view->setModel(model);
         view->show();
@@ -180,17 +165,24 @@ void Dialog::VIEWTABLE()
     else{}
 }
 
-void Dialog::RESETVALUE()
-{
-    ui->sourceBox->setValue(0);
-    ui->destBox->setValue(0);
-}
-
 void Dialog::sqlserver_connect()
 {
     ui->viewtableButton->setDisabled(0);
     ui->viewtableButton->setText("View Tables");
     sql_query();
+}
+
+void Dialog::SWAP()
+{
+    //Starting position
+    startpick = ui->sourceBox->currentText();
+
+    //Destination
+    destpick = ui->destBox->currentText();
+
+    QString Swap = destpick;
+    ui->destBox->setCurrentText(startpick);
+    ui->sourceBox->setCurrentText(Swap);
 }
 
 void Dialog::create_sqltables()
@@ -216,6 +208,9 @@ void Dialog::create_sqltables()
     n = db.exec(query);
     o = db.exec(query);
     p = db.exec(query);
+    mm = db.exec(query);
+    nn = db.exec(query);
+    qq = db.exec(query);
 
     //Create DS_Connectivity Table
     //Table holds track name and ID
@@ -244,13 +239,13 @@ void Dialog::create_sqltables()
     int ii = 0;
     /*-------------------------------------------------------------------*/
         QString s3 = QString("SELECT Current from %3").arg("DS_Connectivity");
-        q = db.exec(s3);
+        p = db.exec(s3);
 
     //For each swich in switchInfoTable execute the following:
-    for(;q.next() == 1;) //If it is 1 it contains data
+    for(;p.next() == 1;) //If it is 1 it contains data
     {
         int ss1 = ii;
-        QString ss2 = q.value(0).toString();
+        QString ss2 = p.value(0).toString();
         QString ss = QString("INSERT INTO tracklistingTable (trackID, trackNAME) VALUES (%1,'%2');").arg(ss1).arg(ss2);
         n.exec(ss);
         ii++;
@@ -258,22 +253,22 @@ void Dialog::create_sqltables()
     /*-------------------------------------------------------------------*/
     n.exec("SELECT * FROM tracklistingTable;");
 
-    m.exec("CREATE TABLE trackInfoTable (currentnode INT, nextnode INT, weight INT);");
+    qq.exec("CREATE TABLE trackInfoTable (currentnode INT, nextnode INT, weight INT);");
     /*-------------------------------------------------------------------*/
-        QString s = QString("SELECT Current,NumberOfConnections,Connection1,Connection2,Connection3 from %3").arg("DS_Connectivity");
-        o = db.exec(s);
-        QString sm3 = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+        QString s9 = QString("SELECT Current,NumberOfConnections,Connection1,Connection2,Connection3 from %3").arg("DS_Connectivity");
+        o = db.exec(s9);
+        QString smi3 = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
 
     for(;o.next() == 1;) //Check DS_Connectivity table for data
     {
-        n = db.exec(sm3);
+        n = db.exec(smi3);
         for(;n.next() == 1;) //Check each track piece
         {
             int trackID = n.value(0).toInt(); //trackID
             QString trackNAME = n.value(1).toString();//trackNAME
 
                 QString Current = o.value(0).toString();//Current
-                int NumofConn = o.value(1).toInt();   //Connection1
+                NumofConn = o.value(1).toInt();   //Connection1
                 QString Conn1 = o.value(2).toString();//Connection2
                 QString Conn2 = o.value(3).toString();//Connection3
                 QString Conn3 = o.value(4).toString();//Connection3
@@ -300,70 +295,77 @@ void Dialog::create_sqltables()
         }
         //qDebug() << COL0 <<","<< COL1 <<","<< COL2 <<","<< COL3;
 
+        if (COL0 < COL1 && COL0 < COL2)
+        {
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                qq.exec(smpms);
+                QString smpms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL1).arg(COL0);
+                qq.exec(smpms1);
+                QString smpms2 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL2);
+                qq.exec(smpms2);
+                QString smpms3 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL2).arg(COL0);
+                qq.exec(smpms3);
+        }
+        else
+        {
         if (COL0 < COL1)
         {
         if (COL0 != COL1)
         {
-            QString smms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-            m.exec(smms);
+            QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+            qq.exec(smpms);
+
         }
         }
         if (COL0 < COL2)
         {
         if (COL0 != COL2)
         {
-            QString smms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL2);
-            m.exec(smms1);
+            QString smpms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL2);
+            qq.exec(smpms1);
         }
         }
-
-        //Delete rows with swapped data
-        //DELETE FROM trackInfoTable WHERE CustomerName='Alfreds Futterkiste' AND ContactName='Maria Anders';
+        if (NumofConn == 3)
+        {
+        if (COL0 < COL3)
+        {
+        if (COL0 != COL3)
+        {
+            QString smpms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL3);
+            qq.exec(smpms1);
+        }
+        }
+        }
+        }
 
     }
     /*-------------------------------------------------------------------*/
-    m.exec("SELECT * FROM trackInfoTable;");
+    qq.exec("SELECT * FROM trackInfoTable;");
 
-    //Create Track_Info Table
-    //Table shows how nodes are connected.
-    //When reading from this, code was created to create the double sided connection
+    QString ts3 = QString("SELECT trackID,trackNAME from %1").arg("tracklistingTable");
+    n = db.exec(ts3);
 
-    /*
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (0,2,33);");//Left Side Middle Connect
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (0,3,33);");//Left Side Middle Connect
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (2,0,33);");//Left Side Middle Connect Flipped
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (3,0,33);");//Left Side Middle Connect Flipped
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (2,4,5);");//Switch 1 Bypass
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (3,4,5);");//Switch 1 Bypass
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (4,5,5);");//SW1 & SW2 Middle
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (5,6,5);");//SW1 & SW2 Middle
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (6,7,5);");//Switch 2 Bypass
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (6,8,5);");//Switch 2 Bypass
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (8,10,5);");//Top Row btw SW1 & SW2
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (10,12,5);");//Top Row btw SW1 & SW2
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (7,9,5);");//Bottom Row btw SW1 & SW2
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (9,11,5);");//Bottom Row btw SW1 & SW2
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (11,13,5);");//Switch 3 Bypass
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (12,13,5);");//Switch 3 Bypass
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (13,14,5);");//SW3 & SW4 Middle
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (14,15,5);");//SW3 & SW4 Middle
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (15,16,5);");//Switch 4 Bypass
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (15,17,5);");//Switch 4 Bypass
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (16,1,5);");//Right Side Middle Connect
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (17,1,5);");//Right Side Middle Connect
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (1,16,5);");//Right Side Middle Connect Flipped
-     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (1,17,5);");//Right Side Middle Connect Flipped
-     */
+    /*-------------------------------------------------------------------*/
+    for(;n.next() == 1;) //If it is 1 it contains data
+    {
+    //int sts1 = n.value(0).toInt();
+    QString sts2 = n.value(1).toString();
+
+    ui->sourceBox->addItem(sts2);
+    ui->destBox->addItem(sts2);
+
+    }
+    /*-------------------------------------------------------------------*/
 
     //Create Switch_Info Table
     //Table list switches and Open/Closed status
     //Unused but code was created to read from this table and do nothing with it
-     q.exec("CREATE TABLE switchInfoTable (switch TEXT, position TEXT);");
-     q.exec("INSERT INTO switchInfoTable VALUES ('SW1', 'Open');");
-     q.exec("INSERT INTO switchInfoTable VALUES ('SW2', 'Open');");
-     q.exec("INSERT INTO switchInfoTable VALUES ('SW3', 'Open');");
-     q.exec("INSERT INTO switchInfoTable VALUES ('SW4', 'Open');");
-     q.exec("SELECT * FROM switchInfoTable;");
+     p.exec("CREATE TABLE switchInfoTable (switch TEXT, position TEXT);");
+     p.exec("INSERT INTO switchInfoTable VALUES ('SW1', 'Open');");
+     p.exec("INSERT INTO switchInfoTable VALUES ('SW2', 'Open');");
+     p.exec("INSERT INTO switchInfoTable VALUES ('SW3', 'Open');");
+     p.exec("INSERT INTO switchInfoTable VALUES ('SW4', 'Open');");
+     p.exec("SELECT * FROM switchInfoTable;");
 
     //Create Throttle_Info Table
     //CURRENTLY NOT IMPORTANT

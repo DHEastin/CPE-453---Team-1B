@@ -1,17 +1,3 @@
-/* Thhors of this work have released all rights to it and placed it
-in the public domain under the Creative Commons CC0 1.0 waiver
-(http://creativecommons.org/publicdomain/zero/1.0/).
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-Retrieved from: http://en.literateprograms.org/Dijkstra's_algorithm_(C_Plus_Plus)?oldid=19645
-*/
 
 #include <iostream>
 #include <vector>
@@ -119,46 +105,29 @@ void Dialog::dij_mainprogram() //Main Program
      adjacency_map.clear(); //Clears ajacency_map
      CHECKER = 0;
 
-    //Populate switches
-    /*-------------------------------------------------------------------*/
-        QString s = QString("SELECT Switch,Position from %3").arg("switchInfoTable");
-        q = db.exec(s);
-
-    //For each swich in switchInfoTable execute the following:
-    for(;q.next() == 1;) //If it is 1 it contains data
-    {
-        //QString ss1 = q.value(0).toString();
-        //QString ss2 = q.value(1).toChar();
-        //qDebug() << "(" << ss1 << ", " << ss2 << ")";
-        //qDebug() << "(" << ss1 << ")";
-        //vertex_names.push_back(ss1.toStdString());
-    }
-    /*-------------------------------------------------------------------*/
-
-    //Reads track ids and names for showing the path
+  //Reads track ids and names for showing the path
     /*-------------------------------------------------------------------*/
     QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
-    q = db.exec(t);
+    nn = db.exec(t);
 
-    for(;q.next() == 1;) //If it is 1 it contains data
+    for(;nn.next() == 1;) //If it is 1 it contains data
     {
-        QString ss4 = q.value(1).toString();
-        //qDebug() << "(" << ss1 <<","<< ss2 <<","<< ss3 << ")";
+        QString ss4 = nn.value(1).toString();
         vertex_names.push_back(ss4.toStdString());
     }
     /*-------------------------------------------------------------------*/
 
     //Reads data for each track and how its connected along with its weight
     QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
-    q = db.exec(t2);
+    INFO = db.exec(t2);
 
     //For each swich in trackInfoTable execute the following:
     /*-------------------------------------------------------------------*/
-    for(;q.next() == 1;) //If it is 1 it contains data
+    for(;INFO.next() == 1;) //If it is 1 it contains data
     {
-    int ss1 = q.value(0).toInt();
-    int ss2 = q.value(1).toInt();
-    int ss3 = q.value(2).toInt();
+    int ss1 = INFO.value(0).toInt();
+    int ss2 = INFO.value(1).toInt();
+    int ss3 = INFO.value(2).toInt();
     adjacency_map[ss1].push_back(edge(ss2,  ss3));
     }
     /*-------------------------------------------------------------------*/
@@ -171,15 +140,15 @@ void Dialog::dij_mainprogram() //Main Program
     CHECKER = 0;
     //Reads data for each track and how its connected along with its weight
     QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
-    q = db.exec(t3);
+    INFO2 = db.exec(t3);
 
     //For each swich in trackInfoTable execute the following:
     /*-------------------------------------------------------------------*/
-    for(;q.next() == 1;) //If it is 1 it contains data
+    for(;INFO2.next() == 1;) //If it is 1 it contains data
     {
-    int ss1 = q.value(0).toInt();
-    int ss2 = q.value(1).toInt();
-    int ss3 = q.value(2).toInt();
+    int ss1 = INFO2.value(0).toInt();
+    int ss2 = INFO2.value(1).toInt();
+    int ss3 = INFO2.value(2).toInt();
     adjacency_map[ss2].push_back(edge(ss1,  ss3));
     //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
     }
@@ -207,10 +176,32 @@ void Dialog::dij_main()
 
     //Range of spinboxes set in dialog.cpp
     //Starting position
-    start = ui->sourceBox->value();
+    startpick = ui->sourceBox->currentText();
 
     //Destination
-    dest = ui->destBox->value();
+    destpick = ui->destBox->currentText();
+
+    QString t3 = QString("SELECT trackID,trackNAME from %1").arg("tracklistingTable");
+    mm = db.exec(t3);
+
+    //For each swich in trackInfoTable execute the following:
+    /*-------------------------------------------------------------------*/
+    for(;mm.next() == 1;) //If it is 1 it contains data
+    {
+    int sts1 = mm.value(0).toInt();
+    QString sts2 = mm.value(1).toString();
+
+    if (startpick == sts2)
+    {
+        start = sts1;
+    }
+    if (destpick == sts2)
+    {
+        dest = sts1;
+    }
+
+    }
+    /*-------------------------------------------------------------------*/
 
     std::map<vertex_t, weight_t> min_distance;
     std::map<vertex_t, vertex_t> previous;
@@ -234,7 +225,7 @@ void Dialog::dij_main()
             else
             {
             CHECKER = 0;
-            s = QString("Distance from vertex %1 to %2 is: %3").arg(start).arg(dest).arg(min_distance[v]);
+            s = QString("Distance from vertex %1 to %2 is: %3").arg(startpick).arg(destpick).arg(min_distance[v]);
             ui->distanceEdit->clear();
             ui->distanceEdit->setText(s);
             std::cout << "Distance to " << vertex_names[v] << ": " << min_distance[v] << std::endl;

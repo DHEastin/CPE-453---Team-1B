@@ -35,39 +35,6 @@
     <attribute name="title">
      <string>Testing Algorithm</string>
     </attribute>
-    <widget class="QWidget" name="layoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>95</x>
-       <y>316</y>
-       <width>240</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
-      <item>
-       <widget class="QPushButton" name="swapButton">
-        <property name="text">
-         <string>Swap Source and Destination</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="Line" name="line_5">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="clearButton">
-        <property name="text">
-         <string>Clear All</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
     <widget class="QLabel" name="label_18">
      <property name="geometry">
       <rect>
@@ -183,7 +150,7 @@
        <x>10</x>
        <y>106</y>
        <width>461</width>
-       <height>205</height>
+       <height>236</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -229,7 +196,7 @@
             <string>Source</string>
            </property>
           </widget>
-          <widget class="QSpinBox" name="sourceBox"/>
+          <widget class="QComboBox" name="sourceBox"/>
          </widget>
         </item>
         <item>
@@ -255,7 +222,7 @@
             <string>Destination</string>
            </property>
           </widget>
-          <widget class="QSpinBox" name="destBox"/>
+          <widget class="QComboBox" name="destBox"/>
          </widget>
         </item>
         <item>
@@ -357,6 +324,43 @@
          <enum>Qt::Horizontal</enum>
         </property>
        </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="swapButton">
+          <property name="text">
+           <string>Swap Source and Destination</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
