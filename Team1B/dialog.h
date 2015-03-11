@@ -26,10 +26,14 @@ public:
     int CHECKER;//algorithm file variable
     int count;//algorithm file variable
     int ii;
+    int COL0;
+    int COL1;
+    int COL2;
+    int COL3;
     void initializeModel(QSqlTableModel *model);
      QTableView *createView(QSqlTableModel *model, const QString &title = "");
      QSqlTableModel *table1;
-     QSqlQuery q,j,k,l,m,n,q1,k1,m1,n1,o;
+     QSqlQuery q,j,k,l,m,n,q1,k1,m1,n1,o,p;
      QSqlQueryModel *model;
      QTableView *view;
      QSqlDatabase db,rdb;

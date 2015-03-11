@@ -91,7 +91,7 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -177,7 +177,7 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -393,6 +393,11 @@
       </item>
       <item>
        <widget class="QListWidget" name="listWidget">
+        <item>
+         <property name="text">
+          <string>DS_Connectivity</string>
+         </property>
+        </item>
         <item>
          <property name="text">
           <string>trainInfoTable</string>

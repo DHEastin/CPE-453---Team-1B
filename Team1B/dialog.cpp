@@ -169,6 +169,14 @@ void Dialog::VIEWTABLE()
         view->setModel(model);
         view->show();
     }
+    else if(VIEW=="DS_Connectivity")
+    {
+        model = new QSqlQueryModel;
+        model->setQuery(o);
+        view = new QTableView;
+        view->setModel(model);
+        view->show();
+    }
     else{}
 }
 
@@ -207,6 +215,7 @@ void Dialog::create_sqltables()
     m = db.exec(query);
     n = db.exec(query);
     o = db.exec(query);
+    p = db.exec(query);
 
     //Create DS_Connectivity Table
     //Table holds track name and ID
@@ -251,20 +260,81 @@ void Dialog::create_sqltables()
 
     m.exec("CREATE TABLE trackInfoTable (currentnode INT, nextnode INT, weight INT);");
     /*-------------------------------------------------------------------*/
-        QString s = QString("SELECT Switch,Position from %3").arg("switchInfoTable");
-        q = db.exec(s);
+        QString s = QString("SELECT Current,NumberOfConnections,Connection1,Connection2,Connection3 from %3").arg("DS_Connectivity");
+        o = db.exec(s);
+        QString sm3 = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
 
-    //For each swich in switchInfoTable execute the following:
-    for(;q.next() == 1;) //If it is 1 it contains data
+    for(;o.next() == 1;) //Check DS_Connectivity table for data
     {
-        //QString ss1 = q.value(0).toString();
-        //QString ss2 = q.value(1).toChar();
-        //qDebug() << "(" << ss1 << ", " << ss2 << ")";
-        //qDebug() << "(" << ss1 << ")";
-        //vertex_names.push_back(ss1.toStdString());
+        n = db.exec(sm3);
+        for(;n.next() == 1;) //Check each track piece
+        {
+            int trackID = n.value(0).toInt(); //trackID
+            QString trackNAME = n.value(1).toString();//trackNAME
+
+                QString Current = o.value(0).toString();//Current
+                int NumofConn = o.value(1).toInt();   //Connection1
+                QString Conn1 = o.value(2).toString();//Connection2
+                QString Conn2 = o.value(3).toString();//Connection3
+                QString Conn3 = o.value(4).toString();//Connection3
+                //qDebug() << Current <<","<< NumofConn <<","<< Conn1 <<","<< Conn2 <<","<< Conn3;
+
+            if(Current == trackNAME)
+            {
+                COL0 = trackID;
+            }
+            if(Conn1 == trackNAME)
+            {
+                COL1 = trackID;
+            }
+            if(Conn2 == trackNAME)
+            {
+                COL2 = trackID;
+            }
+            if(Conn3 == trackNAME)
+            {
+                COL3 = trackID;
+            }
+        }
+        qDebug() << COL0 <<","<< COL1 <<","<< COL2 <<","<< COL3;
+        QString smms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+        m.exec(smms);
+        QString smms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL2);
+        m.exec(smms1);
     }
     /*-------------------------------------------------------------------*/
     m.exec("SELECT * FROM trackInfoTable;");
+
+    //Create Track_Info Table
+    //Table shows how nodes are connected.
+    //When reading from this, code was created to create the double sided connection
+
+    /*
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (0,2,33);");//Left Side Middle Connect
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (0,3,33);");//Left Side Middle Connect
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (2,0,33);");//Left Side Middle Connect Flipped
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (3,0,33);");//Left Side Middle Connect Flipped
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (2,4,5);");//Switch 1 Bypass
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (3,4,5);");//Switch 1 Bypass
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (4,5,5);");//SW1 & SW2 Middle
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (5,6,5);");//SW1 & SW2 Middle
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (6,7,5);");//Switch 2 Bypass
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (6,8,5);");//Switch 2 Bypass
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (8,10,5);");//Top Row btw SW1 & SW2
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (10,12,5);");//Top Row btw SW1 & SW2
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (7,9,5);");//Bottom Row btw SW1 & SW2
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (9,11,5);");//Bottom Row btw SW1 & SW2
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (11,13,5);");//Switch 3 Bypass
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (12,13,5);");//Switch 3 Bypass
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (13,14,5);");//SW3 & SW4 Middle
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (14,15,5);");//SW3 & SW4 Middle
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (15,16,5);");//Switch 4 Bypass
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (15,17,5);");//Switch 4 Bypass
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (16,1,5);");//Right Side Middle Connect
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (17,1,5);");//Right Side Middle Connect
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (1,16,5);");//Right Side Middle Connect Flipped
+     m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (1,17,5);");//Right Side Middle Connect Flipped
+     */
 
     //Create Switch_Info Table
     //Table list switches and Open/Closed status
@@ -296,40 +366,6 @@ void Dialog::create_sqltables()
      l.exec("INSERT INTO pathInfoTable (pathId, next2, next11) VALUES (1, '3 5 9 11 31 37 50 52 44 48', '1 2 7 18 20 12 14 17 6 34');");
      l.exec("INSERT INTO pathInfoTable (pathId, next2, next11) VALUES (2, '1 7 10 8 21 27 16 19 13 9', '32 35 41 44 45 87 89 76 90 91');");
      l.exec("SELECT * FROM pathInfoTable;");
-
-     //Create Track_Info Table
-     //Table shows how nodes are connected.
-     //When reading from this, code was created to create the double sided connection
-
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (0,2,33);");//Left Side Middle Connect
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (0,3,33);");//Left Side Middle Connect
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (2,0,33);");//Left Side Middle Connect Flipped
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (3,0,33);");//Left Side Middle Connect Flipped
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (2,4,5);");//Switch 1 Bypass
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (3,4,5);");//Switch 1 Bypass
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (4,5,5);");//SW1 & SW2 Middle
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (5,6,5);");//SW1 & SW2 Middle
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (6,7,5);");//Switch 2 Bypass
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (6,8,5);");//Switch 2 Bypass
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (8,10,5);");//Top Row btw SW1 & SW2
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (10,12,5);");//Top Row btw SW1 & SW2
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (7,9,5);");//Bottom Row btw SW1 & SW2
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (9,11,5);");//Bottom Row btw SW1 & SW2
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (11,13,5);");//Switch 3 Bypass
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (12,13,5);");//Switch 3 Bypass
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (13,14,5);");//SW3 & SW4 Middle
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (14,15,5);");//SW3 & SW4 Middle
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (15,16,5);");//Switch 4 Bypass
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (15,17,5);");//Switch 4 Bypass
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (16,1,5);");//Right Side Middle Connect
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (17,1,5);");//Right Side Middle Connect
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (1,16,5);");//Right Side Middle Connect Flipped
-      m.exec("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (1,17,5);");//Right Side Middle Connect Flipped
-
-
-
-
-
 
      //This disables createtablesButton and updates text to update user on status.
      ui->createtablesButton->setDisabled(1);
