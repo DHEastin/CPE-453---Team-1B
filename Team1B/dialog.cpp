@@ -279,6 +279,7 @@ void Dialog::create_sqltables()
                 QString Conn3 = o.value(4).toString();//Connection3
                 //qDebug() << Current <<","<< NumofConn <<","<< Conn1 <<","<< Conn2 <<","<< Conn3;
 
+            //Converts strings to int values
             if(Current == trackNAME)
             {
                 COL0 = trackID;
@@ -295,12 +296,30 @@ void Dialog::create_sqltables()
             {
                 COL3 = trackID;
             }
+
         }
-        qDebug() << COL0 <<","<< COL1 <<","<< COL2 <<","<< COL3;
-        QString smms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-        m.exec(smms);
-        QString smms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL2);
-        m.exec(smms1);
+        //qDebug() << COL0 <<","<< COL1 <<","<< COL2 <<","<< COL3;
+
+        if (COL0 < COL1)
+        {
+        if (COL0 != COL1)
+        {
+            QString smms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+            m.exec(smms);
+        }
+        }
+        if (COL0 < COL2)
+        {
+        if (COL0 != COL2)
+        {
+            QString smms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL2);
+            m.exec(smms1);
+        }
+        }
+
+        //Delete rows with swapped data
+        //DELETE FROM trackInfoTable WHERE CustomerName='Alfreds Futterkiste' AND ContactName='Maria Anders';
+
     }
     /*-------------------------------------------------------------------*/
     m.exec("SELECT * FROM trackInfoTable;");
