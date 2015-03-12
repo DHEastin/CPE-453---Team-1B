@@ -40,7 +40,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="Track"/>
+        <widget class="QComboBox" name="startBox"/>
        </item>
       </layout>
      </item>

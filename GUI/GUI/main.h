@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAIN
+#define MAIN
 
 #include <QMainWindow>
 #include <QSpinBox>
@@ -12,13 +12,8 @@
 #include <QListWidget>
 #include <QComboBox>
 
-namespace Ui {
-class MainWindow;
-}
 
-class MainWindow : public QMainWindow
-{
-    Q_OBJECT
+
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -48,18 +43,12 @@ private:
     Ui::MainWindow *ui;
 
 private slots:
-    void train_dia();
-    void edit_train_dia();
-    void del_train_dia();
-    void sched_dia();
-    void make_map();
-    void check_sched();
     void dij_main(); // Main program in dij_algorithm.cpp
     void dij_mainprogram(); // Algorithm part of program in dij_algorithm.cpp
     void sql_query();
     void create_sqltables();
     void sqlserver_connect();
-    void VIEWTABLE();
 };
 
-#endif // MAINWINDOW_H
+#endif // MAIN
+

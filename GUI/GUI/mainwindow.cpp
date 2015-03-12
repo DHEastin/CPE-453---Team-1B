@@ -5,16 +5,16 @@
 #include "path_map.h"
 #include <QDialog>
 #include <QTimer>
-//#include <QDebug>
+#include <QDebug>
 
-path_map schedule_map = path_map();
-
+Path_Map schedule_map = Path_Map();
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    create_sqltables();
 
     QTimer* persistence = new QTimer();
 
@@ -52,6 +52,7 @@ void MainWindow::del_train_dia()
 
 void MainWindow::sched_dia()
 {
+    MainWindow::create_sqltables();
     Schedule_Dialog dia;
     dia.exec();
 }

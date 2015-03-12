@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,7 +16,9 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     schedule_dialog.cpp \
     train_dialog.cpp \
-    path_map.cpp
+    path_map.cpp \
+    algorithm.cpp \
+    sql.cpp
 
 HEADERS  += mainwindow.h \
     schedule_dialog.h \

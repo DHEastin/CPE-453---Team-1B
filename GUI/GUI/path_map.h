@@ -1,17 +1,41 @@
 #ifndef PATH_MAP_H
 #define PATH_MAP_H
 
-#include "path_map_global.h"
+//#include "path_map_global.h"
 #include <map>
 #include <string>
+#include "mainwindow.h"
 
-class PATH_MAPSHARED_EXPORT Path_Map
+//class PATH_MAPSHARED_EXPORT Path_Map
+//{
+
+class Path_Map
 {
-
 public:
     Path_Map();
-    enum node_type;
-    struct  node;
+    enum node_type      //Enumeration type to track node type
+    {
+        track,
+        two_switch,
+        cross,
+        dead_end,
+        null
+    };
+    struct node
+    {
+        node_type   type;
+        //int         length = 0;
+                                              //linked node usage determined by current node_type
+        std::string connectionA;    //normal track = inbound; two_switch = open; cross = path1
+        std::string connectionB;     //normal track = null; two_switch = null; cross = path1
+        std::string connectionC;     //normal track = outbound; two_switch = bypass; cross = path2
+        std::string connectionD;    //normal track = null; two_switch = outbound; cross = path2
+
+        float weightA;
+        float weightB;
+        float weightC;
+        float weightD;
+    };
     std::map <std::string, node> path_map;
 
 /* The manner in which the key string is named will indicate the directional
@@ -25,31 +49,6 @@ public:
  * impossible turns. _A and _B should be the same physical part, and _C and _D are
  * representations of the other crossing part.
  */
-
-    enum node_type      //Enumeration type to track node type
-    {
-        track,
-        two_switch,
-        cross,
-        dead_end,
-        null
-    };
-
-    struct node
-    {
-        node_type   type = null;
-        //int         length = 0;
-                                              //linked node usage determined by current node_type
-        std::string connectionA = "NULL";     //normal track = inbound; two_switch = open; cross = path1
-        std::string connectionB = "NULL";     //normal track = null; two_switch = null; cross = path1
-        std::string connectionC = "NULL";     //normal track = outbound; two_switch = bypass; cross = path2
-        std::string connectionD = "NULL";     //normal track = null; two_switch = outbound; cross = path2
-
-        float weightA = 0.0;
-        float weightB = 0.0;
-        float weightC = 0.0;
-        float weightD = 0.0;
-    };
 };
 
 #endif // PATH_MAP_H

@@ -2,6 +2,10 @@
 #define TRAIN_DIALOG_H
 
 #include <QDialog>
+#include "mainwindow.h"
+#include <QtSql/QSqlTableModel>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlDatabase>
 
 namespace Ui {
 class Train_Dialog;
@@ -13,6 +17,8 @@ class Train_Dialog : public QDialog
 
 public:
     explicit Train_Dialog(QWidget *parent = 0);
+     QSqlQuery n;
+     QSqlDatabase db1;
     ~Train_Dialog();
 
 private:
