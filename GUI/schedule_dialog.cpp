@@ -1,5 +1,7 @@
 #include "schedule_dialog.h"
 #include "ui_schedule_dialog.h"
+#include "mainwindow.h"
+#include <QComboBox>
 
 Schedule_Dialog::Schedule_Dialog(QWidget *parent) :
     QDialog(parent),
@@ -7,7 +9,10 @@ Schedule_Dialog::Schedule_Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    //ui->destBox->currentText();
+    this->setWindowTitle("Train Scheduling");
+
+    connect(ui->buttonBox,SIGNAL(accepted()),this,SLOT(Save_Schedule()));
+    connect(ui->buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 
     LOCAL();
     //Change to REMOTE(); when you want to test real live data.
@@ -99,4 +104,15 @@ void Schedule_Dialog::REMOTE()
     ui->destBox->addItem(sts1);
     }
     rdb.close();
+}
+
+void Schedule_Dialog::Save_Schedule()
+{
+    //Train_Dialog::SaveTrainID();// = new Train_Dialog;
+    //Train_Dialog::SaveTrainID();
+    //QString Train = Train_Dialog.TrainID;
+    DESTINATION= ui->destBox->currentText();
+    //ui->trainSelection->addItem(Train);
+
+    qDebug() << DESTINATION;
 }

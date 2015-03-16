@@ -10,6 +10,8 @@
 #include <QDebug>
 #include "mainwindow.h"
 
+QString TEST;
+
 //MUST BE HERE TO MAKE THE ALGORITHM WORK
 double inf = std::numeric_limits<double>::infinity();
 

@@ -1,7 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "schedule_dialog.h"
-#include "train_dialog.h"
 #include "path_map.h"
 #include <QDialog>
 #include <QTimer>
@@ -15,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //create_sqltables();
+
+    this->setWindowTitle("CPE 453 Team 1B");
 
     QTimer* persistence = new QTimer();
 
@@ -34,12 +34,16 @@ MainWindow::~MainWindow()
 
 void MainWindow::train_dia()
 {
-    Train_Dialog dia;
+    Train_Dialog dia; 
     dia.exec();
+    //qDebug() << Train_Dialog::ID::TrainID;
 }
 
 void MainWindow::edit_train_dia()
 {
+    //QString TrainID;
+    //Train_Dialog::SaveTrainID(Train_Dialog::TrainID);
+    //qDebug()<< TrainID ;
     //Edit_Train_Dialog dia;
     //dia.exec();
 }
@@ -52,7 +56,6 @@ void MainWindow::del_train_dia()
 
 void MainWindow::sched_dia()
 {
-    MainWindow::create_sqltables();
     Schedule_Dialog dia;
     dia.exec();
 }

@@ -3,9 +3,6 @@
 
 #include <QDialog>
 #include "mainwindow.h"
-#include <QtSql/QSqlTableModel>
-#include <QtSql/QSqlQuery>
-#include <QtSql/QSqlDatabase>
 
 namespace Ui {
 class Schedule_Dialog;
@@ -19,6 +16,7 @@ public:
     explicit Schedule_Dialog(QWidget *parent = 0);
     QSqlQuery n;
     QSqlDatabase db,rdb;
+    QString DESTINATION;
     ~Schedule_Dialog();
 
 private:
@@ -27,6 +25,9 @@ private:
 private slots:
     void REMOTE();
     void LOCAL();
+
+public slots:
+    void Save_Schedule();
 };
 
 #endif // SCHEDULE_DIALOG_H

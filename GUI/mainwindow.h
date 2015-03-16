@@ -12,6 +12,8 @@
 #include <QListWidget>
 #include <QComboBox>
 #include <QDebug>
+#include "train_dialog.h"
+#include "schedule_dialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -43,6 +45,7 @@ public:
      QTableView *view;
      QSqlDatabase db,rdb;
      std::vector<std::string> vertex_names;
+     QString TrainID;
     ~MainWindow();
 
 private:
@@ -61,6 +64,7 @@ private slots:
     void create_sqltables();
     void sqlserver_connect();
     void VIEWTABLE();
+
 };
 
 #endif // MAINWINDOW_H

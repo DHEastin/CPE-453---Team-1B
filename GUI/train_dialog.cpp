@@ -10,8 +10,12 @@ Train_Dialog::Train_Dialog(QWidget *parent) :
 
     //ui->startBox->currentText();
 
+    this->setWindowTitle("Add Train");
+
     connect(ui->startBox,SIGNAL(currentTextChanged(QString)),this,SLOT(Forward_Function()));
     connect(ui->startBox,SIGNAL(currentTextChanged(QString)),this,SLOT(Backward_Function()));
+    connect(ui->buttonBox,SIGNAL(accepted()),this,SLOT(SaveTrainID()));
+    connect(ui->buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
     //connect(ui->startBox,SIGNAL(currentIndexChanged(QString))
 
     LOCAL();
@@ -71,7 +75,6 @@ void Train_Dialog::LOCAL()
     QString sts1 = n.value(0).toString();
     ui->startBox->addItem(sts1);
     }
-
 }
 
 void Train_Dialog::REMOTE()
@@ -123,3 +126,29 @@ void Train_Dialog::Backward_Function()
     QString sts1 = p.value(3).toString();
     ui->backwardButton->setText(sts1);
 }
+
+void Train_Dialog::SaveTrainID()
+{
+    /*
+    //QString DIRECTION;
+    ID::TrainID = ui->train_idEdit->text();
+    //QString TrainID = ui->train_idEdit->text();
+    if(ui->forwardButton->isChecked())
+    {
+        ID::DIRECTION = ui->forwardButton->text();
+    }
+    else if(ui->backwardButton->isChecked())
+    {
+        ID::DIRECTION = ui->backwardButton->text();
+    }
+    else
+    {
+        qDebug() << "No Button is checked.";
+        ID::DIRECTION = "NULL";
+    }
+    qDebug() << ID::TrainID<<","<<ID::DIRECTION;
+
+    //return TrainID;
+    */
+}
+

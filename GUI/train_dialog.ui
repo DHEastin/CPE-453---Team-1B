@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>254</width>
-    <height>149</height>
+    <width>220</width>
+    <height>195</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="TrainID"/>
+        <widget class="QLineEdit" name="train_idEdit"/>
        </item>
       </layout>
      </item>
