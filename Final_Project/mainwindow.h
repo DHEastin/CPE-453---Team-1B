@@ -55,6 +55,7 @@ private:
     int NumofConn;
     QStringList items;
     bool ok;
+    QString Destination;
 
 private slots:
     void sql_query();
@@ -67,6 +68,7 @@ private slots:
     void Load_State();
     void Save_State();
     void Schedule();
+    void Set_Schedule();
     void Train_Table();
 
 public slots:

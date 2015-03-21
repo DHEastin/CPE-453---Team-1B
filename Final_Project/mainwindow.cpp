@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionLoad_State,SIGNAL(triggered()),this,SLOT(Load_State()));
     connect(ui->scheduleButton,SIGNAL(clicked()),this,SLOT(Schedule()));
     connect(ui->actionView_Trains,SIGNAL(triggered()),this,SLOT(Train_Table()));
+    connect(ui->set_scheduleButton,SIGNAL(clicked()),this,SLOT(Set_Schedule()));
 
 }
 
@@ -41,7 +42,7 @@ void MainWindow::Add_Train()
     items.clear();
     ID = QInputDialog::getText(this, tr("Create Train ID"),
                                          tr("TrainID:"), QLineEdit::Normal,
-                                         QDir::home().dirName(), &ok);
+                                         "Train 1", &ok);
 
     QString ts0 = QString("SELECT Current from %1").arg("DS_Connectivity");
     LOAD = db.exec(ts0);
@@ -76,13 +77,7 @@ void MainWindow::Add_Train()
     if (ok && !ID.isEmpty())
         ui->trainBox->addItem(ID);
 
-    if (ok && !Start.isEmpty())
-        qDebug() << Start;
-
-    if (ok && !direction.isEmpty())
-        qDebug() << direction;
-
-    QString qtts0 = QString("INSERT INTO Trains (ID,Start,Direction) VALUES ('%1','%2','%3')").arg(ID).arg(Start).arg(direction);
+    QString qtts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination) VALUES ('%1','%2','%3','%4')").arg(ID).arg(Start).arg(direction).arg("");
     TRAIN = db.exec(qtts0);
     TRAIN.next();
 }
@@ -134,12 +129,6 @@ void MainWindow::Edit_Train()
     direction = QInputDialog::getItem(this, tr("Choose Direction"),
                                          tr("Direction:"), items, 0, false, &ok);
 
-    if (ok && !Start.isEmpty())
-        qDebug() << Start;
-
-    if (ok && !direction.isEmpty())
-        qDebug() << direction;
-
     QString tts0 = QString("UPDATE Trains SET Start='%1',Direction='%2' WHERE ID='%3'").arg(Start).arg(direction).arg(ID);
     qDebug() << tts0;
     TRAIN = db.exec(tts0);
@@ -165,6 +154,14 @@ void MainWindow::Save_State()
 {
 
 }
+
+void MainWindow::Set_Schedule()
+{
+     Destination = ui->destinationBox->currentText();
+     QString ptts0 = QString("UPDATE Trains SET Destination='%1' WHERE ID='%2'").arg(Destination).arg(ID);
+     TRAIN = db.exec(ptts0);
+}
+
 
 void MainWindow::Schedule()
 {

@@ -177,7 +177,7 @@ void MainWindow::create_sqltables()
     TRAIN2 = db.exec(query);
     LOAD = db.exec(query);
 
-    TRAIN.exec("CREATE TABLE Trains(ID TEXT, START TEXT, Direction TEXT);");
+    TRAIN.exec("CREATE TABLE Trains(ID TEXT, START TEXT, Direction TEXT,Destination TEXT);");
     TRAIN.exec("SELECT * FROM Trains;");
 
     //Create DS_Connectivity Table
