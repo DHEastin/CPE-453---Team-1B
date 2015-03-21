@@ -39,7 +39,7 @@ private:
     QTableView *createView(QSqlTableModel *model, const QString &title = "");
     QSqlTableModel *table1;
     QSqlQueryModel *model;
-    QSqlQuery q,j,k,l,m,n,q1,k1,m1,n1,o,p,INFO,INFO2,nn,mm,qq;
+    QSqlQuery q,j,k,l,m,n,q1,k1,m1,n1,o,p,INFO,INFO2,nn,mm,qq,TRAIN,TRAIN2,LOAD;
     std::vector<std::string> vertex_names;
     int count;
     int start; //global variable for Starting Point
@@ -67,6 +67,7 @@ private slots:
     void Load_State();
     void Save_State();
     void Schedule();
+    void Train_Table();
 
 public slots:
     void dij_main();

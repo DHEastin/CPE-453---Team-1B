@@ -58,7 +58,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -130,8 +130,15 @@
     <addaction name="actionEdit_Train"/>
     <addaction name="actionDelete_Train"/>
    </widget>
+   <widget class="QMenu" name="menuTables">
+    <property name="title">
+     <string>Tables</string>
+    </property>
+    <addaction name="actionView_Trains"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTrain"/>
+   <addaction name="menuTables"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -165,6 +172,11 @@
   <action name="actionDelete_Train">
    <property name="text">
     <string>Delete Train</string>
+   </property>
+  </action>
+  <action name="actionView_Trains">
+   <property name="text">
+    <string>View Trains</string>
    </property>
   </action>
  </widget>

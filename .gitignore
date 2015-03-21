@@ -34,3 +34,5 @@ build-Team1B-Desktop_Qt_5_4_0_MSVC2013_64bit-Debug/Makefile.Debug
 build-Team1B-Desktop_Qt_5_4_0_MSVC2013_64bit-Debug/Makefile.Release
 build-Team1B-Desktop_Qt_5_4_0_MSVC2013_64bit-Debug/ui_dialog.h
 Team1B/Team1B.pro.user
+*.o
+build-Final_Project-Desktop_Qt_5_4_1_MinGW_32bit-Debug/debug/Final_Project.exe

@@ -75,14 +75,6 @@ void MainWindow::sql_query()
    n.exec("SELECT * FROM tracklistingTable;");
 
 }
-QTableView *MainWindow::createView(QSqlTableModel *model, const QString &title)
-{
-    QTableView *view = new QTableView;
-    view->setModel(model);
-    view->setWindowTitle(title);
-    view->show();
-    return view;
-}
 
 void MainWindow::VIEWTABLE()
 {
@@ -180,9 +172,13 @@ void MainWindow::create_sqltables()
     nn = db.exec(query);
     qq = db.exec(query);
     INFO = db.exec(query);
+    INFO2 = db.exec(query);
+    TRAIN = db.exec(query);
+    TRAIN2 = db.exec(query);
+    LOAD = db.exec(query);
 
-    INFO.exec("CREATE TABLE Trains(ID TEXT, START TEXT, Direction TEXT);");
-    INFO.exec("SELECT * FROM Trains;");
+    TRAIN.exec("CREATE TABLE Trains(ID TEXT, START TEXT, Direction TEXT);");
+    TRAIN.exec("SELECT * FROM Trains;");
 
     //Create DS_Connectivity Table
     //Table holds track name and ID
