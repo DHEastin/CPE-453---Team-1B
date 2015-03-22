@@ -39,10 +39,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::Add_Train()
 {
+
     items.clear();
     ID = QInputDialog::getText(this, tr("Create Train ID"),
                                          tr("TrainID:"), QLineEdit::Normal,
                                          "Train 1", &ok);
+    if (ok)
+    {
 
     QString ts0 = QString("SELECT Current from %1").arg("DS_Connectivity");
     LOAD = db.exec(ts0);
@@ -80,6 +83,7 @@ void MainWindow::Add_Train()
     QString qtts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination) VALUES ('%1','%2','%3','%4')").arg(ID).arg(Start).arg(direction).arg("");
     TRAIN = db.exec(qtts0);
     TRAIN.next();
+    }
 }
 
 void MainWindow::Edit_Train()
@@ -108,9 +112,10 @@ void MainWindow::Edit_Train()
     items.append(sts0);
     }
 
-    Start = QInputDialog::getItem(this, tr("Select Starting Point"),
-                                         tr("Starting Point:"), items, 0, false, &ok);
+    QString TITLE1 = QString("Select NEW Starting Point for %1").arg(ID);;
 
+    Start = QInputDialog::getItem(this, tr("Change Start"),
+                                         QString(TITLE1), items, 0, false, &ok);
     items.clear();
     //Forward
     QString Sts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current=%2").arg("DS_Connectivity").arg(Start);
@@ -126,11 +131,12 @@ void MainWindow::Edit_Train()
     QString sts3 = o.value(3).toString();
     items.append(sts3);
 
-    direction = QInputDialog::getItem(this, tr("Choose Direction"),
-                                         tr("Direction:"), items, 0, false, &ok);
+    QString TITLE2 = QString("Select NEW Direction for %1").arg(ID);;
+
+    direction = QInputDialog::getItem(this, tr("Change Direction"),
+                                         QString (TITLE2), items, 0, false, &ok);
 
     QString tts0 = QString("UPDATE Trains SET Start='%1',Direction='%2' WHERE ID='%3'").arg(Start).arg(direction).arg(ID);
-    qDebug() << tts0;
     TRAIN = db.exec(tts0);
 
 }
@@ -139,10 +145,40 @@ void MainWindow::Delete_Train()
 {
    int CI_Train = ui->trainBox->currentIndex();
    QString CT_Train = ui->trainBox->currentText();
-   ui->trainBox->removeItem(CI_Train);
+   if (CT_Train != "")
+   {
 
-   QString tts0 = QString("DELETE FROM Trains WHERE ID='%1'").arg(CT_Train);
-   INFO = db.exec(tts0);
+   QString DEL_Train = QString("DELETE FROM Trains WHERE ID='%1'").arg(CT_Train);
+
+   QMessageBox msgBox;
+   QString ID1 = QString("Delete Selected: %1?").arg(CT_Train);
+   msgBox.setText(ID1);
+   msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+   msgBox.setDefaultButton(QMessageBox::Ok);
+   int ret = msgBox.exec();
+
+   switch (ret) {
+      case QMessageBox::Ok:
+          // Ok was clicked
+
+       ui->trainBox->removeItem(CI_Train);
+       INFO = db.exec(DEL_Train);
+
+          break;
+      case QMessageBox::Cancel:
+          // Cancel was clicked
+          break;
+      default:
+          // should never be reached
+          break;
+    }
+   }
+   else
+   {
+       QMessageBox msgBox;
+       msgBox.setText("No Train has been added!");
+       msgBox.exec();
+   }
 }
 
 void MainWindow::Load_State()
@@ -157,6 +193,7 @@ void MainWindow::Save_State()
 
 void MainWindow::Set_Schedule()
 {
+     ID = ui->trainBox->currentText();
      Destination = ui->destinationBox->currentText();
      QString ptts0 = QString("UPDATE Trains SET Destination='%1' WHERE ID='%2'").arg(Destination).arg(ID);
      TRAIN = db.exec(ptts0);
@@ -177,6 +214,4 @@ void MainWindow::Train_Table()
     model->select();
     view->show();
 }
-
-
 

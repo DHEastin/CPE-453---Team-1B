@@ -15,6 +15,7 @@
 #include <QDir>
 #include <QInputDialog>
 #include <QLineEdit>
+#include <QMessageBox>
 
 namespace Ui {
 class MainWindow;
@@ -56,6 +57,7 @@ private:
     QStringList items;
     bool ok;
     QString Destination;
+    int isSave;
 
 private slots:
     void sql_query();
