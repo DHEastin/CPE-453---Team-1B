@@ -81,58 +81,58 @@ void MainWindow::VIEWTABLE()
     const QString& VIEW = "TEST";//ui->listWidget->currentItem()->text();
     if(VIEW=="trainInfoTable")
     {
-        model = new QSqlQueryModel;
-        model->setQuery(k);
+        qmodel = new QSqlQueryModel;
+        qmodel->setQuery(k);
         view = new QTableView;
-        view->setModel(model);
+        view->setModel(qmodel);
         view->show();
     }
     else if(VIEW=="trackInfoTable")
     {
-        model = new QSqlQueryModel;
-        model->setQuery(qq);
+        qmodel = new QSqlQueryModel;
+        qmodel->setQuery(qq);
         view = new QTableView;
-        view->setModel(model);
+        view->setModel(qmodel);
         view->show();
     }
     else if(VIEW=="tracklistingTable")
     {
-        model = new QSqlQueryModel;
-        model->setQuery(n);
+        qmodel = new QSqlQueryModel;
+        qmodel->setQuery(n);
         view = new QTableView;
-        view->setModel(model);
+        view->setModel(qmodel);
         view->show();
     }
     else if(VIEW=="pathInfoTable")
     {
-        model = new QSqlQueryModel;
-        model->setQuery(l);
+        qmodel = new QSqlQueryModel;
+        qmodel->setQuery(l);
         view = new QTableView;
-        view->setModel(model);
+        view->setModel(qmodel);
         view->show();
     }
     else if(VIEW=="switchInfoTable")
     {
-        model = new QSqlQueryModel;
-        model->setQuery(q);
+        qmodel = new QSqlQueryModel;
+        qmodel->setQuery(q);
         view = new QTableView;
-        view->setModel(model);
-        view->show();
+        view->setModel(qmodel);
+       view->show();
     }
     else if(VIEW=="throttleInfoTable")
     {
-        model = new QSqlQueryModel;
-        model->setQuery(j);
+        qmodel = new QSqlQueryModel;
+        qmodel->setQuery(j);
         view = new QTableView;
-        view->setModel(model);
+        view->setModel(qmodel);
         view->show();
     }
     else if(VIEW=="DS_Connectivity")
     {
-        model = new QSqlQueryModel;
-        model->setQuery(o);
+        qmodel = new QSqlQueryModel;
+        qmodel->setQuery(o);
         view = new QTableView;
-        view->setModel(model);
+        view->setModel(qmodel);
         view->show();
     }
     else{}

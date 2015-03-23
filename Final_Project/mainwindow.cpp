@@ -39,11 +39,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::Add_Train()
 {
-
     items.clear();
     ID = QInputDialog::getText(this, tr("Create Train ID"),
                                          tr("TrainID:"), QLineEdit::Normal,
-                                         "Train 1", &ok);
+                                         "Train", &ok);
     if (ok)
     {
 
@@ -80,7 +79,7 @@ void MainWindow::Add_Train()
     if (ok && !ID.isEmpty())
         ui->trainBox->addItem(ID);
 
-    QString qtts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination) VALUES ('%1','%2','%3','%4')").arg(ID).arg(Start).arg(direction).arg("");
+    QString qtts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination) VALUES ('%1','%2','%3','%4')").arg(ID).arg(Start).arg(direction).arg("EMPTY");
     TRAIN = db.exec(qtts0);
     TRAIN.next();
     }
@@ -89,18 +88,19 @@ void MainWindow::Add_Train()
 void MainWindow::Edit_Train()
 {
     ID = ui->trainBox->currentText();
+
+    if (ID != "")
+    {
+
     QString VAL1,VAL2,VAL3;
     items.clear();
-    QString ts4 = QString("SELECT ID,Start,Direction from %1 WHERE ID=%2").arg("Trains").arg(ID);
-    INFO = db.exec(ts4);
-
-    /*-------------------------------------------------------------------*/
-    for(;INFO.next() == 1;) //If it is 1 it contains data
-    {
-    VAL1 = INFO.value(0).toString();
-    VAL2 = INFO.value(1).toString();
-    VAL3 = INFO.value(2).toString();
-    }
+    QString Edit_ID = QString("SELECT ID,Start,Direction,Destination from %1 WHERE ID='%2'").arg("Trains").arg(ID);
+    //QString tss4 = QString("SELECT ID,Start,Direction from %1 WHERE ID=%2").arg("Trains").arg(ID);
+    TRAIN = db.exec(Edit_ID);
+    TRAIN.next();
+    VAL1 = TRAIN.value(0).toString();
+    VAL2 = TRAIN.value(1).toString();
+    VAL3 = TRAIN.value(2).toString();
 
     QString ts0 = QString("SELECT Current from %1").arg("DS_Connectivity");
     o = db.exec(ts0);
@@ -112,7 +112,7 @@ void MainWindow::Edit_Train()
     items.append(sts0);
     }
 
-    QString TITLE1 = QString("Select NEW Starting Point for %1").arg(ID);;
+    QString TITLE1 = QString("Old Start: %1 | Select NEW Starting Point for %2").arg(VAL2).arg(ID);;
 
     Start = QInputDialog::getItem(this, tr("Change Start"),
                                          QString(TITLE1), items, 0, false, &ok);
@@ -131,14 +131,20 @@ void MainWindow::Edit_Train()
     QString sts3 = o.value(3).toString();
     items.append(sts3);
 
-    QString TITLE2 = QString("Select NEW Direction for %1").arg(ID);;
+    QString TITLE2 = QString("Old Direction: %1 | Select NEW Direction for %2").arg(VAL3).arg(ID);;
 
     direction = QInputDialog::getItem(this, tr("Change Direction"),
                                          QString (TITLE2), items, 0, false, &ok);
 
     QString tts0 = QString("UPDATE Trains SET Start='%1',Direction='%2' WHERE ID='%3'").arg(Start).arg(direction).arg(ID);
     TRAIN = db.exec(tts0);
-
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText("No Train to edit!");
+        msgBox.exec();
+    }
 }
 
 void MainWindow::Delete_Train()
@@ -176,21 +182,114 @@ void MainWindow::Delete_Train()
    else
    {
        QMessageBox msgBox;
-       msgBox.setText("No Train has been added!");
+       msgBox.setText("No Train to delete!");
        msgBox.exec();
    }
 }
 
-void MainWindow::Load_State()
-{
-
-}
-
 void MainWindow::Save_State()
 {
+    tmodel = new QSqlTableModel( this, db );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable( "Trains" );
+    tmodel->select();
 
+    QString fileName = QFileDialog::getSaveFileName(this,
+    tr("Save My File"), "",
+    tr("My File (*.txt);;All Files (*)"));
+
+         if (fileName.isEmpty())
+             return;
+         else {
+             QFile file(fileName);
+             if (!file.open((QIODevice::WriteOnly) | QIODevice::Text))
+             {
+                 QMessageBox::information(this, tr("Unable to open file"),
+                     file.errorString());
+                 return;
+             }
+
+             QString data;
+             data ="";
+
+          for (int row = 0; row < tmodel->rowCount(); ++row)
+          {
+            QSqlRecord record = tmodel->record(row);
+            qDebug() << record;
+                    for (int field = 0; field < record.count(); ++field)
+                    {
+                        if(field >= 0 && field !=5 )
+                        {
+                            if (field >= 0) data += "\n";
+                            data += record.field(field).value().toString();
+                        }
+                    }
+          }
+
+          QTextStream output(&file);
+          output.setCodec("UTF-8");
+          output << data;
+}
 }
 
+void MainWindow::Load_State()
+{
+    //view->setModel(tmodel);
+    //tmodel->setTable( "Trains" );
+    //tmodel->select();
+
+    QString fileName = QFileDialog::getOpenFileName(this,
+    tr("Open My File"), "",
+    tr("My File (*.txt);;All Files (*)"));
+
+    if (fileName.isEmpty())
+    {
+    return;
+    }
+    else
+    {
+         //tmodel->clear();
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+    QMessageBox::information(this, tr("Unable to open file"),
+    file.errorString());
+    return;
+    }
+    QString ttps0 = QString("DELETE FROM Trains");
+    TRAIN2 = db.exec(ttps0);
+
+    QTextStream in(&file);
+    in.setCodec("UTF-8");
+    QString line=in.readLine(); //Move past null line
+    while (!line.isNull())
+        {
+        QString COL1 = line=in.readLine();
+        QString COL2 = line=in.readLine();
+        QString COL3 = line=in.readLine();
+        QString COL4 = line=in.readLine();
+        QString tts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination) VALUES ('%1','%2','%3','%4')").arg(COL1).arg(COL2).arg(COL3).arg(COL4);
+        qDebug() << tts0;
+        TRAIN = db.exec(tts0);
+        }
+    QString ttps1 = QString("DELETE FROM Trains Where ID='%1'").arg("");
+    TRAIN2 = db.exec(ttps1);
+
+    QString ts1 = QString("SELECT ID from %1").arg("Trains");
+    TRAIN = db.exec(ts1);
+
+    /*-------------------------------------------------------------------*/
+    for(;TRAIN.next() == 1;) //If it is 1 it contains data
+    {
+    QString sts2 = TRAIN.value(0).toString();
+    ui->trainBox->addItem(sts2);
+    }
+
+    file.close();
+}
+}
 void MainWindow::Set_Schedule()
 {
      ID = ui->trainBox->currentText();
@@ -207,11 +306,11 @@ void MainWindow::Schedule()
 
 void MainWindow::Train_Table()
 {
-    QSqlTableModel* model = new QSqlTableModel( this, db );
-    QTableView *view = new QTableView;
-    view->setModel(model);
-    model->setTable( "Trains" );
-    model->select();
+    tmodel = new QSqlTableModel( this, db );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("Trains");
+    tmodel->select();
     view->show();
 }
 

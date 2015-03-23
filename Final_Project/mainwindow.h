@@ -16,6 +16,10 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QFile>
+#include <QtSql>
+#include <QStandardItemModel>
+#include <QFileDialog>
 
 namespace Ui {
 class MainWindow;
@@ -39,7 +43,7 @@ private:
     void initializeModel(QSqlTableModel *model);
     QTableView *createView(QSqlTableModel *model, const QString &title = "");
     QSqlTableModel *table1;
-    QSqlQueryModel *model;
+    QSqlQueryModel *qmodel;
     QSqlQuery q,j,k,l,m,n,q1,k1,m1,n1,o,p,INFO,INFO2,nn,mm,qq,TRAIN,TRAIN2,LOAD;
     std::vector<std::string> vertex_names;
     int count;
@@ -58,6 +62,8 @@ private:
     bool ok;
     QString Destination;
     int isSave;
+    QSqlTableModel* tmodel;
+    QStandardItemModel* imodel;
 
 private slots:
     void sql_query();
