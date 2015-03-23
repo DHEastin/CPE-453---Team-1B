@@ -49,8 +49,6 @@ private:
     int count;
     int start; //global variable for Starting Point
     int dest; //global variable for Destination
-    QString destpick;
-    QString startpick;
     int ii;
     QTableView *view;
     int COL0;
@@ -67,8 +65,6 @@ private:
 
 private slots:
     void sql_query();
-    void VIEWTABLE();
-    void sqlserver_connect();
     void create_sqltables();
     void Add_Train();
     void Edit_Train();
@@ -78,11 +74,8 @@ private slots:
     void Schedule();
     void Set_Schedule();
     void Train_Table();
-
-public slots:
     void dij_main();
     void dij_mainprogram();
-
 };
 
 #endif // MAINWINDOW_H

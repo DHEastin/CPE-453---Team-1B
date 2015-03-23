@@ -9,7 +9,29 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->setWindowTitle("Train Scheduling Application");
 
-    create_sqltables();
+    rdb.addDatabase( "QMYSQL", "Remote" );
+    rdb.setDatabaseName("Remote");
+    rdb.setHostName("pavelow.eng.uah.edu");
+    rdb.setPort(33158);
+    rdb.setDatabaseName("team4b");
+    rdb.setUserName("root");
+    rdb.setPassword("drabroig");
+    if (!rdb.open())
+    {
+        qDebug() << "Error connecting to Pavelow.eng.uah.edu.";
+        qDebug() << "Switching database to Local Database.";
+    }
+
+    rdb.open();
+
+    if(rdb.isOpen())
+    {
+       sql_query();
+    }
+    else
+    {
+        create_sqltables();
+    }
 
     QString ts1 = QString("SELECT Current from %1").arg("DS_Connectivity");
     n = db.exec(ts1);
@@ -235,10 +257,6 @@ void MainWindow::Save_State()
 
 void MainWindow::Load_State()
 {
-    //view->setModel(tmodel);
-    //tmodel->setTable( "Trains" );
-    //tmodel->select();
-
     QString fileName = QFileDialog::getOpenFileName(this,
     tr("Open My File"), "",
     tr("My File (*.txt);;All Files (*)"));
@@ -271,7 +289,6 @@ void MainWindow::Load_State()
         QString COL3 = line=in.readLine();
         QString COL4 = line=in.readLine();
         QString tts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination) VALUES ('%1','%2','%3','%4')").arg(COL1).arg(COL2).arg(COL3).arg(COL4);
-        qDebug() << tts0;
         TRAIN = db.exec(tts0);
         }
     QString ttps1 = QString("DELETE FROM Trains Where ID='%1'").arg("");
@@ -297,7 +314,6 @@ void MainWindow::Set_Schedule()
      QString ptts0 = QString("UPDATE Trains SET Destination='%1' WHERE ID='%2'").arg(Destination).arg(ID);
      TRAIN = db.exec(ptts0);
 }
-
 
 void MainWindow::Schedule()
 {

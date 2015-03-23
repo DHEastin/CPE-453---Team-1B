@@ -7,6 +7,7 @@
 #include <limits>
 #include <QDebug>
 #include "mainwindow.h"
+#include "ui_mainwindow.h"
 
 QString TEST;
 
@@ -174,12 +175,19 @@ void MainWindow::dij_main()
 {
     count = 0;//count is used to output only one line of paths/distance
 
-    //Range of spinboxes set in dialog.cpp
-    //Starting position
-    startpick = Start;
+    QString ts1 = QString("SELECT ID,START,Direction,Destination from %1 WHERE ID='%2").arg("Trains").arg(ui->trainBox->currentText());
+    TRAIN = db.exec(ts1);
 
-    //Destination
-    //destpick =
+    QString START;
+    QString DEST;
+
+    /*-------------------------------------------------------------------*/
+    for(;TRAIN.next() == 1;) //If it is 1 it contains data
+    {
+    START = TRAIN.value(1).toString();
+    DEST = TRAIN.value(3).toString();
+    }
+
 
     QString t3 = QString("SELECT trackID,trackNAME from %1").arg("tracklistingTable");
     mm = db.exec(t3);
@@ -191,11 +199,11 @@ void MainWindow::dij_main()
     int sts1 = mm.value(0).toInt();
     QString sts2 = mm.value(1).toString();
 
-    if (startpick == sts2)
+    if (START == sts2)
     {
         start = sts1;
     }
-    if (destpick == sts2)
+    if (DEST == sts2)
     {
         dest = sts1;
     }
@@ -225,7 +233,7 @@ void MainWindow::dij_main()
             else
             {
             CHECKER = 0;
-            s = QString("Distance from vertex %1 to %2 is: %3").arg(startpick).arg(destpick).arg(min_distance[v]);
+            s = QString("Distance from vertex %1 to %2 is: %3").arg(START).arg(DEST).arg(min_distance[v]);
             //ui->distanceEdit->clear();
             //ui->distanceEdit->setText(s);
             std::cout << "Distance to " << vertex_names[v] << ": " << min_distance[v] << std::endl;

@@ -3,16 +3,6 @@
 #include <QSqlQueryModel>
 #include <QDebug>
 
-    //Connect statements for Algorithm Testing
-    //connect(ui->startButton,SIGNAL(clicked()),this,SLOT(dij_mainprogram()));
-    //connect(ui->viewtableButton,SIGNAL(clicked()),this,SLOT(VIEWTABLE()));
-    //connect(ui->swapButton,SIGNAL(clicked()),this,SLOT(SWAP()));
-
-    //Connect statements for SQL Testing
-    //connect(ui->queryButton,SIGNAL(clicked()),this,SLOT(sql_query()));
-    //connect(ui->createtablesButton,SIGNAL(clicked()),this,SLOT(create_sqltables()));
-    //connect(ui->server_connectButton,SIGNAL(clicked()),this,SLOT(sqlserver_connect()));
-
 void MainWindow::sql_query()
 {
     //Connect to SQL Server
@@ -27,20 +17,6 @@ void MainWindow::sql_query()
     }
 
     db.open();
-
-    rdb.addDatabase( "QMYSQL", "Remote" );
-    rdb.setDatabaseName("Remote");
-    rdb.setHostName("pavelow.eng.uah.edu");
-    rdb.setPort(33158);
-    rdb.setDatabaseName("team4b");
-    rdb.setUserName("root");
-    rdb.setPassword("drabroig");
-    if (!rdb.open())
-    {
-        qDebug() << "Error";
-    }
-
-    rdb.open();
 
     QString query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'title'";
     q = db.exec(query);
@@ -74,75 +50,6 @@ void MainWindow::sql_query()
 
    n.exec("SELECT * FROM tracklistingTable;");
 
-}
-
-void MainWindow::VIEWTABLE()
-{
-    const QString& VIEW = "TEST";//ui->listWidget->currentItem()->text();
-    if(VIEW=="trainInfoTable")
-    {
-        qmodel = new QSqlQueryModel;
-        qmodel->setQuery(k);
-        view = new QTableView;
-        view->setModel(qmodel);
-        view->show();
-    }
-    else if(VIEW=="trackInfoTable")
-    {
-        qmodel = new QSqlQueryModel;
-        qmodel->setQuery(qq);
-        view = new QTableView;
-        view->setModel(qmodel);
-        view->show();
-    }
-    else if(VIEW=="tracklistingTable")
-    {
-        qmodel = new QSqlQueryModel;
-        qmodel->setQuery(n);
-        view = new QTableView;
-        view->setModel(qmodel);
-        view->show();
-    }
-    else if(VIEW=="pathInfoTable")
-    {
-        qmodel = new QSqlQueryModel;
-        qmodel->setQuery(l);
-        view = new QTableView;
-        view->setModel(qmodel);
-        view->show();
-    }
-    else if(VIEW=="switchInfoTable")
-    {
-        qmodel = new QSqlQueryModel;
-        qmodel->setQuery(q);
-        view = new QTableView;
-        view->setModel(qmodel);
-       view->show();
-    }
-    else if(VIEW=="throttleInfoTable")
-    {
-        qmodel = new QSqlQueryModel;
-        qmodel->setQuery(j);
-        view = new QTableView;
-        view->setModel(qmodel);
-        view->show();
-    }
-    else if(VIEW=="DS_Connectivity")
-    {
-        qmodel = new QSqlQueryModel;
-        qmodel->setQuery(o);
-        view = new QTableView;
-        view->setModel(qmodel);
-        view->show();
-    }
-    else{}
-}
-
-void MainWindow::sqlserver_connect()
-{
-    //ui->viewtableButton->setDisabled(0);
-    //ui->viewtableButton->setText("View Tables");
-    sql_query();
 }
 
 void MainWindow::create_sqltables()
