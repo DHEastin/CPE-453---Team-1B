@@ -65,6 +65,7 @@ private:
     QString START;
     QString DEST;
     QStringList PATH;
+    bool ERROR;
 
 private slots:
     void sql_query();

@@ -318,12 +318,20 @@ void MainWindow::Schedule()
 {
     PATH.clear();
     dij_mainprogram();
+    if (ERROR == 1)
+    {
+         qDebug() <<"Error, No Destination Found OR Already at Destination!";
+    }
+    else
+    {
+    qDebug() <<"Length: "<< PATH.length();
 
     qDebug() << "Path";
     QStringList::const_iterator constIterator;
      for (constIterator = PATH.constBegin(); constIterator != PATH.constEnd();
             ++constIterator)
          qDebug() << (*constIterator).toLocal8Bit().constData();
+    }
 }
 
 void MainWindow::Train_Table()

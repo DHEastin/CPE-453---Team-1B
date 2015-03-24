@@ -187,6 +187,23 @@ void MainWindow::dij_main()
     DEST = TRAIN.value(3).toString();
     }
 
+    if (DEST == "EMPTY")
+    {
+        ERROR = 1;
+        QMessageBox msgBox;
+        msgBox.setText("No Destination Found, Schedule a destination!");
+        msgBox.exec();
+    }
+    else if(START == DEST)
+    {
+        ERROR = 1;
+        QMessageBox msgBox;
+        msgBox.setText("At Destination, Schedule a different destination!");
+        msgBox.exec();
+    }
+    else
+    {
+    ERROR = 0;
     QString t3 = QString("SELECT trackID,trackNAME from %1").arg("tracklistingTable");
     n = db.exec(t3);
 
@@ -263,5 +280,5 @@ void MainWindow::dij_main()
            count++;//Increments count by 1 to prevent more than one line of outputs
         }
     }
-    //qDebug() << "End of dij_main";
+  }
 }
