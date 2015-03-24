@@ -62,6 +62,9 @@ private:
     int isSave;
     QSqlTableModel* tmodel;
     QStandardItemModel* imodel;
+    QString START;
+    QString DEST;
+    QStringList PATH;
 
 private slots:
     void sql_query();

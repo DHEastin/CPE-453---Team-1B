@@ -296,8 +296,7 @@ void MainWindow::Load_State()
 
     QString ts1 = QString("SELECT ID from %1").arg("Trains");
     TRAIN = db.exec(ts1);
-
-    /*-------------------------------------------------------------------*/
+    ui->trainBox->clear();
     for(;TRAIN.next() == 1;) //If it is 1 it contains data
     {
     QString sts2 = TRAIN.value(0).toString();
@@ -317,7 +316,14 @@ void MainWindow::Set_Schedule()
 
 void MainWindow::Schedule()
 {
+    PATH.clear();
+    dij_mainprogram();
 
+    qDebug() << "Path";
+    QStringList::const_iterator constIterator;
+     for (constIterator = PATH.constBegin(); constIterator != PATH.constEnd();
+            ++constIterator)
+         qDebug() << (*constIterator).toLocal8Bit().constData();
 }
 
 void MainWindow::Train_Table()

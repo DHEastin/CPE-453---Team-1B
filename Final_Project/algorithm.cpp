@@ -109,27 +109,28 @@ void MainWindow::dij_mainprogram() //Main Program
   //Reads track ids and names for showing the path
     /*-------------------------------------------------------------------*/
     QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
-    nn = db.exec(t);
+    n = db.exec(t);
 
-    for(;nn.next() == 1;) //If it is 1 it contains data
+    for(;n.next() == 1;) //If it is 1 it contains data
     {
-        QString ss4 = nn.value(1).toString();
+        QString ss4 = n.value(1).toString();
         vertex_names.push_back(ss4.toStdString());
     }
     /*-------------------------------------------------------------------*/
 
     //Reads data for each track and how its connected along with its weight
     QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
-    INFO = db.exec(t2);
+    qq = db.exec(t2);
 
     //For each swich in trackInfoTable execute the following:
     /*-------------------------------------------------------------------*/
-    for(;INFO.next() == 1;) //If it is 1 it contains data
+    for(;qq.next() == 1;) //If it is 1 it contains data
     {
-    int ss1 = INFO.value(0).toInt();
-    int ss2 = INFO.value(1).toInt();
-    int ss3 = INFO.value(2).toInt();
+    int ss1 = qq.value(0).toInt();
+    int ss2 = qq.value(1).toInt();
+    int ss3 = qq.value(2).toInt();
     adjacency_map[ss1].push_back(edge(ss2,  ss3));
+    //qDebug() <<ss1<<",{"<<ss2<<","<<ss3<<"}";
     }
     /*-------------------------------------------------------------------*/
 
@@ -141,15 +142,15 @@ void MainWindow::dij_mainprogram() //Main Program
     CHECKER = 0;
     //Reads data for each track and how its connected along with its weight
     QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
-    INFO2 = db.exec(t3);
+    qq = db.exec(t3);
 
     //For each swich in trackInfoTable execute the following:
     /*-------------------------------------------------------------------*/
-    for(;INFO2.next() == 1;) //If it is 1 it contains data
+    for(;qq.next() == 1;) //If it is 1 it contains data
     {
-    int ss1 = INFO2.value(0).toInt();
-    int ss2 = INFO2.value(1).toInt();
-    int ss3 = INFO2.value(2).toInt();
+    int ss1 = qq.value(0).toInt();
+    int ss2 = qq.value(1).toInt();
+    int ss3 = qq.value(2).toInt();
     adjacency_map[ss2].push_back(edge(ss1,  ss3));
     //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
     }
@@ -162,12 +163,13 @@ void MainWindow::dij_mainprogram() //Main Program
         count = 0;
         CHECKER = 0;
         s = QString("Distance from vertex %1 to %2 is: %3").arg(start).arg(dest).arg("NULL-No Path Exists!");
-        //ui->distanceEdit->setText(s);
+        qDebug() << s;
         std::cout << "No Path Exists or switch is not correctly switched!"<< std::endl;
         s2 = QString("Path: No Path Exists or switch is not correctly switched!");
         //ui->pathEdit->setText(s2);
     }
     }
+    //qDebug() << "End of dij_mainprogram";
 }
 
 //Dialog:: was added to iterface with Qt dialog.cpp
@@ -175,11 +177,8 @@ void MainWindow::dij_main()
 {
     count = 0;//count is used to output only one line of paths/distance
 
-    QString ts1 = QString("SELECT ID,START,Direction,Destination from %1 WHERE ID='%2").arg("Trains").arg(ui->trainBox->currentText());
+    QString ts1 = QString("SELECT ID,START,Direction,Destination from %1 WHERE ID='%2'").arg("Trains").arg(ui->trainBox->currentText());
     TRAIN = db.exec(ts1);
-
-    QString START;
-    QString DEST;
 
     /*-------------------------------------------------------------------*/
     for(;TRAIN.next() == 1;) //If it is 1 it contains data
@@ -188,25 +187,27 @@ void MainWindow::dij_main()
     DEST = TRAIN.value(3).toString();
     }
 
-
     QString t3 = QString("SELECT trackID,trackNAME from %1").arg("tracklistingTable");
-    mm = db.exec(t3);
+    n = db.exec(t3);
 
     //For each swich in trackInfoTable execute the following:
     /*-------------------------------------------------------------------*/
-    for(;mm.next() == 1;) //If it is 1 it contains data
+    for(;n.next() == 1;) //If it is 1 it contains data
     {
-    int sts1 = mm.value(0).toInt();
-    QString sts2 = mm.value(1).toString();
+    int stqs1 = n.value(0).toInt();
+    QString stqs2 = n.value(1).toString();
+    //qDebug() << stqs1 << stqs2;
 
-    if (START == sts2)
+    if (START == stqs2)
     {
-        start = sts1;
+        start = stqs1;
     }
-    if (DEST == sts2)
+    //qDebug() << START << start;
+    if (DEST == stqs2)
     {
-        dest = sts1;
+        dest = stqs1;
     }
+    //qDebug() << DEST << dest;
 
     }
     /*-------------------------------------------------------------------*/
@@ -234,38 +235,33 @@ void MainWindow::dij_main()
             {
             CHECKER = 0;
             s = QString("Distance from vertex %1 to %2 is: %3").arg(START).arg(DEST).arg(min_distance[v]);
-            //ui->distanceEdit->clear();
-            //ui->distanceEdit->setText(s);
-            std::cout << "Distance to " << vertex_names[v] << ": " << min_distance[v] << std::endl;
+            qDebug() << s;
             std::list<vertex_t> path =
                 DijkstraGetShortestPathTo(v, previous);
             std::list<vertex_t>::iterator path_iter = path.begin();
             s2 = QString("Path: ");
-            //ui->pathEdit->clear();
-            //ui->pathEdit->setText(s2);
-            std::cout << "Path: ";
+            //qDebug() << s2;
             for( ; path_iter != path.end(); path_iter++)
             {
                 //Below statements are used to add arrows between destinations and no arrow on last node
                 QString s3;
                 if(*path_iter == dest)
                 {
-                    s3 = QString("%1 ").arg(QString::fromStdString(vertex_names[*path_iter]));
-                    std::cout << vertex_names[*path_iter] << " ";
+                    s3 = QString("%1").arg(QString::fromStdString(vertex_names[*path_iter]));
+                    //qDebug() << s3;
                 }
                 else
                 {
-                s3 = QString("%1 -> ").arg(QString::fromStdString(vertex_names[*path_iter]));
-                std::cout << vertex_names[*path_iter] << " ->";
+                s3 = QString("%1").arg(QString::fromStdString(vertex_names[*path_iter]));
+                //qDebug() << s3;
                 }
-                s2.append(s3);//Appends text to path showing the full path
-                //ui->pathEdit->setText(s2);
+                PATH.append(s3);
+                //s2.append(s3);//Appends text to path showing the fu++ll path
             }
-            std::cout << std::endl;
             }
-            std::cout << std::endl;
             }
            count++;//Increments count by 1 to prevent more than one line of outputs
         }
     }
+    //qDebug() << "End of dij_main";
 }
