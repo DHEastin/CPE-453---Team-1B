@@ -9,6 +9,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->setWindowTitle("Train Scheduling Application");
 
+    //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33158 --user=root --password=drabroig
+
+
     rdb.addDatabase( "QMYSQL", "Remote" );
     rdb.setDatabaseName("Remote");
     rdb.setHostName("pavelow.eng.uah.edu");
@@ -51,6 +54,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->scheduleButton,SIGNAL(clicked()),this,SLOT(Schedule()));
     connect(ui->actionView_Trains,SIGNAL(triggered()),this,SLOT(Train_Table()));
     connect(ui->set_scheduleButton,SIGNAL(clicked()),this,SLOT(Set_Schedule()));
+    connect(ui->actionView_DS_Connectivity,SIGNAL(triggered()),this,SLOT(DS_Connectivity_Table()));
+    connect(ui->actionView_Tracklisting,SIGNAL(triggered()),this,SLOT(Tracklisting_Table()));
+    connect(ui->actionView_Trackinfo,SIGNAL(triggered()),this,SLOT(Trackinfo_Table()));
 
 }
 
@@ -69,12 +75,12 @@ void MainWindow::Add_Train()
     {
 
     QString ts0 = QString("SELECT Current from %1").arg("DS_Connectivity");
-    LOAD = db.exec(ts0);
+    o = db.exec(ts0);
 
     /*-------------------------------------------------------------------*/
-    for(;LOAD.next() == 1;) //If it is 1 it contains data
+    for(;o.next() == 1;) //If it is 1 it contains data
     {
-    QString sts0 = LOAD.value(0).toString();
+    QString sts0 = o.value(0).toString();
     items.append(sts0);
     }
 
@@ -83,18 +89,15 @@ void MainWindow::Add_Train()
 
     items.clear();
     //Forward
-    QString ts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current=%2").arg("DS_Connectivity").arg(Start);
-    LOAD = db.exec(ts1);
-    LOAD.next();
-    QString sts1 = LOAD.value(2).toString();
+    QString ts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current='%2'").arg("DS_Connectivity").arg(Start);
+    o = db.exec(ts1);
+    o.next();
+    QString sts1 = o.value(2).toString();
     items.append(sts1);
 
     //Backward
-    QString ts2 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current=%2").arg("DS_Connectivity").arg(Start);
-    LOAD = db.exec(ts2);
-    LOAD.next();
-    QString sts3 = LOAD.value(3).toString();
-    items.append(sts3);
+    QString sts2 = o.value(3).toString();
+    items.append(sts2);
 
     direction = QInputDialog::getItem(this, tr("Choose Direction"),
                                          tr("Direction:"), items, 0, false, &ok);
@@ -102,8 +105,8 @@ void MainWindow::Add_Train()
         ui->trainBox->addItem(ID);
 
     QString qtts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination) VALUES ('%1','%2','%3','%4')").arg(ID).arg(Start).arg(direction).arg("EMPTY");
-    TRAIN = db.exec(qtts0);
-    TRAIN.next();
+    o = db.exec(qtts0);
+    o.next();
     }
 }
 
@@ -117,7 +120,6 @@ void MainWindow::Edit_Train()
     QString VAL1,VAL2,VAL3;
     items.clear();
     QString Edit_ID = QString("SELECT ID,Start,Direction,Destination from %1 WHERE ID='%2'").arg("Trains").arg(ID);
-    //QString tss4 = QString("SELECT ID,Start,Direction from %1 WHERE ID=%2").arg("Trains").arg(ID);
     TRAIN = db.exec(Edit_ID);
     TRAIN.next();
     VAL1 = TRAIN.value(0).toString();
@@ -134,26 +136,23 @@ void MainWindow::Edit_Train()
     items.append(sts0);
     }
 
-    QString TITLE1 = QString("Old Start: %1 | Select NEW Starting Point for %2").arg(VAL2).arg(ID);;
+    QString TITLE1 = QString("Old Start: '%1' | Select NEW Starting Point for '%2'").arg(VAL2).arg(ID);;
 
     Start = QInputDialog::getItem(this, tr("Change Start"),
                                          QString(TITLE1), items, 0, false, &ok);
     items.clear();
     //Forward
-    QString Sts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current=%2").arg("DS_Connectivity").arg(Start);
+    QString Sts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current='%2'").arg("DS_Connectivity").arg(Start);
     o = db.exec(Sts1);
     o.next();
     QString sts1 = o.value(2).toString();
     items.append(sts1);
 
     //Backward
-    QString Sts2 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current=%2").arg("DS_Connectivity").arg(Start);
-    o = db.exec(Sts2);
-    o.next();
-    QString sts3 = o.value(3).toString();
-    items.append(sts3);
+    QString sts2 = o.value(3).toString();
+    items.append(sts2);
 
-    QString TITLE2 = QString("Old Direction: %1 | Select NEW Direction for %2").arg(VAL3).arg(ID);;
+    QString TITLE2 = QString("Old Direction: '%1' | Select NEW Direction for '%2'").arg(VAL3).arg(ID);;
 
     direction = QInputDialog::getItem(this, tr("Change Direction"),
                                          QString (TITLE2), items, 0, false, &ok);
@@ -340,6 +339,36 @@ void MainWindow::Train_Table()
     view = new QTableView;
     view->setModel(tmodel);
     tmodel->setTable("Trains");
+    tmodel->select();
+    view->show();
+}
+
+void MainWindow::DS_Connectivity_Table()
+{
+    tmodel = new QSqlTableModel( this, db );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("DS_Connectivity");
+    tmodel->select();
+    view->show();
+}
+
+void MainWindow::Tracklisting_Table()
+{
+    tmodel = new QSqlTableModel( this, db );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("tracklistingTable");
+    tmodel->select();
+    view->show();
+}
+
+void MainWindow::Trackinfo_Table()
+{
+    tmodel = new QSqlTableModel( this, db );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("trackInfoTable");
     tmodel->select();
     view->show();
 }

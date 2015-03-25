@@ -58,7 +58,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -150,6 +150,9 @@
      <string>Tables</string>
     </property>
     <addaction name="actionView_Trains"/>
+    <addaction name="actionView_DS_Connectivity"/>
+    <addaction name="actionView_Tracklisting"/>
+    <addaction name="actionView_Trackinfo"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTrain"/>
@@ -192,6 +195,21 @@
   <action name="actionView_Trains">
    <property name="text">
     <string>View Trains</string>
+   </property>
+  </action>
+  <action name="actionView_DS_Connectivity">
+   <property name="text">
+    <string>View DS_Connectivity</string>
+   </property>
+  </action>
+  <action name="actionView_Tracklisting">
+   <property name="text">
+    <string>View Tracklisting</string>
+   </property>
+  </action>
+  <action name="actionView_Trackinfo">
+   <property name="text">
+    <string>View Trackinfo</string>
    </property>
   </action>
  </widget>

@@ -80,6 +80,9 @@ private slots:
     void Train_Table();
     void dij_main();
     void dij_mainprogram();
+    void DS_Connectivity_Table();
+    void Tracklisting_Table();
+    void Trackinfo_Table();
 };
 
 #endif // MAINWINDOW_H

@@ -108,6 +108,84 @@ void MainWindow::create_sqltables()
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.14',3,'2.13','2.15','2.16');");
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.15',2,'2.14','1.2','Null');");
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.16',2,'2.14','1.2','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('4.9',2,'U.3','5.2','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('4.10',2,'U.1','4.11','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('4.11',2,'4.10','5.1','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('4.12',2,'U.2','5.2','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5.1',2,'4.11','5.3','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5.2',3,'5.3','4.9','4.12');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5.3',3,'5.13','5.1','5.2');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5.4',2,'5.13','U.9','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5.13',3,'5.4','5.3','5.14');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5.14',2,'5.13','5.15','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5.15',2,'5.14','5.16','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5.16',2,'U.1','5.15','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.1',3,'U.61','4.10','5.16');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.2',1,'4.12','Null','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.3',1,'4.9','Null','Null');");
+    //o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.4',2,'U.2','5.2','Null');");
+    //o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.5',2,'4.11','5.3','Null');");
+    //o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.6',2,'4.10','5.1','Null');");
+    //o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.7',2,'U.2','5.2','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.8',2,'U.61','U.10','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.9',2,'U.12','5.4','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.10',2,'U.8','U.13','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.11',1,'U.14','Null','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.12',2,'U.15','U.9','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.13',2,'U.16','U.10','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.14',2,'U.16','U.11','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.15',2,'U.18','U.12','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.16',3,'U.17','U.13','U.14');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.17',2,'U.16','U.19','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.18',2,'U.20','U.15','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.19',2,'U.20','U.17','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.20',3,'U.21','U.18','U.19');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.21',2,'U.22','U.20','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.22',2,'U.31','U.21','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.23',2,'U.32','U.25','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.24',2,'U.26','U.61','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.25',3,'U.23','U.21','1.4R');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.26',3,'U.24','U.27','U.35');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.27',3,'U.26','U.36','U.37');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.28',1,'U.42','Null','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.29',1,'U.41','Null','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.30',1,'U.40','Null','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.31',2,'U.33','U.22','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.32',2,'U.34','U.23','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.33',2,'U.44','U.31','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.34',3,'U.32','1.3R','U.44');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.35',3,'U.62','U.26','U.36');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.36',3,'U.35','U.27','U.37');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.37',3,'U.36','U.27','U.38');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.38',3,'U.37','U.42','U.39');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.39',3,'U.38','U.40','U.41');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.40',2,'U.39','U.30','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.41',2,'U.39','U.29','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.42',2,'U.38','U.28','Null');");
+    //o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.43',2,'U.2','5.2','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.44',3,'U.45','U.33','U.34');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.45',3,'U.44','U.46','U.47');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.46',2,'U.50','U.45','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.47',2,'U.48','U.45','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.48',2,'U.53','U.47','Null');");
+    //o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.49',2,'U.3','5.2','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.50',2,'U.51','U.46','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.51',3,'U.50','U.52','U.54');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.52',2,'U.51','U.55','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.53',2,'U.48','U.57','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.54',2,'U.51','U.56','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.55',2,'U.52','U.58','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.56',1,'U.54','Null','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.57',3,'U.53','U.59','U.63');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.58',2,'U.55','U.59','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.59',3,'U.60','U.57','U.58');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.60',3,'U.59','1.3R','U.62');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.61',3,'U.8','U.24','1.4R');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.62',2,'U.60','U.35','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U.63',2,'U.57','U.1','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('1.3R',2,'U.60','U.34','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('1.4R',2,'U.25','U.61','Null');");
+
     o.exec("SELECT * FROM DS_Connectivity;");
 
     n.exec("CREATE TABLE tracklistingTable (trackID INT, trackNAME TEXT);");
@@ -147,7 +225,6 @@ void MainWindow::create_sqltables()
                 QString Conn1 = o.value(2).toString();//Connection2
                 QString Conn2 = o.value(3).toString();//Connection3
                 QString Conn3 = o.value(4).toString();//Connection3
-                //qDebug() << Current <<","<< NumofConn <<","<< Conn1 <<","<< Conn2 <<","<< Conn3;
 
             //Converts strings to int values
             if(Current == trackNAME)
@@ -168,7 +245,6 @@ void MainWindow::create_sqltables()
             }
 
         }
-        //qDebug() << COL0 <<","<< COL1 <<","<< COL2 <<","<< COL3;
 
         if (COL0 < COL1 && COL0 < COL2)
         {
