@@ -34,6 +34,7 @@ public:
     QString ID;
     QString Start;
     QString direction;
+    int path_ID;
     ~MainWindow();
 
 private:
@@ -83,6 +84,8 @@ private slots:
     void DS_Connectivity_Table();
     void Tracklisting_Table();
     void Trackinfo_Table();
+    void Update_ScheduleTable();
+    void Pathinfo_Table();
 };
 
 #endif // MAINWINDOW_H

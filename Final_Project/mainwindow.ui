@@ -153,6 +153,7 @@
     <addaction name="actionView_DS_Connectivity"/>
     <addaction name="actionView_Tracklisting"/>
     <addaction name="actionView_Trackinfo"/>
+    <addaction name="actionView_Pathinfo"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTrain"/>
@@ -210,6 +211,11 @@
   <action name="actionView_Trackinfo">
    <property name="text">
     <string>View Trackinfo</string>
+   </property>
+  </action>
+  <action name="actionView_Pathinfo">
+   <property name="text">
+    <string>View Pathinfo</string>
    </property>
   </action>
  </widget>

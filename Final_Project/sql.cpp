@@ -84,7 +84,7 @@ void MainWindow::create_sqltables()
     TRAIN2 = db.exec(query);
     LOAD = db.exec(query);
 
-    TRAIN.exec("CREATE TABLE Trains(ID TEXT, START TEXT, Direction TEXT,Destination TEXT);");
+    TRAIN.exec("CREATE TABLE Trains(ID TEXT, START TEXT, Direction TEXT,Destination TEXT,pathID INT);");
     TRAIN.exec("SELECT * FROM Trains;");
 
     //Create DS_Connectivity Table
@@ -318,9 +318,7 @@ void MainWindow::create_sqltables()
 
     //Create Path_Info Table
     //CURRENTLY NOT IMPORTANT
-     l.exec("CREATE TABLE pathInfoTable (pathId INT, next2 TEXT, next11 TEXT);");
-     l.exec("INSERT INTO pathInfoTable (pathId, next2, next11) VALUES (1, '3 5 9 11 31 37 50 52 44 48', '1 2 7 18 20 12 14 17 6 34');");
-     l.exec("INSERT INTO pathInfoTable (pathId, next2, next11) VALUES (2, '1 7 10 8 21 27 16 19 13 9', '32 35 41 44 45 87 89 76 90 91');");
+     l.exec("CREATE TABLE pathInfoTable (pathID INT, nextID1 TEXT, nextID2 TEXT, nextID3 TEXT, nextID4 TEXT, nextID5 TEXT, nextID6 TEXT, nextID7 TEXT, nextID8 TEXT, nextID9 TEXT, nextID10 TEXT, nextpathID TEXT);");
      l.exec("SELECT * FROM pathInfoTable;");
 }
 
