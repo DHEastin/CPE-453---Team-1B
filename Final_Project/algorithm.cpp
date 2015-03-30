@@ -246,6 +246,7 @@ void MainWindow::dij_main()
            {
             if (min_distance[v] == inf)
             {
+            qDebug() << "min_distance[v] == inf";
             CHECKER = 1;
             }
             else

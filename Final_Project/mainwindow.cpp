@@ -69,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->scheduleButton,SIGNAL(clicked()),this,SLOT(Schedule()));
     connect(ui->scheduleButton,SIGNAL(clicked()),this,SLOT(Update_ScheduleTable()));
     connect(ui->actionView_Trains,SIGNAL(triggered()),this,SLOT(Train_Table()));
-    connect(ui->set_scheduleButton,SIGNAL(clicked()),this,SLOT(Set_Schedule()));
+    //connect(ui->set_scheduleButton,SIGNAL(clicked()),this,SLOT(Set_Schedule()));
     connect(ui->actionView_DS_Connectivity,SIGNAL(triggered()),this,SLOT(DS_Connectivity_Table()));
     connect(ui->actionView_Tracklisting,SIGNAL(triggered()),this,SLOT(Tracklisting_Table()));
     connect(ui->actionView_Trackinfo,SIGNAL(triggered()),this,SLOT(Trackinfo_Table()));
@@ -371,6 +371,8 @@ void MainWindow::Set_Schedule()
 
 void MainWindow::Schedule()
 {
+    Set_Schedule();
+
     PATH.clear();
     dij_mainprogram();
     if (ERROR == 1)

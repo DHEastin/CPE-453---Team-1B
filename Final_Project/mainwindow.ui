@@ -61,7 +61,7 @@
      </size>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>410</x>
@@ -125,13 +125,6 @@
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QPushButton" name="set_scheduleButton">
-           <property name="text">
-            <string>Set Schedule</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <widget class="QPushButton" name="scheduleButton">
            <property name="text">
