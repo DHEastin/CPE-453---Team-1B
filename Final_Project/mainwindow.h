@@ -86,6 +86,8 @@ private slots:
     void Trackinfo_Table();
     void Update_ScheduleTable();
     void Pathinfo_Table();
+    void DEL_OLD_PATH();
+    void Check_Path_Trains();
     void check_sched();
 };
 
