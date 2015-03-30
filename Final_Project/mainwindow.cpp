@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     path_ID = 0;
 
     //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33158 --user=root --password=drabroig
-
+/*
     rdb.addDatabase( "QMYSQL", "Remote" );
     rdb.setDatabaseName("Remote");
     rdb.setHostName("pavelow.eng.uah.edu");
@@ -20,6 +20,20 @@ MainWindow::MainWindow(QWidget *parent) :
     rdb.setDatabaseName("team4b");
     rdb.setUserName("root");
     rdb.setPassword("drabroig");
+*/
+
+    //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33155 --user=Team1B_User --password=YaaasGAGA
+    //Team1b database and user for testing
+    rdb.addDatabase( "QMYSQL", "Remote" );
+    rdb.setDatabaseName("Remote");
+    rdb.setHostName("pavelow.eng.uah.edu");
+    rdb.setPort(33155);
+    rdb.setDatabaseName("team1b");
+    rdb.setUserName("Team1B_User");
+    rdb.setPassword("YaaasGAGA");
+
+
+
     if (!rdb.open())
     {
         qDebug() << "Error connecting to Pavelow.eng.uah.edu.";
