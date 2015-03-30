@@ -86,6 +86,7 @@ private slots:
     void Trackinfo_Table();
     void Update_ScheduleTable();
     void Pathinfo_Table();
+    void check_sched();
 };
 
 #endif // MAINWINDOW_H

@@ -75,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionView_Trackinfo,SIGNAL(triggered()),this,SLOT(Trackinfo_Table()));
     connect(ui->actionView_Pathinfo,SIGNAL(triggered()),this,SLOT(Pathinfo_Table()));
 
+    QTimer* persistence = new QTimer();
+    QObject::connect(persistence, SIGNAL(timeout()), this, SLOT(check_sched()));
 }
 
 MainWindow::~MainWindow()
@@ -510,3 +512,10 @@ void MainWindow::Update_ScheduleTable()
     path_ID++;
 }
 
+void MainWindow::check_sched()
+{
+//check team 2 SQL for track shutdowns. If any new ones, check schedules, trigger reroutes if necessary
+
+//check occupancy data and adjust throttles accordingly,
+    //If a schedule cannot be made up with throttle adjustments, trigger reroute
+}
