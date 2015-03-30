@@ -180,6 +180,49 @@ void MainWindow::Edit_Train()
     Schedule();
     Update_ScheduleTable();
 
+    int sts11/*,sts2*/,sts3,sts4/*,sts5*/;
+
+    QString tqtps11 = QString("SELECT pathID FROM Trains WHERE ID='%1'").arg(ui->trainBox->currentText());
+    TRAIN = db.exec(tqtps11);
+
+    for(;TRAIN.next() == 1;) //If it is 1 it contains data
+    {
+    sts11 = TRAIN.value(4).toInt();
+    }
+
+    int Test = sts11+1;
+
+    //qDebug() <<sts1<<Test;
+
+    QString tqtps2 = QString("SELECT pathID,nextpathID FROM pathInfoTable WHERE pathID=%1").arg(sts11);
+    Path = db.exec(tqtps2);
+
+    for(;Path.next() == 1;) //If it is 1 it contains data
+    {
+    //sts2 = Path.value(0).toInt();
+    sts3 = Path.value(1).toInt();
+    }
+
+    QString tqtps3 = QString("SELECT pathID,nextpathID FROM pathInfoTable WHERE pathID=%1").arg(Test);
+    Path = db.exec(tqtps3);
+
+    for(;Path.next() == 1;) //If it is 1 it contains data
+    {
+    sts4 = Path.value(0).toInt();
+    //sts5 = Path.value(1).toInt();
+    }
+
+    //qDebug() << sts1<< sts2<< sts3<<sts4<<sts5;
+
+    QString ttps11 = QString("DELETE FROM pathInfoTable WHERE pathID=%1").arg(sts11);
+    TRAIN2 = db.exec(ttps11);
+
+    if(sts3 == sts4)
+    {
+        QString ttps1 = QString("DELETE FROM pathInfoTable WHERE pathID=%1").arg(sts4);
+        Path2 = db.exec(ttps1);
+    }
+
     tmodel = new QSqlTableModel( this, db );
     ui->tableView->setModel(tmodel);
     tmodel->setTable("pathInfoTable");
@@ -214,20 +257,48 @@ void MainWindow::Delete_Train()
           // Ok was clicked
    {
 
+       int sts1/*,sts2*/,sts3,sts4/*,sts5*/;
+
        QString tqtps1 = QString("SELECT pathID FROM Trains WHERE ID='%1'").arg(CT_Train);
        TRAIN = db.exec(tqtps1);
 
-       int sts2;
-
        for(;TRAIN.next() == 1;) //If it is 1 it contains data
        {
-       sts2 = TRAIN.value(4).toInt();
+       sts1 = TRAIN.value(4).toInt();
        }
 
-       qDebug() << sts2;
+       int Test = sts1+1;
 
-       QString ttps1 = QString("DELETE FROM pathInfoTable WHERE pathID=%1").arg(sts2);
+       //qDebug() <<sts1<<Test;
+
+       QString tqtps2 = QString("SELECT pathID,nextpathID FROM pathInfoTable WHERE pathID=%1").arg(sts1);
+       Path = db.exec(tqtps2);
+
+       for(;Path.next() == 1;) //If it is 1 it contains data
+       {
+       //sts2 = Path.value(0).toInt();
+       sts3 = Path.value(1).toInt();
+       }
+
+       QString tqtps3 = QString("SELECT pathID,nextpathID FROM pathInfoTable WHERE pathID=%1").arg(Test);
+       Path = db.exec(tqtps3);
+
+       for(;Path.next() == 1;) //If it is 1 it contains data
+       {
+       sts4 = Path.value(0).toInt();
+       //sts5 = Path.value(1).toInt();
+       }
+
+       //qDebug() << sts1<< sts2<< sts3<<sts4<<sts5;
+
+       QString ttps1 = QString("DELETE FROM pathInfoTable WHERE pathID=%1").arg(sts1);
        TRAIN2 = db.exec(ttps1);
+
+       if(sts3 == sts4)
+       {
+           QString ttps1 = QString("DELETE FROM pathInfoTable WHERE pathID=%1").arg(sts4);
+           Path2 = db.exec(ttps1);
+       }
 
        ui->trainBox->removeItem(CI_Train);
        INFO = db.exec(DEL_Train);
@@ -435,8 +506,7 @@ void MainWindow::Pathinfo_Table()
 void MainWindow::Update_ScheduleTable()
 {
     PATH.begin();
-    qDebug() << PATH.length();
-    if(PATH.length() <= 11)
+    if(PATH.length() <= 11) //Less than 11 points between source and destination
     {
         int LEN;
         QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
@@ -464,30 +534,131 @@ void MainWindow::Update_ScheduleTable()
         }
         else
         {
-        for (int C_ID = LEN;C_ID != 11; C_ID++)
-        {
-            qDebug() << C_ID;
-            qtts0.append("'NULL'");
-            qtts0.append(",");
-        }
+            for (int C_ID = LEN;C_ID != 11; C_ID++)
+            {
+                //qDebug() << C_ID;
+                qtts0.append("'NULL'");
+                qtts0.append(",");
+            }
         }
         QString I_D;
         I_D = QString("%1").arg(path_ID);
         qtts0.append(I_D);
         qtts0.append(")");
-
-        o = db.exec(qtts0);
         qDebug() << qtts0;
+        INFO = db.exec(qtts0);
+
         QString train_up = QString("UPDATE Trains SET pathID=%1 WHERE ID='%2'").arg(path_ID).arg(ui->trainBox->currentText());
         TRAIN = db.exec(train_up);
     }
-    else
+    else //Greater than 10 points between source and destination (Multi-line Path)
     {
-        int Local_ID = path_ID++;
-        QString qtts10 = QString("INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (%1,'%2','%3','%4','%5','%6','%7','%8','%9','%10','%11',%12)").arg(Local_ID).arg("Node 1").arg("Node 2").arg("Node 3").arg("Node 4").arg("Node 5").arg("Node 6").arg("Node 7").arg("Node 8").arg("Node 9").arg("Node 10").arg(0);
-        o = db.exec(qtts10);
-    }
+        //Must use # of paths for # of full rows of data *each row is 10 nodes
 
+        int LEN = 0;
+        int TOT = PATH.length();
+        int TOT_LEFT = TOT - LEN;
+        if (TOT > 23)
+        {
+            QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
+            for (LEN= LEN;LEN <= TOT_LEFT;LEN++)
+            {
+            if(LEN == 0)
+            {
+                QString I_D;
+                I_D = QString("%1").arg(path_ID);
+                qtts0.append(I_D);
+                qtts0.append(",");
+            }
+
+            else
+            {
+                QString I_D;
+                I_D = QString("'%1'").arg(PATH.value(LEN));
+                qtts0.append(I_D);
+                qtts0.append(",");
+            }
+            }
+            QString I_D;
+            I_D = QString("%1").arg(path_ID++);
+            qtts0.append(I_D);
+            qtts0.append(")");
+            //qDebug() << qtts0;
+
+            o = db.exec(qtts0);
+        }
+            int LEFT = TOT_LEFT - 11;
+            QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
+            for (LEN= LEN;LEN != 11;LEN++)
+            {
+            if(LEN == 0)
+            {
+                QString I_D;
+                I_D = QString("%1").arg(path_ID);
+                qtts0.append(I_D);
+                qtts0.append(",");
+            }
+
+            else
+            {
+                QString I_D;
+                I_D = QString("'%1'").arg(PATH.value(LEN));
+                qtts0.append(I_D);
+                qtts0.append(",");
+            }
+            }
+            QString I_D;
+            path_ID++;
+            I_D = QString("%1").arg(path_ID);
+            qtts0.append(I_D);
+            qtts0.append(")");
+            //qDebug() << qtts0;
+
+            o = db.exec(qtts0);
+        //qDebug() <<"LEFT= "<< LEFT;
+        if(LEFT <= 11) //Less than 10 points between source and destination
+        {
+            int LENL = 0;
+            //qDebug() <<"LEN= "<< LEN <<"PATH.length()= "<<PATH.length();
+            QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
+            for (LEN = LEN;LEN != PATH.length();LEN++ )
+            {
+                if(LENL == 0)
+                {
+                    QString I_D;
+                    I_D = QString("%1").arg(path_ID);
+                    qtts0.append(I_D);
+                    qtts0.append(",");
+                }
+                else
+                {
+                    QString I_D;
+                    I_D = QString("'%1'").arg(PATH.value(LEN));
+                    qtts0.append(I_D);
+                    qtts0.append(",");
+                }
+                LENL++;
+            }
+
+            qDebug() <<"LEN= "<< LEN;
+                for (int C_ID = LEN;C_ID != 22; C_ID++)
+                {
+                    //qDebug() <<"C_ID= "<< C_ID;
+                    qtts0.append("'NULL'");
+                    qtts0.append(",");
+                }
+            QString I_D;
+            I_D = QString("%1").arg(path_ID);
+            qtts0.append(I_D);
+            qtts0.append(")");
+            qDebug() << qtts0;
+
+            o = db.exec(qtts0);
+
+        QString train_up = QString("UPDATE Trains SET pathID=%1 WHERE ID='%2'").arg(path_ID).arg(ui->trainBox->currentText());
+        TRAIN = db.exec(train_up);
+    }
+}
     tmodel = new QSqlTableModel( this, db );
     ui->tableView->setModel(tmodel);
     tmodel->setTable("pathInfoTable");
