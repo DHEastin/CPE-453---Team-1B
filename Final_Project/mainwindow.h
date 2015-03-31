@@ -4,9 +4,6 @@
 #include <QMainWindow>
 #include <QSpinBox>
 #include <QString>
-#include <QtSql/QSqlTableModel>
-#include <QtSql/QSqlQuery>
-#include <QtSql/QSqlDatabase>
 #include <QTableView>
 #include <QVector>
 #include <QListWidget>
@@ -17,9 +14,9 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QFile>
-#include <QtSql>
 #include <QStandardItemModel>
 #include <QFileDialog>
+#include <QtSql>
 
 namespace Ui {
 class MainWindow;
@@ -31,7 +28,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    QString ID;
+    int ID;
     QString Start;
     QString direction;
     int path_ID;
@@ -51,7 +48,7 @@ private:
     int start; //global variable for Starting Point
     int dest; //global variable for Destination
     int ii;
-    QTableView *view;
+    QTableView *view,*view2;
     int COL0;
     int COL1;
     int COL2;
@@ -61,7 +58,7 @@ private:
     bool ok;
     QString Destination;
     int isSave;
-    QSqlTableModel* tmodel;
+    QSqlTableModel *tmodel,*tmodel2;
     QStandardItemModel* imodel;
     QString START;
     QString DEST;

@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     path_ID = 0;
 
     //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33158 --user=root --password=drabroig
+    //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33155 --user=root --password=rychakkn
 /*
     rdb.addDatabase( "QMYSQL", "Remote" );
     rdb.setDatabaseName("Remote");
@@ -24,15 +25,29 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33155 --user=Team1B_User --password=YaaasGAGA
     //Team1b database and user for testing
+    //rdb = QSqlDatabase::addDatabase( "QMYSQL" ,"Remote" );
     rdb.addDatabase( "QMYSQL", "Remote" );
-    rdb.setDatabaseName("Remote");
     rdb.setHostName("pavelow.eng.uah.edu");
     rdb.setPort(33155);
-    rdb.setDatabaseName("team1b");
-    rdb.setUserName("Team1B_User");
-    rdb.setPassword("YaaasGAGA");
+    rdb.setDatabaseName("Team1B");
+    rdb.setUserName("1BUser");
+    rdb.setPassword("TEAM1bUSER");
+    /*
+    mysql> show tables;
+    +----------------------+
+    | Tables_in_Team1B     |
+    +----------------------+
+    | schedule_train_info  |
+    | scheduled_routes     |
+    | scheduled_train_info |
+    | switch_req           |
+    | throttle_req         |
+    +----------------------+
+    5 rows in set (0.00 sec)
 
+    */
 
+    //rdb.open();
 
     if (!rdb.open())
     {
@@ -40,16 +55,12 @@ MainWindow::MainWindow(QWidget *parent) :
         qDebug() << "Switching database to Local Database.";
     }
 
-    rdb.open();
-
     if(rdb.isOpen())
     {
        sql_query();
     }
-    else
-    {
-        create_sqltables();
-    }
+
+    create_sqltables();
 
     QString ts1 = QString("SELECT Current from %1").arg("DS_Connectivity");
     n = db.exec(ts1);
@@ -69,7 +80,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->scheduleButton,SIGNAL(clicked()),this,SLOT(Schedule()));
     connect(ui->scheduleButton,SIGNAL(clicked()),this,SLOT(Update_ScheduleTable()));
     connect(ui->actionView_Trains,SIGNAL(triggered()),this,SLOT(Train_Table()));
-    //connect(ui->set_scheduleButton,SIGNAL(clicked()),this,SLOT(Set_Schedule()));
     connect(ui->actionView_DS_Connectivity,SIGNAL(triggered()),this,SLOT(DS_Connectivity_Table()));
     connect(ui->actionView_Tracklisting,SIGNAL(triggered()),this,SLOT(Tracklisting_Table()));
     connect(ui->actionView_Trackinfo,SIGNAL(triggered()),this,SLOT(Trackinfo_Table()));
@@ -87,9 +97,7 @@ MainWindow::~MainWindow()
 void MainWindow::Add_Train()
 {
     items.clear();
-    ID = QInputDialog::getText(this, tr("Create Train ID"),
-                                         tr("TrainID:"), QLineEdit::Normal,
-                                         "Train", &ok);
+    ID = QInputDialog::getInt(this, tr("Create Train ID"),tr("TrainID:"),0, -2147483647, 2147483647, 1, &ok);
     if (ok)
     {
 
@@ -120,8 +128,10 @@ void MainWindow::Add_Train()
 
     direction = QInputDialog::getItem(this, tr("Choose Direction"),
                                          tr("Direction:"), items, 0, false, &ok);
-    if (ok && !ID.isEmpty())
-        ui->trainBox->addItem(ID);
+    if (ok)
+    {
+        ui->trainBox->addItem(QString::number(ID));
+    }
 
     QString qtts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination,pathID) VALUES ('%1','%2','%3','%4','%5')").arg(ID).arg(Start).arg(direction).arg("EMPTY").arg(999);
     o = db.exec(qtts0);
@@ -131,9 +141,10 @@ void MainWindow::Add_Train()
 
 void MainWindow::Edit_Train()
 {
-    ID = ui->trainBox->currentText();
+    ID = ui->trainBox->currentText().toInt();
 
-    if (ID != "")
+
+    if (ID != 0)
     {
 
     QString VAL1,VAL2,VAL3,VAL4;
@@ -266,10 +277,15 @@ void MainWindow::Delete_Train()
 void MainWindow::Save_State()
 {
     tmodel = new QSqlTableModel( this, db );
+    tmodel2 = new QSqlTableModel( this, db );
     view = new QTableView;
+    view2 = new QTableView;
     view->setModel(tmodel);
+    view2->setModel(tmodel2);
     tmodel->setTable( "Trains" );
     tmodel->select();
+    tmodel2->setTable( "pathInfoTable" );
+    tmodel2->select();
 
     QString fileName = QFileDialog::getSaveFileName(this,
     tr("Save My File"), "",
@@ -291,11 +307,37 @@ void MainWindow::Save_State()
 
           for (int row = 0; row < tmodel->rowCount(); ++row)
           {
+            //qDebug() <<"rowCount()= "<< tmodel->rowCount();
+              //qDebug() << row;
             QSqlRecord record = tmodel->record(row);
             //qDebug() << record;
                     for (int field = 0; field < record.count(); ++field)
                     {
                         if(field >= 0 && field !=6 )
+                        {
+                            if (field >= 0) data += "\n";
+                            data += record.field(field).value().toString();
+                        }                        
+                    }
+                    int row_count = tmodel->rowCount() - 1;
+                    if(row != row_count)
+                    {
+                    data += "\n";
+                    }
+          }
+
+           data += "\npathInfoTable";
+
+          for (int row = 0; row < tmodel2->rowCount(); ++row)
+          {
+            //qDebug() <<"2rowCount()= "<< tmodel2->rowCount();
+            //qDebug() << row;
+            QSqlRecord record = tmodel2->record(row);
+            //qDebug() << record;
+
+                    for (int field = 0; field < record.count(); ++field)
+                    {
+                        if(field >= 0 && field !=13 )
                         {
                             if (field >= 0) data += "\n";
                             data += record.field(field).value().toString();
@@ -311,6 +353,8 @@ void MainWindow::Save_State()
 
 void MainWindow::Load_State()
 {
+    bool SKIP = 0;
+
     QString fileName = QFileDialog::getOpenFileName(this,
     tr("Open My File"), "",
     tr("My File (*.txt);;All Files (*)"));
@@ -338,14 +382,52 @@ void MainWindow::Load_State()
     QString line=in.readLine(); //Move past null line
     while (!line.isNull())
         {
-        QString COL1 = line=in.readLine();
-        QString COL2 = line=in.readLine();
-        QString COL3 = line=in.readLine();
-        QString COL4 = line=in.readLine();
-        QString COL5 = line=in.readLine();
+        if(SKIP != 1)
+        {
+            //qDebug() << "SKIP !=1";
+            QString COL1 = line=in.readLine();
+            QString COL2 = line=in.readLine();
+            QString COL3 = line=in.readLine();
+            QString COL4 = line=in.readLine();
+            QString COL5 = line=in.readLine();
+        if(COL1 != "pathInfoTable" && COL2 != "pathInfoTable" && COL3 != "pathInfoTable" && COL4 != "pathInfoTable" && COL5 != "pathInfoTable")
+        {
         QString tts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination,pathID) VALUES ('%1','%2','%3','%4',%5)").arg(COL1).arg(COL2).arg(COL3).arg(COL4).arg(COL5);
         TRAIN = db.exec(tts0);
         }
+        QString NEXT = line=in.readLine();
+        if(NEXT == "pathInfoTable")
+        {
+            //qDebug() << "Set SKIP to 1";
+            SKIP = 1;
+        }
+        }
+        else
+        {
+            //qDebug() << "SKIP ==1";
+            QString COL1 = line=in.readLine();
+            QString COL2 = line=in.readLine();
+            QString COL3 = line=in.readLine();
+            QString COL4 = line=in.readLine();
+            QString COL5 = line=in.readLine();
+            QString COL6 = line=in.readLine();
+            QString COL7 = line=in.readLine();
+            QString COL8 = line=in.readLine();
+            QString COL9 = line=in.readLine();
+            QString COL10 = line=in.readLine();
+            QString COL11 = line=in.readLine();
+            QString COL12 = line=in.readLine();
+
+             QString path = QString("INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (%1,'%2','%3','%4','%5','%6','%7','%8','%9','%10','%11',%12)").arg(COL1).arg(COL2).arg(COL3).arg(COL4).arg(COL5).arg(COL6).arg(COL7).arg(COL8).arg(COL9).arg(COL10).arg(COL11).arg(COL12);
+             Path = db.exec(path);
+        }
+        }//end while loop
+
+    tmodel = new QSqlTableModel( this, db );
+    ui->tableView->setModel(tmodel);
+    tmodel->setTable("pathInfoTable");
+    tmodel->select();
+
     QString ttps1 = QString("DELETE FROM Trains Where ID='%1'").arg("");
     TRAIN2 = db.exec(ttps1);
 
@@ -363,7 +445,7 @@ void MainWindow::Load_State()
 }
 void MainWindow::Set_Schedule()
 {
-     ID = ui->trainBox->currentText();
+     ID = ui->trainBox->currentText().toInt();
      Destination = ui->destinationBox->currentText();
      QString ptts0 = QString("UPDATE Trains SET Destination='%1' WHERE ID='%2'").arg(Destination).arg(ID);
      TRAIN = db.exec(ptts0);
@@ -732,6 +814,14 @@ void MainWindow::Check_Path_Trains()
 
 void MainWindow::check_sched()
 {
+
+    tmodel = new QSqlTableModel( this, rdb );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("pathInfoTable");
+    tmodel->select();
+    view->show();
+
 //check team 2 SQL for track shutdowns. If any new ones, check schedules, trigger reroutes if necessary
 
 //check occupancy data and adjust throttles accordingly,
