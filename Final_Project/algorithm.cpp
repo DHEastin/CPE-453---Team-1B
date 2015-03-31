@@ -177,7 +177,7 @@ void MainWindow::dij_main()
 {
     count = 0;//count is used to output only one line of paths/distance
 
-    QString ts1 = QString("SELECT ID,START,Direction,Destination from %1 WHERE ID='%2'").arg("Trains").arg(ui->trainBox->currentText());
+    QString ts1 = QString("SELECT ID,START,Direction,Destination from %1 WHERE ID=%2").arg("Trains").arg(ui->trainBox->currentText().toInt());
     TRAIN = db.exec(ts1);
 
     /*-------------------------------------------------------------------*/

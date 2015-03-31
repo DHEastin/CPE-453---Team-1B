@@ -28,14 +28,14 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    int ID;
-    QString Start;
-    QString direction;
-    int path_ID;
     ~MainWindow();
 
 private:
     Ui::MainWindow *ui;
+    int ID;
+    QString Start;
+    QString direction;
+    int path_ID;
     QSqlDatabase db,rdb;
     int CHECKER;
     void initializeModel(QSqlTableModel *model);

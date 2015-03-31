@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->setWindowTitle("Train Scheduling Application");
 
-    path_ID = 0;
+    path_ID = 1;
 
     //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33158 --user=root --password=drabroig
     //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33155 --user=root --password=rychakkn
@@ -97,7 +97,7 @@ MainWindow::~MainWindow()
 void MainWindow::Add_Train()
 {
     items.clear();
-    ID = QInputDialog::getInt(this, tr("Create Train ID"),tr("TrainID:"),0, -2147483647, 2147483647, 1, &ok);
+    ID = QInputDialog::getInt(this, tr("Create Train ID"),tr("TrainID:"),1, 1, 100, 1, &ok);
     if (ok)
     {
 
@@ -143,16 +143,15 @@ void MainWindow::Edit_Train()
 {
     ID = ui->trainBox->currentText().toInt();
 
-
     if (ID != 0)
     {
 
     QString VAL1,VAL2,VAL3,VAL4;
     items.clear();
-    QString Edit_ID = QString("SELECT ID,Start,Direction,Destination,pathID from %1 WHERE ID='%2'").arg("Trains").arg(ID);
+    QString Edit_ID = QString("SELECT ID,Start,Direction,Destination,pathID from %1 WHERE ID=%2").arg("Trains").arg(ID);
     TRAIN = db.exec(Edit_ID);
     TRAIN.next();
-    VAL1 = TRAIN.value(0).toString();
+    VAL1 = TRAIN.value(0).toInt();
     VAL2 = TRAIN.value(1).toString();
     VAL3 = TRAIN.value(2).toString();
     VAL4 = TRAIN.value(3).toInt();
@@ -464,7 +463,7 @@ void MainWindow::Schedule()
     }
     else
     {
-    DEL_OLD_PATH();
+    //DEL_OLD_PATH();
     qDebug() <<"Length: "<< PATH.length();
 
     qDebug() << "Path";
@@ -584,6 +583,8 @@ void MainWindow::Update_ScheduleTable()
     }
     else //Greater than 10 points between source and destination (Multi-line Path)
     {
+        bool ok = 0;
+        int tot,tot2;
         //Must use # of paths for # of full rows of data *each row is 10 nodes
 
         int LEN = 0;
@@ -591,8 +592,9 @@ void MainWindow::Update_ScheduleTable()
         int TOT_LEFT = TOT - LEN;
         if (TOT > 23)
         {
+            ok = 1;
             QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
-            for (LEN= LEN;LEN <= TOT_LEFT;LEN++)
+            for (LEN= LEN;LEN != 11;LEN++)
             {
             if(LEN == 0)
             {
@@ -618,9 +620,19 @@ void MainWindow::Update_ScheduleTable()
 
             o = db.exec(qtts0);
         }
-            int LEFT = TOT_LEFT - 11;
+            if(ok == 1)
+            {
+                tot = 22;
+                tot2 = 33;
+            }
+            else
+            {
+                tot = 11;
+                tot2 = 22;
+            }
+            int LEFT = TOT_LEFT - tot;
             QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
-            for (LEN= LEN;LEN != 11;LEN++)
+            for (LEN= LEN;LEN != tot;LEN++)
             {
             if(LEN == 0)
             {
@@ -676,7 +688,7 @@ void MainWindow::Update_ScheduleTable()
             }
 
             //qDebug() <<"LEN= "<< LEN;
-                for (int C_ID = LEN;C_ID != 22; C_ID++)
+                for (int C_ID = LEN;C_ID != tot2; C_ID++)
                 {
                     //qDebug() <<"C_ID= "<< C_ID;
                     qtts0.append("'NULL'");
