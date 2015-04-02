@@ -5,28 +5,15 @@
 
 void MainWindow::sql_query()
 {
-    //Connect to SQL Server
-    //QSqlTableModel model;
-    db.addDatabase( "QSQLITE" ,"Local" );
-    db.setDatabaseName("Local");
-    db.setHostName("localhost");
-    db.setDatabaseName(":memory:");
-    if (!db.open())
-    {
-        qDebug() << "Error";
-    }
-
-    db.open();
-
     QString query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'title'";
-    q = db.exec(query);
-    k = db.exec(query);
-    m = db.exec(query);
+    //q = db.exec(query);
+    //k = db.exec(query);
+    //m = db.exec(query);
     n = db.exec(query);
     q1 = rdb.exec(query);
-    k1 = rdb.exec(query);
-    m1 = rdb.exec(query);
-    n1 = rdb.exec(query);
+    //k1 = rdb.exec(query);
+    //m1 = rdb.exec(query);
+    //n1 = rdb.exec(query);
 
     //Create Path_Info Table
     //Table holds track name and ID
@@ -67,6 +54,7 @@ void MainWindow::create_sqltables()
     db.open();
 
     QString query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'title'";
+    //Local Database
     q = db.exec(query);
     k = db.exec(query);
     l = db.exec(query);
@@ -83,8 +71,18 @@ void MainWindow::create_sqltables()
     TRAIN = db.exec(query);
     TRAIN2 = db.exec(query);
     LOAD = db.exec(query);
+    //Remote Database
+    if (rdb.isOpen())
+    {
+    r1 = rdb.exec(query);
+    r2 = rdb.exec(query);
+    r3 = rdb.exec(query);
+    r4 = rdb.exec(query);
+    r5 = rdb.exec(query);
+    }
 
-    TRAIN.exec("CREATE TABLE Trains(ID TEXT, START TEXT, Direction TEXT,Destination TEXT,pathID INT);");
+
+    TRAIN.exec("CREATE TABLE Trains(ID TEXT, START TEXT, Direction TEXT,Destination TEXT,next TEXT,pathID INT);");
     TRAIN.exec("SELECT * FROM Trains;");
 
     //Create DS_Connectivity Table
@@ -96,14 +94,24 @@ void MainWindow::create_sqltables()
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.2',2,'1.1','2.3','Null');");
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.3',3,'2.4','2.2','2.1');");
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.4',2,'2.3','2.5','Null');");
-    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.5',3,'2.4','2.6','2.7');");
+    //o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.5',3,'2.4','2.6','2.7');");
+    //TESTING
+    //Top Node takes effect -- Bottom Node is ignored
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.5',2,'2.4','2.6','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.5',2,'2.4','2.7','Null');");
+    //TESTING
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.6',2,'2.5','2.8','Null');");
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.7',2,'2.5','2.9','Null');");
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.8',2,'2.6','2.10','Null');");
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.9',2,'2.7','2.11','Null');");
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.10',2,'2.8','2.12','Null');");
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.11',2,'2.9','2.12','Null');");
-    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.12',3,'2.13','2.10','2.11');");
+    //o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.12',3,'2.13','2.10','2.11');");
+    //TESTING
+    //Top Node takes effect -- Bottom Node is ignored
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.12',2,'2.13','2.10','Null');");
+    o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.12',2,'2.13','2.11','Null');");
+    //TESTING
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.13',2,'2.12','2.14','Null');");
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.14',3,'2.13','2.15','2.16');");
     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('2.15',2,'2.14','1.2','Null');");
@@ -318,7 +326,7 @@ void MainWindow::create_sqltables()
 
     //Create Path_Info Table
     //CURRENTLY NOT IMPORTANT
-     l.exec("CREATE TABLE pathInfoTable (pathID INT, nextID1 TEXT, nextID2 TEXT, nextID3 TEXT, nextID4 TEXT, nextID5 TEXT, nextID6 TEXT, nextID7 TEXT, nextID8 TEXT, nextID9 TEXT, nextID10 TEXT, nextpathID TEXT);");
+     l.exec("CREATE TABLE pathInfoTable (pathID INT, nextpathID INT, nextID1 TEXT, nextID2 TEXT, nextID3 TEXT, nextID4 TEXT, nextID5 TEXT, nextID6 TEXT, nextID7 TEXT, nextID8 TEXT, nextID9 TEXT, nextID10 TEXT);");
      l.exec("SELECT * FROM pathInfoTable;");
 }
 

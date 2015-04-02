@@ -101,6 +101,12 @@ std::list<vertex_t> DijkstraGetShortestPathTo(
     return path;
 }
 
+/*-------------------------------------------------------------------------------------------------------------*/
+//dij_mainprogram is called from mainwindow and is used to determine the path from source to destination
+//dij_main is called to determine the desired path
+//This will flip the adjacency_map to allow for traveling both directions on track
+/*-------------------------------------------------------------------------------------------------------------*/
+
 void MainWindow::dij_mainprogram() //Main Program
 {
      adjacency_map.clear(); //Clears ajacency_map
@@ -134,7 +140,9 @@ void MainWindow::dij_mainprogram() //Main Program
     }
     /*-------------------------------------------------------------------*/
 
+    qDebug() <<"BFC"<< CHECKER;
     dij_main();//Call algorithm function
+    qDebug() <<"AFC"<< CHECKER;
 
     if (CHECKER == 1)//Use for checking purposes
     {
@@ -155,8 +163,9 @@ void MainWindow::dij_mainprogram() //Main Program
     //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
     }
     /*-------------------------------------------------------------------*/
-
+    qDebug() <<"BFC"<< CHECKER;
     dij_main();//Call algorithm function
+    qDebug() <<"AFC"<< CHECKER;
 
     if(CHECKER == 1)//Use for checking purposes
     {
@@ -165,14 +174,15 @@ void MainWindow::dij_mainprogram() //Main Program
         s = QString("Distance from vertex %1 to %2 is: %3").arg(start).arg(dest).arg("NULL-No Path Exists!");
         qDebug() << s;
         std::cout << "No Path Exists or switch is not correctly switched!"<< std::endl;
-        s2 = QString("Path: No Path Exists or switch is not correctly switched!");
-        //ui->pathEdit->setText(s2);
     }
     }
     //qDebug() << "End of dij_mainprogram";
 }
 
-//Dialog:: was added to iterface with Qt dialog.cpp
+/*-------------------------------------------------------------------------------------------------------------*/
+//dij_main is called in dij_mainprogram to find the path
+/*-------------------------------------------------------------------------------------------------------------*/
+
 void MainWindow::dij_main()
 {
     count = 0;//count is used to output only one line of paths/distance
@@ -191,14 +201,22 @@ void MainWindow::dij_main()
     {
         ERROR = 1;
         QMessageBox msgBox;
+        msgBox.setWindowTitle("ERROR: No Destination Found!");
         msgBox.setText("No Destination Found, Schedule a destination!");
+        QSpacerItem* horizontalSpacer = new QSpacerItem(200, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        QGridLayout* layout = (QGridLayout*)msgBox.layout();
+        layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
         msgBox.exec();
     }
     else if(START == DEST)
     {
         ERROR = 1;
         QMessageBox msgBox;
+        msgBox.setWindowTitle("ERROR: At Destination!");
         msgBox.setText("At Destination, Schedule a different destination!");
+        QSpacerItem* horizontalSpacer = new QSpacerItem(200, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        QGridLayout* layout = (QGridLayout*)msgBox.layout();
+        layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
         msgBox.exec();
     }
     else
@@ -246,7 +264,7 @@ void MainWindow::dij_main()
            {
             if (min_distance[v] == inf)
             {
-            qDebug() << "min_distance[v] == inf";
+            //qDebug() << "min_distance[v] == inf";
             CHECKER = 1;
             }
             else

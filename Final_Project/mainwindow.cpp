@@ -8,32 +8,23 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     this->setWindowTitle("Train Scheduling Application");
-
     path_ID = 1;
 
+    //Team 4B
     //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33158 --user=root --password=drabroig
+    //TEAM 1B
     //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33155 --user=root --password=rychakkn
-/*
-    rdb.addDatabase( "QMYSQL", "Remote" );
-    rdb.setDatabaseName("Remote");
-    rdb.setHostName("pavelow.eng.uah.edu");
-    rdb.setPort(33158);
-    rdb.setDatabaseName("team4b");
-    rdb.setUserName("root");
-    rdb.setPassword("drabroig");
-*/
+    //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33155 --user=1BUser --password=TEAM1bUSER
 
-    //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33155 --user=Team1B_User --password=YaaasGAGA
     //Team1b database and user for testing
-    //rdb = QSqlDatabase::addDatabase( "QMYSQL" ,"Remote" );
-    rdb.addDatabase( "QMYSQL", "Remote" );
+    rdb = QSqlDatabase::addDatabase( "QMYSQL" ,"Remote" );
+    //rdb.addDatabase( "QMYSQL", "Remote" );
     rdb.setHostName("pavelow.eng.uah.edu");
     rdb.setPort(33155);
     rdb.setDatabaseName("Team1B");
     rdb.setUserName("1BUser");
     rdb.setPassword("TEAM1bUSER");
     /*
-    mysql> show tables;
     +----------------------+
     | Tables_in_Team1B     |
     +----------------------+
@@ -43,24 +34,34 @@ MainWindow::MainWindow(QWidget *parent) :
     | switch_req           |
     | throttle_req         |
     +----------------------+
-    5 rows in set (0.00 sec)
-
     */
-
-    //rdb.open();
 
     if (!rdb.open())
     {
+        ui->menuRemote_Tables->setDisabled(1);
+        ui->statusBar->showMessage("Unable to connect to Pavelow.eng.uah.edu");
         qDebug() << "Error connecting to Pavelow.eng.uah.edu.";
         qDebug() << "Switching database to Local Database.";
+        create_sqltables();
     }
 
     if(rdb.isOpen())
     {
+       ui->menuRemote_Tables->setDisabled(0);
+       //This will clean out data on Pavelow tables on startup
+       QString DEL_1 = QString("DELETE FROM schedule_train_info");
+       QString DEL_2 = QString("DELETE FROM scheduled_routes");
+       QString DEL_3 = QString("DELETE FROM scheduled_train_info");
+       r1.exec(DEL_1);
+       r2.exec(DEL_2);
+       r3.exec(DEL_3);
+
+       ui->statusBar->showMessage("Connected to Pavelow.eng.uah.edu");
+       qDebug() << "Connected to Pavelow.eng.uah.edu.";
+       qDebug() << "Switching database to Remote Database.";
+       create_sqltables();
        sql_query();
     }
-
-    create_sqltables();
 
     QString ts1 = QString("SELECT Current from %1").arg("DS_Connectivity");
     n = db.exec(ts1);
@@ -84,6 +85,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionView_Tracklisting,SIGNAL(triggered()),this,SLOT(Tracklisting_Table()));
     connect(ui->actionView_Trackinfo,SIGNAL(triggered()),this,SLOT(Trackinfo_Table()));
     connect(ui->actionView_Pathinfo,SIGNAL(triggered()),this,SLOT(Pathinfo_Table()));
+    connect(ui->actionView_Scheduled_routes,SIGNAL(triggered()),this,SLOT(Scheduled_routes()));
+    connect(ui->actionView_Scheduled_train_info,SIGNAL(triggered()),this,SLOT(Scheduled_train_info()));
+    connect(ui->actionView_Schedule_train_info,SIGNAL(triggered()),this,SLOT(Schedule_train_info()));
 
     QTimer* persistence = new QTimer();
     QObject::connect(persistence, SIGNAL(timeout()), this, SLOT(check_sched()));
@@ -94,10 +98,14 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+/*-------------------------------------------------------------------------------------------------------------*/
+//Add Train allows the user to add a train to the program
+/*-------------------------------------------------------------------------------------------------------------*/
+
 void MainWindow::Add_Train()
 {
     items.clear();
-    ID = QInputDialog::getInt(this, tr("Create Train ID"),tr("TrainID:"),1, 1, 100, 1, &ok);
+    ID = QInputDialog::getInt(this, tr("Create Train ID"),tr("TrainID:"),1, 1, 10, 1, &ok);
     if (ok)
     {
 
@@ -133,11 +141,23 @@ void MainWindow::Add_Train()
         ui->trainBox->addItem(QString::number(ID));
     }
 
-    QString qtts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination,pathID) VALUES ('%1','%2','%3','%4','%5')").arg(ID).arg(Start).arg(direction).arg("EMPTY").arg(999);
+    QString qtts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination,next,pathID) VALUES ('%1','%2','%3','%4','%5','%6')").arg(ID).arg(Start).arg(direction).arg("EMPTY").arg("EMPTY").arg(999);
     o = db.exec(qtts0);
     o.next();
+    if(rdb.isOpen())
+    {
+    QString qtts0t = QString("INSERT INTO scheduled_train_info (id,current,destination,next,pathid) VALUES ('%1','%2','%3','%4','%5')").arg(ID).arg(Start).arg("EMPTY").arg("EMPTY").arg(999);
+    r1 = rdb.exec(qtts0t);
+    r1.next();
     }
+    }
+    //scheduled_train_info
 }
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Edit Train allows the user to edit the selected train's source node and facing direction
+//If Trains has destination the train will reschdule itself for the new destination from the new source node
+/*-------------------------------------------------------------------------------------------------------------*/
 
 void MainWindow::Edit_Train()
 {
@@ -218,10 +238,18 @@ void MainWindow::Edit_Train()
     else
     {
         QMessageBox msgBox;
+        msgBox.setWindowTitle("Train Error!");
         msgBox.setText("No Train to edit!");
+        QSpacerItem* horizontalSpacer = new QSpacerItem(200, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        QGridLayout* layout = (QGridLayout*)msgBox.layout();
+        layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
         msgBox.exec();
     }
 }
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Delete Train deletes the selected train and removes the train from the scheduler
+/*-------------------------------------------------------------------------------------------------------------*/
 
 void MainWindow::Delete_Train()
 {
@@ -235,6 +263,10 @@ void MainWindow::Delete_Train()
    QMessageBox msgBox;
    QString ID1 = QString("Delete Selected: %1?").arg(CT_Train);
    msgBox.setText(ID1);
+   QSpacerItem* horizontalSpacer = new QSpacerItem(200, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+   QGridLayout* layout = (QGridLayout*)msgBox.layout();
+   layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
+   msgBox.setWindowTitle("Delete Train");
    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
    msgBox.setDefaultButton(QMessageBox::Ok);
    int ret = msgBox.exec();
@@ -249,6 +281,7 @@ void MainWindow::Delete_Train()
 
        ui->trainBox->removeItem(CI_Train);
        INFO = db.exec(DEL_Train);
+
 
        tmodel = new QSqlTableModel( this, db );
        ui->tableView->setModel(tmodel);
@@ -268,10 +301,18 @@ void MainWindow::Delete_Train()
    else
    {
        QMessageBox msgBox;
+       msgBox.setWindowTitle("Train Error!");
        msgBox.setText("No Train to delete!");
+       QSpacerItem* horizontalSpacer = new QSpacerItem(200, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+       QGridLayout* layout = (QGridLayout*)msgBox.layout();
+       layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
        msgBox.exec();
    }
 }
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Save_State saves the Train & Pathinfo Table to a text file for later restoring using Load_State
+/*-------------------------------------------------------------------------------------------------------------*/
 
 void MainWindow::Save_State()
 {
@@ -349,6 +390,10 @@ void MainWindow::Save_State()
           output << data;
 }
 }
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Load_State restores the text file from Save_State restoring trains and paths stored
+/*-------------------------------------------------------------------------------------------------------------*/
 
 void MainWindow::Load_State()
 {
@@ -442,6 +487,11 @@ void MainWindow::Load_State()
     file.close();
 }
 }
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Set_Schedule updates the train table for the new destination when Schedule button is pressed
+/*-------------------------------------------------------------------------------------------------------------*/
+
 void MainWindow::Set_Schedule()
 {
      ID = ui->trainBox->currentText().toInt();
@@ -449,6 +499,10 @@ void MainWindow::Set_Schedule()
      QString ptts0 = QString("UPDATE Trains SET Destination='%1' WHERE ID='%2'").arg(Destination).arg(ID);
      TRAIN = db.exec(ptts0);
 }
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Schedule() schedules the train from the source node to the destination node
+/*-------------------------------------------------------------------------------------------------------------*/
 
 void MainWindow::Schedule()
 {
@@ -474,6 +528,10 @@ void MainWindow::Schedule()
     }
 }
 
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of Trains Table
+/*-------------------------------------------------------------------------------------------------------------*/
+
 void MainWindow::Train_Table()
 {
     tmodel = new QSqlTableModel( this, db );
@@ -483,6 +541,10 @@ void MainWindow::Train_Table()
     tmodel->select();
     view->show();
 }
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of DS_Connectivity Table
+/*-------------------------------------------------------------------------------------------------------------*/
 
 void MainWindow::DS_Connectivity_Table()
 {
@@ -494,6 +556,10 @@ void MainWindow::DS_Connectivity_Table()
     view->show();
 }
 
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of tracklisting Table
+/*-------------------------------------------------------------------------------------------------------------*/
+
 void MainWindow::Tracklisting_Table()
 {
     tmodel = new QSqlTableModel( this, db );
@@ -503,6 +569,10 @@ void MainWindow::Tracklisting_Table()
     tmodel->select();
     view->show();
 }
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of trackinfo Table
+/*-------------------------------------------------------------------------------------------------------------*/
 
 void MainWindow::Trackinfo_Table()
 {
@@ -514,6 +584,10 @@ void MainWindow::Trackinfo_Table()
     view->show();
 }
 
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of pathinfo Table
+/*-------------------------------------------------------------------------------------------------------------*/
+
 void MainWindow::Pathinfo_Table()
 {
     tmodel = new QSqlTableModel( this, db );
@@ -523,7 +597,48 @@ void MainWindow::Pathinfo_Table()
     tmodel->select();
     view->show();
 }
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of Pavelow schedule_train_info Table
+/*-------------------------------------------------------------------------------------------------------------*/
+void MainWindow::Schedule_train_info()
+{
+    tmodel = new QSqlTableModel( this, rdb );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("schedule_train_info");
+    tmodel->select();
+    view->show();
+}
 
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of Pavelow scheduled_routes Table
+/*-------------------------------------------------------------------------------------------------------------*/
+void MainWindow::Scheduled_routes()
+{
+    tmodel = new QSqlTableModel( this, rdb );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("scheduled_routes");
+    tmodel->select();
+    view->show();
+}
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of Pavelow scheduled_train_info Table
+/*-------------------------------------------------------------------------------------------------------------*/
+void MainWindow::Scheduled_train_info()
+{
+    tmodel = new QSqlTableModel( this, rdb );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("scheduled_train_info");
+    tmodel->select();
+    view->show();
+}
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Update_ScheduleTable updates the pathinfo table with the path determined by scheduler
+/*-------------------------------------------------------------------------------------------------------------*/
 
 void MainWindow::Update_ScheduleTable()
 {
@@ -534,52 +649,70 @@ void MainWindow::Update_ScheduleTable()
     }
     else
     {
+    qDebug() <<"PATH Length: "<< PATH.length();
     Check_Path_Trains();
     DEL_OLD_PATH();
-    if(PATH.length() <= 11) //Less than 11 points between source and destination
+    if (PATH.length() <= 11)
     {
-        int LEN;
-        QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
-        for (LEN = 0;LEN != PATH.length();LEN++ )
+    int LENL = 0;
+    int LEN;
+    //qDebug() <<"LEN= "<< LEN <<"PATH.length()= "<<PATH.length();
+    QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
+    QString qtts0t = "INSERT INTO scheduled_routes (pathid,nextpath,next2,next3,next4,next5,next6,next7,next8,next9,next10,next11) VALUES (";
+    for (LEN = 0;LEN != PATH.length();LEN++ )
+    {
+        if(LENL == 0)
         {
-            if(LEN == 0)
-            {
-                QString I_D;
-                I_D = QString("%1").arg(path_ID);
-                qtts0.append(I_D);
-                qtts0.append(",");
-            }
-            else
-            {
-                QString I_D;
-                I_D = QString("'%1'").arg(PATH.value(LEN));
-                qtts0.append(I_D);
-                qtts0.append(",");
-            }
-        }
-        //qDebug() << LEN;
-        if(LEN == 11)
-        {
-
+            QString I_D;
+            I_D = QString("%1").arg(path_ID);
+            qtts0.append(I_D);
+            qtts0.append(",");
+            qtts0t.append(I_D);
+            qtts0t.append(",");
         }
         else
         {
-            for (int C_ID = LEN;C_ID != 11; C_ID++)
-            {
-                //qDebug() << C_ID;
-                qtts0.append("'NULL'");
-                qtts0.append(",");
-            }
+            QString I_D;
+            I_D = QString("'%1'").arg(PATH.value(LEN));
+            qtts0.append(I_D);
+            qtts0.append(",");
+            qtts0t.append(I_D);
+            qtts0t.append(",");
         }
-        QString I_D;
-        I_D = QString("%1").arg(path_ID);
-        qtts0.append(I_D);
-        qtts0.append(")");
-        //qDebug() << qtts0;
-        INFO = db.exec(qtts0);
+        LENL++;
+    }
+
+    //qDebug() <<"LEN= "<< LEN;
+        for (int C_ID = LEN;C_ID != 11; C_ID++)
+        {
+            //qDebug() <<"C_ID= "<< C_ID;
+            qtts0.append("'NULL'");
+            qtts0.append(",");
+            qtts0t.append("'NULL'");
+            qtts0t.append(",");
+        }
+    QString I_D;
+    I_D = QString("%1").arg(path_ID);
+    qtts0.append(I_D);
+    qtts0.append(")");
+    qtts0t.append(I_D);
+    qtts0t.append(")");
+    //qDebug() << qtts0;
+
+    o = db.exec(qtts0);
+    if(rdb.isOpen())
+    {
+    r3 = rdb.exec(qtts0t);
+    }
 
         QString train_up = QString("UPDATE Trains SET pathID=%1 WHERE ID='%2'").arg(path_ID).arg(ui->trainBox->currentText());
         TRAIN = db.exec(train_up);
+
+        if(rdb.isOpen())
+        {
+        QString train_up2 = QString("UPDATE scheduled_train_info SET pathid=%1 WHERE id='%2'").arg(path_ID).arg(ui->trainBox->currentText());
+        r2 = rdb.exec(train_up2);
+        }
     }
     else //Greater than 10 points between source and destination (Multi-line Path)
     {
@@ -594,6 +727,7 @@ void MainWindow::Update_ScheduleTable()
         {
             ok = 1;
             QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
+            QString qtts0t = "INSERT INTO scheduled_routes (pathid,nextpath,next2,next3,next4,next5,next6,next7,next8,next9,next10,next11) VALUES (";
             for (LEN= LEN;LEN != 11;LEN++)
             {
             if(LEN == 0)
@@ -602,6 +736,8 @@ void MainWindow::Update_ScheduleTable()
                 I_D = QString("%1").arg(path_ID);
                 qtts0.append(I_D);
                 qtts0.append(",");
+                qtts0t.append(I_D);
+                qtts0t.append(",");
             }
 
             else
@@ -610,15 +746,23 @@ void MainWindow::Update_ScheduleTable()
                 I_D = QString("'%1'").arg(PATH.value(LEN));
                 qtts0.append(I_D);
                 qtts0.append(",");
+                qtts0t.append(I_D);
+                qtts0t.append(",");
             }
             }
             QString I_D;
             I_D = QString("%1").arg(path_ID++);
             qtts0.append(I_D);
             qtts0.append(")");
+            qtts0t.append(I_D);
+            qtts0t.append(",");
             //qDebug() << qtts0;
 
             o = db.exec(qtts0);
+            if(rdb.isOpen())
+            {
+            r3 = rdb.exec(qtts0t);
+            }
         }
             if(ok == 1)
             {
@@ -632,6 +776,7 @@ void MainWindow::Update_ScheduleTable()
             }
             int LEFT = TOT_LEFT - tot;
             QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
+            QString qtts0t = "INSERT INTO scheduled_routes (pathid,nextpath,next2,next3,next4,next5,next6,next7,next8,next9,next10,next11) VALUES (";
             for (LEN= LEN;LEN != tot;LEN++)
             {
             if(LEN == 0)
@@ -640,9 +785,16 @@ void MainWindow::Update_ScheduleTable()
                 I_D = QString("%1").arg(path_ID);
                 qtts0.append(I_D);
                 qtts0.append(",");
+                qtts0t.append(I_D);
+                qtts0t.append(",");
 
                 QString train_up = QString("UPDATE Trains SET pathID=%1 WHERE ID='%2'").arg(path_ID).arg(ui->trainBox->currentText());
                 TRAIN = db.exec(train_up);
+                if(rdb.isOpen())
+                {
+                QString train_up2 = QString("UPDATE scheduled_train_info SET pathid=%1 WHERE id='%2'").arg(path_ID).arg(ui->trainBox->currentText());
+                r2 = rdb.exec(train_up2);
+                }
             }
 
             else
@@ -651,6 +803,8 @@ void MainWindow::Update_ScheduleTable()
                 I_D = QString("'%1'").arg(PATH.value(LEN));
                 qtts0.append(I_D);
                 qtts0.append(",");
+                qtts0t.append(I_D);
+                qtts0t.append(",");
             }
             }
             QString I_D;
@@ -658,9 +812,15 @@ void MainWindow::Update_ScheduleTable()
             I_D = QString("%1").arg(path_ID);
             qtts0.append(I_D);
             qtts0.append(")");
+            qtts0t.append(I_D);
+            qtts0t.append(")");
             //qDebug() << qtts0;
 
             o = db.exec(qtts0);
+            if(rdb.isOpen())
+            {
+            r3 = rdb.exec(qtts0t);
+            }
 
         //qDebug() <<"LEFT= "<< LEFT;
         if(LEFT <= 11) //Less than 10 points between source and destination
@@ -668,6 +828,7 @@ void MainWindow::Update_ScheduleTable()
             int LENL = 0;
             //qDebug() <<"LEN= "<< LEN <<"PATH.length()= "<<PATH.length();
             QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
+            QString qtts0t = "INSERT INTO scheduled_routes (pathid,nextpath,next2,next3,next4,next5,next6,next7,next8,next9,next10,next11) VALUES (";
             for (LEN = LEN;LEN != PATH.length();LEN++ )
             {
                 if(LENL == 0)
@@ -676,6 +837,8 @@ void MainWindow::Update_ScheduleTable()
                     I_D = QString("%1").arg(path_ID);
                     qtts0.append(I_D);
                     qtts0.append(",");
+                    qtts0t.append(I_D);
+                    qtts0t.append(",");
                 }
                 else
                 {
@@ -683,6 +846,8 @@ void MainWindow::Update_ScheduleTable()
                     I_D = QString("'%1'").arg(PATH.value(LEN));
                     qtts0.append(I_D);
                     qtts0.append(",");
+                    qtts0t.append(I_D);
+                    qtts0t.append(",");
                 }
                 LENL++;
             }
@@ -693,14 +858,22 @@ void MainWindow::Update_ScheduleTable()
                     //qDebug() <<"C_ID= "<< C_ID;
                     qtts0.append("'NULL'");
                     qtts0.append(",");
+                    qtts0t.append("'NULL'");
+                    qtts0t.append(",");
                 }
             QString I_D;
             I_D = QString("%1").arg(path_ID);
             qtts0.append(I_D);
             qtts0.append(")");
+            qtts0t.append(I_D);
+            qtts0t.append(")");
             //qDebug() << qtts0;
 
             o = db.exec(qtts0);
+            if(rdb.isOpen())
+            {
+            r3 = rdb.exec(qtts0t);
+            }
     }
 }
     tmodel = new QSqlTableModel( this, db );
@@ -711,6 +884,8 @@ void MainWindow::Update_ScheduleTable()
     path_ID++;
 }
 }
+
+/*-------------------------------------------------------------------------------------------------------------*/
 
 void MainWindow::DEL_OLD_PATH()
 {
@@ -753,6 +928,12 @@ void MainWindow::DEL_OLD_PATH()
     {
         QString ttps2 = QString("DELETE FROM pathInfoTable WHERE nextID1='%1'").arg("NULL");
         TRAIN2 = db.exec(ttps2);
+
+        if(rdb.isOpen())
+        {
+        QString qtts0t = QString("DELETE FROM scheduled_routes WHERE next2='%1'").arg("NULL");
+        r2 = rdb.exec(qtts0t);
+        }
     }
 
     //qDebug() << sts1<< sts2<< sts3<<sts4<<sts5;
@@ -760,12 +941,28 @@ void MainWindow::DEL_OLD_PATH()
     QString ttps1 = QString("DELETE FROM pathInfoTable WHERE pathID=%1").arg(sts1);
     TRAIN2 = db.exec(ttps1);
 
+    if(rdb.isOpen())
+    {
+    QString qtts0t = QString("DELETE FROM scheduled_routes WHERE pathid='%1'").arg(sts1);
+    r2 = rdb.exec(qtts0t);
+    }
+
     if(sts3 == sts4)
     {
         QString ttps1 = QString("DELETE FROM pathInfoTable WHERE pathID=%1").arg(sts4);
         Path2 = db.exec(ttps1);
+
+        if(rdb.isOpen())
+        {
+        QString qtts0t = QString("DELETE FROM scheduled_routes WHERE pathid=%1").arg(sts4);
+        r2 = rdb.exec(qtts0t);
+        }
     }
 }
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Deletes unused/deleted train paths from pathinfoTable
+/*-------------------------------------------------------------------------------------------------------------*/
 
 void MainWindow::Check_Path_Trains()
 {
@@ -824,8 +1021,14 @@ void MainWindow::Check_Path_Trains()
     }
 }
 
+/*-------------------------------------------------------------------------------------------------------------*/
+//check_sched will update Pavelow Team 3 Table with desired path
+/*-------------------------------------------------------------------------------------------------------------*/
+
 void MainWindow::check_sched()
 {
+    if(rdb.isOpen())
+    {
 
     tmodel = new QSqlTableModel( this, rdb );
     view = new QTableView;
@@ -833,6 +1036,8 @@ void MainWindow::check_sched()
     tmodel->setTable("pathInfoTable");
     tmodel->select();
     view->show();
+
+    }
 
 //check team 2 SQL for track shutdowns. If any new ones, check schedules, trigger reroutes if necessary
 

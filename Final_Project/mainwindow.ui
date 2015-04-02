@@ -167,11 +167,26 @@
     <property name="title">
      <string>Tables</string>
     </property>
-    <addaction name="actionView_Trains"/>
-    <addaction name="actionView_DS_Connectivity"/>
-    <addaction name="actionView_Tracklisting"/>
-    <addaction name="actionView_Trackinfo"/>
-    <addaction name="actionView_Pathinfo"/>
+    <widget class="QMenu" name="menuLocal_Tables">
+     <property name="title">
+      <string>Local Tables</string>
+     </property>
+     <addaction name="actionView_Trains"/>
+     <addaction name="actionView_DS_Connectivity"/>
+     <addaction name="actionView_Pathinfo"/>
+     <addaction name="actionView_Trackinfo"/>
+     <addaction name="actionView_Tracklisting"/>
+    </widget>
+    <widget class="QMenu" name="menuRemote_Tables">
+     <property name="title">
+      <string>Remote Tables</string>
+     </property>
+     <addaction name="actionView_Schedule_train_info"/>
+     <addaction name="actionView_Scheduled_routes"/>
+     <addaction name="actionView_Scheduled_train_info"/>
+    </widget>
+    <addaction name="menuLocal_Tables"/>
+    <addaction name="menuRemote_Tables"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTrain"/>
@@ -234,6 +249,21 @@
   <action name="actionView_Pathinfo">
    <property name="text">
     <string>View Pathinfo</string>
+   </property>
+  </action>
+  <action name="actionView_Schedule_train_info">
+   <property name="text">
+    <string>View Schedule_train_info</string>
+   </property>
+  </action>
+  <action name="actionView_Scheduled_routes">
+   <property name="text">
+    <string>View Scheduled_routes</string>
+   </property>
+  </action>
+  <action name="actionView_Scheduled_train_info">
+   <property name="text">
+    <string>View Scheduled_train_info</string>
    </property>
   </action>
  </widget>
