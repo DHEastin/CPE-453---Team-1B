@@ -38,6 +38,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if (!rdb.open())
     {
+        QPalette* palette = new QPalette();
+        palette->setColor(QPalette::WindowText,Qt::red);
+        ui->connection_statusLabel->setPalette(*palette);
+
+        ui->connection_statusLabel->setText("Disconnected!");
         ui->menuRemote_Tables->setDisabled(1);
         ui->statusBar->showMessage("Unable to connect to Pavelow.eng.uah.edu");
         qDebug() << "Error connecting to Pavelow.eng.uah.edu.";
@@ -47,6 +52,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if(rdb.isOpen())
     {
+       QPalette* palette = new QPalette();
+       palette->setColor(QPalette::WindowText,Qt::green);
+       ui->connection_statusLabel->setPalette(*palette);
+
+       ui->connection_statusLabel->setText("Connected!");
        ui->menuRemote_Tables->setDisabled(0);
        //This will clean out data on Pavelow tables on startup
        QString DEL_1 = QString("DELETE FROM schedule_train_info");
@@ -539,6 +549,7 @@ void MainWindow::Train_Table()
     view->setModel(tmodel);
     tmodel->setTable("Trains");
     tmodel->select();
+    view->setWindowTitle("Trains");
     view->show();
 }
 
@@ -553,6 +564,7 @@ void MainWindow::DS_Connectivity_Table()
     view->setModel(tmodel);
     tmodel->setTable("DS_Connectivity");
     tmodel->select();
+    view->setWindowTitle("DS_Connectivity");
     view->show();
 }
 
@@ -567,6 +579,7 @@ void MainWindow::Tracklisting_Table()
     view->setModel(tmodel);
     tmodel->setTable("tracklistingTable");
     tmodel->select();
+    view->setWindowTitle("tracklistingTable");
     view->show();
 }
 
@@ -581,6 +594,7 @@ void MainWindow::Trackinfo_Table()
     view->setModel(tmodel);
     tmodel->setTable("trackInfoTable");
     tmodel->select();
+    view->setWindowTitle("trackInfoTable");
     view->show();
 }
 
@@ -595,6 +609,7 @@ void MainWindow::Pathinfo_Table()
     view->setModel(tmodel);
     tmodel->setTable("pathInfoTable");
     tmodel->select();
+    view->setWindowTitle("pathInfoTable");
     view->show();
 }
 /*-------------------------------------------------------------------------------------------------------------*/
@@ -607,6 +622,7 @@ void MainWindow::Schedule_train_info()
     view->setModel(tmodel);
     tmodel->setTable("schedule_train_info");
     tmodel->select();
+    view->setWindowTitle("schedule_train_info");
     view->show();
 }
 
@@ -620,6 +636,7 @@ void MainWindow::Scheduled_routes()
     view->setModel(tmodel);
     tmodel->setTable("scheduled_routes");
     tmodel->select();
+    view->setWindowTitle("scheduled_routes");
     view->show();
 }
 
@@ -633,6 +650,7 @@ void MainWindow::Scheduled_train_info()
     view->setModel(tmodel);
     tmodel->setTable("scheduled_train_info");
     tmodel->select();
+    view->setWindowTitle("scheduled_train_info");
     view->show();
 }
 
