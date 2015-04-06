@@ -144,7 +144,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>1076</x>
@@ -185,6 +185,39 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>1000</x>
+      <y>100</y>
+      <width>256</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="label_6">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Options:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="rescheduleBox">
+       <property name="text">
+        <string>Auto-Reschedule Train when Edited</string>
        </property>
       </widget>
      </item>
@@ -233,9 +266,9 @@
      <property name="title">
       <string>Remote Tables</string>
      </property>
-     <addaction name="actionView_Schedule_train_info"/>
-     <addaction name="actionView_Scheduled_routes"/>
      <addaction name="actionView_Scheduled_train_info"/>
+     <addaction name="actionView_Scheduled_routes"/>
+     <addaction name="actionView_Schedule_train_info"/>
     </widget>
     <addaction name="menuLocal_Tables"/>
     <addaction name="menuRemote_Tables"/>
@@ -305,17 +338,17 @@
   </action>
   <action name="actionView_Schedule_train_info">
    <property name="text">
-    <string>View Schedule_train_info</string>
+    <string>View (Train Info) Schedule_train_info</string>
    </property>
   </action>
   <action name="actionView_Scheduled_routes">
    <property name="text">
-    <string>View Scheduled_routes</string>
+    <string>View (Path) Scheduled_routes</string>
    </property>
   </action>
   <action name="actionView_Scheduled_train_info">
    <property name="text">
-    <string>View Scheduled_train_info</string>
+    <string>View (Trains) Scheduled_train_info</string>
    </property>
   </action>
  </widget>
