@@ -147,7 +147,7 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>1076</x>
+      <x>1080</x>
       <y>10</y>
       <width>201</width>
       <height>43</height>
@@ -194,7 +194,7 @@
     <property name="geometry">
      <rect>
       <x>1000</x>
-      <y>100</y>
+      <y>110</y>
       <width>256</width>
       <height>19</height>
      </rect>
@@ -218,6 +218,52 @@
       <widget class="QCheckBox" name="rescheduleBox">
        <property name="text">
         <string>Auto-Reschedule Train when Edited</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="layoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>1080</x>
+      <y>60</y>
+      <width>201</width>
+      <height>43</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_7">
+     <item>
+      <widget class="QLabel" name="label_8">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Schedule Overwrite Status</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="overwrite_statusLabel">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -261,6 +307,7 @@
      <addaction name="actionView_Pathinfo"/>
      <addaction name="actionView_Trackinfo"/>
      <addaction name="actionView_Tracklisting"/>
+     <addaction name="actionView_Switchinfo"/>
     </widget>
     <widget class="QMenu" name="menuRemote_Tables">
      <property name="title">
@@ -269,6 +316,8 @@
      <addaction name="actionView_Scheduled_train_info"/>
      <addaction name="actionView_Scheduled_routes"/>
      <addaction name="actionView_Schedule_train_info"/>
+     <addaction name="actionView_Switch_req"/>
+     <addaction name="actionView_Throttle_req"/>
     </widget>
     <addaction name="menuLocal_Tables"/>
     <addaction name="menuRemote_Tables"/>
@@ -349,6 +398,21 @@
   <action name="actionView_Scheduled_train_info">
    <property name="text">
     <string>View (Trains) Scheduled_train_info</string>
+   </property>
+  </action>
+  <action name="actionView_Switch_req">
+   <property name="text">
+    <string>View Switch_req</string>
+   </property>
+  </action>
+  <action name="actionView_Throttle_req">
+   <property name="text">
+    <string>View Throttle_req</string>
+   </property>
+  </action>
+  <action name="actionView_Switchinfo">
+   <property name="text">
+    <string>View Switchinfo</string>
    </property>
   </action>
  </widget>

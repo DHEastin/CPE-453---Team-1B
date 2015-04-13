@@ -7,6 +7,16 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //TO DO LIST
+    //---------------------------------------
+    //Work on Switches
+    //Work on Request interface for Team4A
+    //Check Overwrite Status for Team5
+
+    //BUGS
+    //---------------------------------------
+    //
+
     this->setWindowTitle("Train Scheduling Application");
     path_ID = 1;
 
@@ -35,6 +45,11 @@ MainWindow::MainWindow(QWidget *parent) :
     | throttle_req         |
     +----------------------+
     */
+
+    QPalette* palette = new QPalette();
+    palette->setColor(QPalette::WindowText,Qt::green);
+    ui->overwrite_statusLabel->setPalette(*palette);
+    ui->overwrite_statusLabel->setText("Normal");
 
     if (!rdb.open())
     {
@@ -98,6 +113,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionView_Scheduled_routes,SIGNAL(triggered()),this,SLOT(Scheduled_routes()));
     connect(ui->actionView_Scheduled_train_info,SIGNAL(triggered()),this,SLOT(Scheduled_train_info()));
     connect(ui->actionView_Schedule_train_info,SIGNAL(triggered()),this,SLOT(Schedule_train_info()));
+    connect(ui->actionView_Throttle_req,SIGNAL(triggered()),this,SLOT(Throttle_req()));
+    connect(ui->actionView_Switch_req,SIGNAL(triggered()),this,SLOT(Switch_req()));
+    connect(ui->actionView_Switchinfo,SIGNAL(triggered()),this,SLOT(Switch_info()));
 
     QTimer* persistence = new QTimer();
     QObject::connect(persistence, SIGNAL(timeout()), this, SLOT(check_sched()));
@@ -645,6 +663,22 @@ void MainWindow::Pathinfo_Table()
     view->setWindowTitle("pathInfoTable");
     view->show();
 }
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of switchinfo Table
+/*-------------------------------------------------------------------------------------------------------------*/
+
+void MainWindow::Switch_info()
+{
+    tmodel = new QSqlTableModel( this, db );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("switchInfoTable");
+    tmodel->select();
+    view->setWindowTitle("switchInfoTable");
+    view->show();
+}
+
 /*-------------------------------------------------------------------------------------------------------------*/
 //Allows viewing of Pavelow schedule_train_info Table
 /*-------------------------------------------------------------------------------------------------------------*/
@@ -658,6 +692,40 @@ void MainWindow::Schedule_train_info()
     tmodel->setTable("schedule_train_info");
     tmodel->select();
     view->setWindowTitle("schedule_train_info");
+    view->show();
+    }
+}
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of Pavelow Throttle_req Table
+/*-------------------------------------------------------------------------------------------------------------*/
+void MainWindow::Throttle_req()
+{
+    if(rdb.isOpen())
+    {
+    tmodel = new QSqlTableModel( this, rdb );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("throttle_req");
+    tmodel->select();
+    view->setWindowTitle("throttle_req");
+    view->show();
+    }
+}
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of Pavelow Switch_req Table
+/*-------------------------------------------------------------------------------------------------------------*/
+void MainWindow::Switch_req()
+{
+    if(rdb.isOpen())
+    {
+    tmodel = new QSqlTableModel( this, rdb );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("switch_req");
+    tmodel->select();
+    view->setWindowTitle("switch_req");
     view->show();
     }
 }
