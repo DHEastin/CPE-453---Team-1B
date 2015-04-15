@@ -66,6 +66,7 @@ private:
     QStringList PATH;
     bool ERROR;
     int a;
+    int MIN_DISTANCE;
 
 private slots:
     void sql_query();

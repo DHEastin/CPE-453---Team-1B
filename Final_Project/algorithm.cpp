@@ -110,25 +110,22 @@ std::list<vertex_t> DijkstraGetShortestPathTo(
 void MainWindow::dij_mainprogram() //Main Program
 {
     a = 0;
-    qDebug()<<"CALLED MAIN PROGRAM!";
-        adjacency_map.clear(); //Clears ajacency_map
-        CHECKER = 0;
+    adjacency_map.clear(); //Clears ajacency_map
+    CHECKER = 0;
 
-         QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
-         p = db.exec(tqtps1);
+    //Add Switch Positions switch -> openPOS
+    QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
+    p = db.exec(tqtps1);
 
-         for(;p.next() == 1;) //If it is 1 it contains data
-         {
-             int ss1 = p.value(0).toInt();
-             //int ss2 = p.value(1).toInt();
-             //int ss3 = p.value(2).toInt();
-             int ss4 = p.value(3).toInt();
-             //int ss5 = p.value(4).toInt();
-             adjacency_map[ss1].push_back(edge(ss4,  5));
-         }
+    for(;p.next() == 1;) //If it is 1 it contains data
+    {
+        int ss1 = p.value(0).toInt();
+        int ss4 = p.value(3).toInt();
+        adjacency_map[ss1].push_back(edge(ss4,  5));
+     }
 
 
-  //Reads track ids and names for showing the path
+   //Reads track ids and names for showing the path
     /*-------------------------------------------------------------------*/
     QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
     n = db.exec(t);
@@ -155,34 +152,43 @@ void MainWindow::dij_mainprogram() //Main Program
     }
     /*-------------------------------------------------------------------*/
 
-    //qDebug() <<"BFC"<< CHECKER;
+    qDebug() <<"BFC"<< CHECKER;
     dij_main();//Call algorithm function
-    //qDebug() <<"AFC"<< CHECKER;
+    qDebug() <<"AFC"<< CHECKER;
 
+    //Flip if inf distance
     if (CHECKER == 1)//Use for checking purposes
     {
     adjacency_map.clear(); //Clears ajacency_map must be done to allow opposite direction of travel
-    CHECKER = 0;
+    //CHECKER = 0;
 
+    //Add Switch Positions openPOS -> switch
     QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
     p = db.exec(tqtps1);
 
     for(;p.next() == 1;) //If it is 1 it contains data
     {
         int ss1 = p.value(0).toInt();
-        //int ss2 = p.value(1).toInt();
-        //int ss3 = p.value(2).toInt();
         int ss4 = p.value(3).toInt();
-        //int ss5 = p.value(4).toInt();
-        adjacency_map[ss4].push_back(edge(ss1,  5));
+        adjacency_map[ss1].push_back(edge(ss4,  5));
     }
 
+    //Reads track ids and names for showing the path
+      /*-------------------------------------------------------------------*/
+      QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+      n = db.exec(t);
+
+      for(;n.next() == 1;) //If it is 1 it contains data
+      {
+          QString ss4 = n.value(1).toString();
+          vertex_names.push_back(ss4.toStdString());
+      }
+      /*-------------------------------------------------------------------*/
 
     //Reads data for each track and how its connected along with its weight
     QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
     qq = db.exec(t3);
 
-    //For each swich in trackInfoTable execute the following:
     /*-------------------------------------------------------------------*/
     for(;qq.next() == 1;) //If it is 1 it contains data
     {
@@ -193,15 +199,25 @@ void MainWindow::dij_mainprogram() //Main Program
     //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
     }
     /*-------------------------------------------------------------------*/
-    //qDebug() <<"BFC"<< CHECKER;
-    dij_main();//Call algorithm function
-    //qDebug() <<"AFC"<< CHECKER;
 
+    qDebug() <<"BFC"<< CHECKER;
+    dij_main();//Call algorithm function
+    qDebug() <<"AFC"<< CHECKER;
+    qDebug() <<"End 1st Half of Algorithm";
+    }
+
+    //*-------------------------------------------------------------------------------------------------------------------------------------------------
+    //*-------------------------------------------------------------------------------------------------------------------------------------------------
+    //*-------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //Start of Opening Switches
     if(CHECKER == 1)//Use for checking purposes
     {
+        qDebug()<<"Initilize 2nd Part of Algorithm";
         adjacency_map.clear(); //Clears ajacency_map
         CHECKER = 0;
 
+         //Add Switch Positions switch -> closedPOS
          QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
          p = db.exec(tqtps1);
 
@@ -242,19 +258,18 @@ void MainWindow::dij_mainprogram() //Main Program
     //qDebug() <<ss1<<",{"<<ss2<<","<<ss3<<"}";
     }
     /*-------------------------------------------------------------------*/
-
-    //qDebug() <<"BFC"<< CHECKER;
+    qDebug() <<"BFC"<< CHECKER;
     dij_main();//Call algorithm function
-    //qDebug() <<"AFC"<< CHECKER;
+    qDebug() <<"AFC"<< CHECKER;
+    }
 
     if (CHECKER == 1)//Use for checking purposes
     {
     adjacency_map.clear(); //Clears ajacency_map must be done to allow opposite direction of travel
-    CHECKER = 0;
 
+    //Add Switch Positions closedPOS -> switch
     QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
     p = db.exec(tqtps1);
-
     for(;p.next() == 1;) //If it is 1 it contains data
     {
         int ss1 = p.value(0).toInt();
@@ -262,15 +277,27 @@ void MainWindow::dij_mainprogram() //Main Program
         //int ss3 = p.value(2).toInt();
         //int ss4 = p.value(3).toInt();
         int ss5 = p.value(4).toInt();
-        adjacency_map[ss5].push_back(edge(ss1,  5));
+        adjacency_map[ss1].push_back(edge(ss5,  5));
     }
+
+    //Reads track ids and names for showing the path
+      /*-------------------------------------------------------------------*/
+      QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+      n = db.exec(t);
+
+      for(;n.next() == 1;) //If it is 1 it contains data
+      {
+          QString ss4 = n.value(1).toString();
+          vertex_names.push_back(ss4.toStdString());
+      }
+      /*-------------------------------------------------------------------*/
 
 
     //Reads data for each track and how its connected along with its weight
     QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
     qq = db.exec(t3);
 
-    //For each swich in trackInfoTable execute the following:
+    //For each switch in trackInfoTable execute the following:
     /*-------------------------------------------------------------------*/
     for(;qq.next() == 1;) //If it is 1 it contains data
     {
@@ -281,15 +308,230 @@ void MainWindow::dij_mainprogram() //Main Program
     //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
     }
     /*-------------------------------------------------------------------*/
-    //qDebug() <<"BFC"<< CHECKER;
+    qDebug() <<"BFC"<< CHECKER;
     dij_main();//Call algorithm function
-    //qDebug() <<"AFC"<< CHECKER;
+    qDebug() <<"AFC"<< CHECKER;
+    }
 
+    //*-------------------------------------------------------------------------------------------------------------------------------------------------
+    //*-------------------------------------------------------------------------------------------------------------------------------------------------
+    //*-------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //Start of Opening Switches
+    if(CHECKER == 1)//Use for checking purposes
+    {
+        qDebug()<<"Initilize 3rd Part of Algorithm";
+        adjacency_map.clear(); //Clears ajacency_map
+        CHECKER = 0;
+
+         //Add Switch Positions switch -> closedPOS
+         QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
+         p = db.exec(tqtps1);
+
+         for(;p.next() == 1;) //If it is 1 it contains data
+         {
+             int ss1 = p.value(0).toInt();
+             //int ss2 = p.value(1).toInt();
+             //int ss3 = p.value(2).toInt();
+             int ss4 = p.value(3).toInt();
+             //int ss5 = p.value(4).toInt();
+             adjacency_map[ss4].push_back(edge(ss1,  5));
+         }
+
+
+  //Reads track ids and names for showing the path
+    /*-------------------------------------------------------------------*/
+    QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+    n = db.exec(t);
+
+    for(;n.next() == 1;) //If it is 1 it contains data
+    {
+        QString ss4 = n.value(1).toString();
+        vertex_names.push_back(ss4.toStdString());
+    }
+    /*-------------------------------------------------------------------*/
+
+    //Reads data for each track and how its connected along with its weight
+    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    qq = db.exec(t2);
+
+    /*-------------------------------------------------------------------*/
+    for(;qq.next() == 1;) //If it is 1 it contains data
+    {
+    int ss1 = qq.value(0).toInt();
+    int ss2 = qq.value(1).toInt();
+    int ss3 = qq.value(2).toInt();
+    adjacency_map[ss1].push_back(edge(ss2,  ss3));
+    //qDebug() <<ss1<<",{"<<ss2<<","<<ss3<<"}";
+    }
+    /*-------------------------------------------------------------------*/
+    qDebug() <<"BFC"<< CHECKER;
+    dij_main();//Call algorithm function
+    qDebug() <<"AFC"<< CHECKER;
+
+    if (CHECKER == 1)//Use for checking purposes
+    {
+    adjacency_map.clear(); //Clears ajacency_map must be done to allow opposite direction of travel
+
+    //Add Switch Positions closedPOS -> switch
+    QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
+    p = db.exec(tqtps1);
+    for(;p.next() == 1;) //If it is 1 it contains data
+    {
+        int ss1 = p.value(0).toInt();
+        //int ss2 = p.value(1).toInt();
+        //int ss3 = p.value(2).toInt();
+        int ss4 = p.value(3).toInt();
+        //int ss5 = p.value(4).toInt();
+        adjacency_map[ss4].push_back(edge(ss1,  5));
+    }
+
+    //Reads track ids and names for showing the path
+      /*-------------------------------------------------------------------*/
+      QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+      n = db.exec(t);
+
+      for(;n.next() == 1;) //If it is 1 it contains data
+      {
+          QString ss4 = n.value(1).toString();
+          vertex_names.push_back(ss4.toStdString());
+      }
+      /*-------------------------------------------------------------------*/
+
+
+    //Reads data for each track and how its connected along with its weight
+    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    qq = db.exec(t3);
+
+    //For each switch in trackInfoTable execute the following:
+    /*-------------------------------------------------------------------*/
+    for(;qq.next() == 1;) //If it is 1 it contains data
+    {
+    int ss1 = qq.value(0).toInt();
+    int ss2 = qq.value(1).toInt();
+    int ss3 = qq.value(2).toInt();
+    adjacency_map[ss2].push_back(edge(ss1,  ss3));
+    //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
+    }
+    /*-------------------------------------------------------------------*/
+    qDebug() <<"BFC"<< CHECKER;
+    dij_main();//Call algorithm function
+    qDebug() <<"AFC"<< CHECKER;
+    }
+
+    //*-------------------------------------------------------------------------------------------------------------------------------------------------
+    //*-------------------------------------------------------------------------------------------------------------------------------------------------
+    //*-------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //Start of Opening Switches
+    if(CHECKER == 1)//Use for checking purposes
+    {
+        qDebug()<<"Initilize 4th Part of Algorithm";
+        adjacency_map.clear(); //Clears ajacency_map
+        CHECKER = 0;
+
+         //Add Switch Positions switch -> closedPOS
+         QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
+         p = db.exec(tqtps1);
+
+         for(;p.next() == 1;) //If it is 1 it contains data
+         {
+             int ss1 = p.value(0).toInt();
+             //int ss2 = p.value(1).toInt();
+             //int ss3 = p.value(2).toInt();
+             //int ss4 = p.value(3).toInt();
+             int ss5 = p.value(4).toInt();
+             adjacency_map[ss5].push_back(edge(ss1,  5));
+         }
+
+
+  //Reads track ids and names for showing the path
+    /*-------------------------------------------------------------------*/
+    QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+    n = db.exec(t);
+
+    for(;n.next() == 1;) //If it is 1 it contains data
+    {
+        QString ss4 = n.value(1).toString();
+        vertex_names.push_back(ss4.toStdString());
+    }
+    /*-------------------------------------------------------------------*/
+
+    //Reads data for each track and how its connected along with its weight
+    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    qq = db.exec(t2);
+
+    /*-------------------------------------------------------------------*/
+    for(;qq.next() == 1;) //If it is 1 it contains data
+    {
+    int ss1 = qq.value(0).toInt();
+    int ss2 = qq.value(1).toInt();
+    int ss3 = qq.value(2).toInt();
+    adjacency_map[ss1].push_back(edge(ss2,  ss3));
+    //qDebug() <<ss1<<",{"<<ss2<<","<<ss3<<"}";
+    }
+    /*-------------------------------------------------------------------*/
+    qDebug() <<"BFC"<< CHECKER;
+    dij_main();//Call algorithm function
+    qDebug() <<"AFC"<< CHECKER;
+
+    if (CHECKER == 1)//Use for checking purposes
+    {
+    adjacency_map.clear(); //Clears ajacency_map must be done to allow opposite direction of travel
+
+    //Add Switch Positions closedPOS -> switch
+    QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
+    p = db.exec(tqtps1);
+    for(;p.next() == 1;) //If it is 1 it contains data
+    {
+        int ss1 = p.value(0).toInt();
+        //int ss2 = p.value(1).toInt();
+        //int ss3 = p.value(2).toInt();
+        //int ss4 = p.value(3).toInt();
+        int ss5 = p.value(4).toInt();
+        adjacency_map[ss5].push_back(edge(ss1,  5));
+    }
+
+    //Reads track ids and names for showing the path
+      /*-------------------------------------------------------------------*/
+      QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+      n = db.exec(t);
+
+      for(;n.next() == 1;) //If it is 1 it contains data
+      {
+          QString ss4 = n.value(1).toString();
+          vertex_names.push_back(ss4.toStdString());
+      }
+      /*-------------------------------------------------------------------*/
+
+
+    //Reads data for each track and how its connected along with its weight
+    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    qq = db.exec(t3);
+
+    //For each switch in trackInfoTable execute the following:
+    /*-------------------------------------------------------------------*/
+    for(;qq.next() == 1;) //If it is 1 it contains data
+    {
+    int ss1 = qq.value(0).toInt();
+    int ss2 = qq.value(1).toInt();
+    int ss3 = qq.value(2).toInt();
+    adjacency_map[ss2].push_back(edge(ss1,  ss3));
+    //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
+    }
+    /*-------------------------------------------------------------------*/
+    qDebug() <<"BFC"<< CHECKER;
+    dij_main();//Call algorithm function
+    qDebug() <<"AFC"<< CHECKER;
+
+        if (CHECKER == 1)
+        {
+            s = QString("Distance from vertex %1 to %2 is: %3").arg(start).arg(dest).arg("NULL-No Path Exists!");
+            qDebug() << s;
+            std::cout << "No Path Exists or switch is not correctly switched!"<< std::endl;
+        }
         count = 0;
         CHECKER = 0;
-        s = QString("Distance from vertex %1 to %2 is: %3").arg(start).arg(dest).arg("NULL-No Path Exists!");
-        qDebug() << s;
-        std::cout << "No Path Exists or switch is not correctly switched!"<< std::endl;
     }
     }
     //qDebug() << "End of dij_mainprogram";
@@ -302,6 +544,7 @@ void MainWindow::dij_mainprogram() //Main Program
 
 void MainWindow::dij_main()
 {
+    qDebug() << "Called dij_main()";
     count = 0;//count is used to output only one line of paths/distance
 
     QString ts1 = QString("SELECT ID,START,Direction,Destination from %1 WHERE ID=%2").arg("Trains").arg(ui->trainBox->currentText().toInt());
@@ -342,7 +585,7 @@ void MainWindow::dij_main()
     QString t3 = QString("SELECT trackID,trackNAME from %1").arg("tracklistingTable");
     n = db.exec(t3);
 
-    //For each swich in trackInfoTable execute the following:
+    //Pull source and destination name using trackid
     /*-------------------------------------------------------------------*/
     for(;n.next() == 1;) //If it is 1 it contains data
     {
@@ -353,11 +596,13 @@ void MainWindow::dij_main()
     if (START == stqs2)
     {
         start = stqs1;
+        qDebug() <<"Start:                 "<<START;
     }
     //qDebug() << START << start;
     if (DEST == stqs2)
     {
         dest = stqs1;
+        qDebug() <<"Destination:               "<<DEST;
     }
     //qDebug() << DEST << dest;
 
@@ -374,13 +619,17 @@ void MainWindow::dij_main()
          vertex_iter++)
     {
         vertex_t v = vertex_iter->first;
+        //MIN_DISTANCE = min_distance[v];
 
         if (v == dest)
         {
+           MIN_DISTANCE = min_distance[v];
+           qDebug() <<"Minimum Distance of V: "<< MIN_DISTANCE;
            if(count == 0)
            {
             if (min_distance[v] == inf)
             {
+            qDebug() <<"inf distance";
             CHECKER = 1;
             }
             else
