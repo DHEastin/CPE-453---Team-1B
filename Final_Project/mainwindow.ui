@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1300</width>
-    <height>423</height>
+    <height>439</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -24,7 +24,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>130</y>
+      <y>160</y>
       <width>91</width>
       <height>16</height>
      </rect>
@@ -43,7 +43,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>150</y>
+      <y>180</y>
       <width>1250</width>
       <height>200</height>
      </rect>
@@ -70,15 +70,15 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>20</y>
-      <width>501</width>
+      <x>20</x>
+      <y>10</y>
+      <width>381</width>
       <height>117</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_4">
      <property name="sizeConstraint">
-      <enum>QLayout::SetFixedSize</enum>
+      <enum>QLayout::SetMinimumSize</enum>
      </property>
      <item>
       <widget class="QLabel" name="label_4">
@@ -193,8 +193,8 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>1000</x>
-      <y>110</y>
+      <x>1030</x>
+      <y>160</y>
       <width>256</width>
       <height>19</height>
      </rect>
@@ -268,6 +268,35 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QTableView" name="trainView">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>20</y>
+      <width>651</width>
+      <height>131</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>0</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>View Trains Table</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

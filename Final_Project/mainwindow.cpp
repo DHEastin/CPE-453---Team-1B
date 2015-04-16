@@ -9,9 +9,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //TO DO LIST
     //---------------------------------------
-    //Work on Switches
     //Work on Request interface for Team4A
     //Check Overwrite Status for Team5
+    //Allow more than 22 nodes
+    //Implement checking for direction by checking nextID1 compared to direction -- if no path found -- MSGBOX FLIP TRAIN
 
     //BUGS
     //---------------------------------------
@@ -117,8 +118,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionView_Switch_req,SIGNAL(triggered()),this,SLOT(Switch_req()));
     connect(ui->actionView_Switchinfo,SIGNAL(triggered()),this,SLOT(Switch_info()));
 
-    QTimer* persistence = new QTimer();
-    QObject::connect(persistence, SIGNAL(timeout()), this, SLOT(check_sched()));
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(check_sched()));
+    timer->start(200);
 }
 
 MainWindow::~MainWindow()
@@ -133,7 +135,7 @@ MainWindow::~MainWindow()
 void MainWindow::Add_Train()
 {
     items.clear();
-    ID = QInputDialog::getInt(this, tr("Create Train ID"),tr("TrainID:"),1, 1, 10, 1, &ok);
+    ID = QInputDialog::getInt(this, tr("Create Train ID"),tr("TrainID:"),1, 1, 3, 1, &ok);
     if (ok)
     {
 
@@ -362,6 +364,7 @@ void MainWindow::Delete_Train()
        QGridLayout* layout = (QGridLayout*)msgBox.layout();
        layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
        msgBox.exec();
+
    }
 }
 
@@ -1170,17 +1173,41 @@ void MainWindow::Check_Path_Trains()
 
 void MainWindow::check_sched()
 {
-    if(rdb.isOpen())
+    QString CT_Train = ui->trainBox->currentText();
+    if (CT_Train == "")
     {
-
-    tmodel = new QSqlTableModel( this, rdb );
-    view = new QTableView;
-    view->setModel(tmodel);
-    tmodel->setTable("pathInfoTable");
-    tmodel->select();
-    view->show();
-
+        path_ID = 1;
     }
+
+    QString stqs1,stqs2;
+    int sts1,sts2;
+    QString tqtps1 = QString("SELECT ID,next,pathID FROM Trains");
+    QString smi3 = QString("SELECT pathID,nextID1 from %1").arg("pathInfoTable");
+    Path2 = db.exec(smi3);
+    TRAIN = db.exec(tqtps1);
+
+    //Check each train
+    for(;TRAIN.next() == 1;) //If it is 1 it contains data
+    {
+        sts2 = TRAIN.value(2).toInt();
+        //stqs1 = TRAIN.value(0).toString();
+        for(;Path2.next() == 1;)
+        {
+            sts1 = Path2.value(0).toInt();
+            stqs1 = Path2.value(1).toString();
+            if(sts1 == sts2)
+            {
+                stqs2 = stqs1;
+            }
+        }
+        QString train_up2 = QString("UPDATE Trains SET next='%1' WHERE pathID=%2").arg(stqs2).arg(sts2);
+        TRAIN = db.exec(train_up2);
+    }
+
+    tmodel3 = new QSqlTableModel( this, db );
+    ui->trainView->setModel(tmodel3);
+    tmodel3->setTable("Trains");
+    tmodel3->select();
 
 //check team 2 SQL for track shutdowns. If any new ones, check schedules, trigger reroutes if necessary
 

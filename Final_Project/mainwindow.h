@@ -59,7 +59,7 @@ private:
     bool ok;
     QString Destination;
     int isSave;
-    QSqlTableModel *tmodel,*tmodel2;
+    QSqlTableModel *tmodel,*tmodel2,*tmodel3;
     QStandardItemModel* imodel;
     QString START;
     QString DEST;
