@@ -88,6 +88,18 @@ MainWindow::MainWindow(QWidget *parent) :
        create_sqltables();
        sql_query();
     }
+    QString s9 = QString("SELECT switch,position,straight,openPOS,closedPOS from %3").arg("switchInfoTable");
+    p = db.exec(s9);
+
+    for(;p.next() == 1;) //Check switchInfoTable table for data
+    {
+        int COL1 = p.value(0).toInt();
+        int COL2 = p.value(4).toInt();
+
+        QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL1).arg(COL2);
+        qq.exec(smpms);
+
+    }
 
     QString ts1 = QString("SELECT Current from %1").arg("DS_Connectivity");
     n = db.exec(ts1);
@@ -120,7 +132,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(check_sched()));
-    timer->start(200);
+    timer->start(500);
 }
 
 MainWindow::~MainWindow()
@@ -854,12 +866,13 @@ void MainWindow::Update_ScheduleTable()
         int LEN = 0;
         int TOT = PATH.length();
         int TOT_LEFT = TOT - LEN;
-        if (TOT > 23)
+        if (TOT >= 23)
         {
             ok = 1;
+            tot = 11;
             QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
-            QString qtts0tq = "INSERT INTO scheduled_routes (pathid,next2,next3,next4,next5,next6,next7,next8,next9,next10,next11,nextpath) VALUES (";
-            for (LEN= LEN;LEN != 11;LEN++)
+            QString qtts0tw = "INSERT INTO scheduled_routes (pathid,next2,next3,next4,next5,next6,next7,next8,next9,next10,next11,nextpath) VALUES (";
+            for (LEN= LEN;LEN != tot;LEN++)
             {
             if(LEN == 0)
             {
@@ -867,8 +880,16 @@ void MainWindow::Update_ScheduleTable()
                 I_D = QString("%1").arg(path_ID);
                 qtts0.append(I_D);
                 qtts0.append(",");
-                qtts0tq.append(I_D);
-                qtts0tq.append(",");
+                qtts0tw.append(I_D);
+                qtts0tw.append(",");
+
+                QString train_up = QString("UPDATE Trains SET pathID=%1 WHERE ID='%2'").arg(path_ID).arg(ui->trainBox->currentText());
+                TRAIN = db.exec(train_up);
+                if(rdb.isOpen())
+                {
+                QString train_up2 = QString("UPDATE scheduled_train_info SET pathid=%1 WHERE id='%2'").arg(path_ID).arg(ui->trainBox->currentText());
+                r2 = rdb.exec(train_up2);
+                }
             }
 
             else
@@ -877,22 +898,23 @@ void MainWindow::Update_ScheduleTable()
                 I_D = QString("'%1'").arg(PATH.value(LEN));
                 qtts0.append(I_D);
                 qtts0.append(",");
-                qtts0tq.append(I_D);
-                qtts0tq.append(",");
+                qtts0tw.append(I_D);
+                qtts0tw.append(",");
             }
             }
             QString I_D;
-            I_D = QString("%1").arg(path_ID++);
+            path_ID++;
+            I_D = QString("%1").arg(path_ID);
             qtts0.append(I_D);
             qtts0.append(")");
-            qtts0tq.append(I_D);
-            qtts0tq.append(",");
+            qtts0tw.append(I_D);
+            qtts0tw.append(")");
             //qDebug() << qtts0;
 
             o = db.exec(qtts0);
             if(rdb.isOpen())
             {
-            r3 = rdb.exec(qtts0tq);
+            r3 = rdb.exec(qtts0tw);
             }
         }
             if(ok == 1)

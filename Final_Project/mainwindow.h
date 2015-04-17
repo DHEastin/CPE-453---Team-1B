@@ -36,7 +36,7 @@ private:
     QString Start;
     QString direction;
     int path_ID;
-    QSqlDatabase db,rdb;
+    QSqlDatabase db,rdb,T2;
     int CHECKER;
     void initializeModel(QSqlTableModel *model);
     QTableView *createView(QSqlTableModel *model, const QString &title = "");
