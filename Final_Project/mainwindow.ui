@@ -337,6 +337,9 @@
      <addaction name="actionView_Trackinfo"/>
      <addaction name="actionView_Tracklisting"/>
      <addaction name="actionView_Switchinfo"/>
+     <addaction name="actionView_Trains1"/>
+     <addaction name="actionView_Trains2"/>
+     <addaction name="actionView_Trains3"/>
     </widget>
     <widget class="QMenu" name="menuRemote_Tables">
      <property name="title">
@@ -442,6 +445,21 @@
   <action name="actionView_Switchinfo">
    <property name="text">
     <string>View Switchinfo</string>
+   </property>
+  </action>
+  <action name="actionView_Trains1">
+   <property name="text">
+    <string>View Trains1</string>
+   </property>
+  </action>
+  <action name="actionView_Trains2">
+   <property name="text">
+    <string>View Trains2</string>
+   </property>
+  </action>
+  <action name="actionView_Trains3">
+   <property name="text">
+    <string>View Trains3</string>
    </property>
   </action>
  </widget>

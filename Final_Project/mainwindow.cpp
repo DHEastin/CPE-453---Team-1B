@@ -9,8 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //TO DO LIST
     //---------------------------------------
-    //Work on Request interface for Team4A
-    //Check Overwrite Status for Team5
+    //Check Overwrite Status for Team5 -- On Team 4A Database
     //Allow more than 22 nodes
     //Implement checking for direction by checking nextID1 compared to direction -- if no path found -- MSGBOX FLIP TRAIN
 
@@ -35,20 +34,20 @@ MainWindow::MainWindow(QWidget *parent) :
     rdb.setDatabaseName("Team1B");
     rdb.setUserName("1BUser");
     rdb.setPassword("TEAM1bUSER");
-    /*
-    +----------------------+
-    | Tables_in_Team1B     |
-    +----------------------+
-    | schedule_train_info  |
-    | scheduled_routes     |
-    | scheduled_train_info |
-    | switch_req           |
-    | throttle_req         |
-    +----------------------+
-    */
+
+    LOCONET = QSqlDatabase::addDatabase( "QMYSQL" ,"Loconet" );
+    //rdb.addDatabase( "QMYSQL", "Remote" );
+    LOCONET.setHostName("pavelow.eng.uah.edu");
+    LOCONET.setPort(33153);
+    LOCONET.setDatabaseName("cpe453");
+    LOCONET.setUserName("root");
+    LOCONET.setPassword("cstrapwi");
+
+    //override_status
+    //st    mode    estop
 
     QPalette* palette = new QPalette();
-    palette->setColor(QPalette::WindowText,Qt::green);
+    palette->setColor(QPalette::WindowText,Qt::blue);
     ui->overwrite_statusLabel->setPalette(*palette);
     ui->overwrite_statusLabel->setText("Normal");
 
@@ -69,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if(rdb.isOpen())
     {
        QPalette* palette = new QPalette();
-       palette->setColor(QPalette::WindowText,Qt::green);
+       palette->setColor(QPalette::WindowText,Qt::blue);
        ui->connection_statusLabel->setPalette(*palette);
 
        ui->connection_statusLabel->setText("Connected!");
@@ -129,6 +128,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionView_Throttle_req,SIGNAL(triggered()),this,SLOT(Throttle_req()));
     connect(ui->actionView_Switch_req,SIGNAL(triggered()),this,SLOT(Switch_req()));
     connect(ui->actionView_Switchinfo,SIGNAL(triggered()),this,SLOT(Switch_info()));
+    connect(ui->actionView_Trains1,SIGNAL(triggered()),this,SLOT(Trains1_Table()));
+    connect(ui->actionView_Trains2,SIGNAL(triggered()),this,SLOT(Trains2_Table()));
+    connect(ui->actionView_Trains3,SIGNAL(triggered()),this,SLOT(Trains3_Table()));
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(check_sched()));
@@ -665,6 +667,51 @@ void MainWindow::Trackinfo_Table()
 }
 
 /*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of Trains1 Table
+/*-------------------------------------------------------------------------------------------------------------*/
+
+void MainWindow::Trains1_Table()
+{
+    tmodel = new QSqlTableModel( this, db );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("Trains1");
+    tmodel->select();
+    view->setWindowTitle("Trains1");
+    view->show();
+}
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of Trains2 Table
+/*-------------------------------------------------------------------------------------------------------------*/
+
+void MainWindow::Trains2_Table()
+{
+    tmodel = new QSqlTableModel( this, db );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("Trains2");
+    tmodel->select();
+    view->setWindowTitle("Trains2");
+    view->show();
+}
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of Trains3 Table
+/*-------------------------------------------------------------------------------------------------------------*/
+
+void MainWindow::Trains3_Table()
+{
+    tmodel = new QSqlTableModel( this, db );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("Trains3");
+    tmodel->select();
+    view->setWindowTitle("Trains3");
+    view->show();
+}
+
+/*-------------------------------------------------------------------------------------------------------------*/
 //Allows viewing of pathinfo Table
 /*-------------------------------------------------------------------------------------------------------------*/
 
@@ -785,6 +832,112 @@ void MainWindow::Scheduled_train_info()
 
 void MainWindow::Update_ScheduleTable()
 {
+    if(ui->trainBox->currentText() == "1")
+    {
+        QString SW_IT1 = QString("DELETE FROM Trains1");
+        TrainSW1.exec(SW_IT1);
+    }
+    if(ui->trainBox->currentText() == "2")
+    {
+        QString SW_IT2 = QString("DELETE FROM Trains2");
+        TrainSW2.exec(SW_IT2);
+    }
+    if(ui->trainBox->currentText() == "3")
+    {
+        QString SW_IT3 = QString("DELETE FROM Trains3");
+        TrainSW3.exec(SW_IT3);
+    }
+
+    //Update Personal Track Table with switches that need to be switches for that train's path
+    PATH.begin();
+    int tt = 0;
+    for (tt = tt; tt != PATH.length(); tt++)
+    {
+        QString PATH_VALUE;
+        int sts0,sts1,sts2,sts3,SWITCH;
+
+        PATH_VALUE = PATH.value(tt);
+
+        //Convert String PATH_VALUE to tracklisting int Value
+        QString tqtps1 = QString("SELECT trackID FROM tracklistingTable WHERE trackNAME='%1'").arg(PATH_VALUE);
+        n = db.exec(tqtps1);
+
+        n.next();
+        sts0 = n.value(0).toInt(); //trackID
+
+        //Check each switch along PATH
+        QString tqtps2 = QString("SELECT switch,openPOS,closedPOS FROM switchInfoTable WHERE closedPOS=%1").arg(sts0);
+        p = db.exec(tqtps2);
+
+        for(;p.next() == 1;)
+        {
+        sts1 = p.value(0).toInt();
+        sts2 = p.value(1).toInt(); //Open Position
+        sts3 = p.value(2).toInt(); //Closed Position
+
+        if(sts0 == sts3)
+        {
+            SWITCH = 1;
+        }
+        else
+        {
+            SWITCH = 0;
+        }
+
+        if(ui->trainBox->currentText() == "1")
+        {
+            QString SW_IT4 = QString("INSERT INTO Trains1 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            TrainSW1.exec(SW_IT4);
+        }
+        if(ui->trainBox->currentText() == "2")
+        {
+            QString SW_IT5 = QString("INSERT INTO Trains2 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            TrainSW2.exec(SW_IT5);
+        }
+        if(ui->trainBox->currentText() == "3")
+        {
+            QString SW_IT6 = QString("INSERT INTO Trains3 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            TrainSW3.exec(SW_IT6);
+        }
+        }
+
+        QString tqtps3 = QString("SELECT switch,openPOS,closedPOS FROM switchInfoTable WHERE openPOS=%1").arg(sts0);
+        p = db.exec(tqtps3);
+
+        for(;p.next() == 1;)
+        {
+        sts1 = p.value(0).toInt();
+        sts2 = p.value(1).toInt(); //Open Position
+        sts3 = p.value(2).toInt(); //Closed Position
+
+        if(sts0 == sts3)
+        {
+            SWITCH = 1;
+        }
+        else
+        {
+            SWITCH = 0;
+        }
+
+        if(ui->trainBox->currentText() == "1")
+        {
+            QString SW_IT4 = QString("INSERT INTO Trains1 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            TrainSW1.exec(SW_IT4);
+        }
+        if(ui->trainBox->currentText() == "2")
+        {
+            QString SW_IT5 = QString("INSERT INTO Trains2 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            TrainSW2.exec(SW_IT5);
+        }
+        if(ui->trainBox->currentText() == "3")
+        {
+            QString SW_IT6 = QString("INSERT INTO Trains3 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            TrainSW3.exec(SW_IT6);
+        }
+
+        }      
+        }
+
     PATH.begin();
     if(ERROR == 1)
     {

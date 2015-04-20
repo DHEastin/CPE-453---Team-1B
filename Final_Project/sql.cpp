@@ -65,6 +65,13 @@ void MainWindow::create_sqltables()
     TRAIN = db.exec(query);
     TRAIN2 = db.exec(query);
     LOAD = db.exec(query);
+    Train1 = db.exec(query);
+    Train2 = db.exec(query);
+    Train3 = db.exec(query);
+    TrainSW1 = db.exec(query);
+    TrainSW2 = db.exec(query);
+    TrainSW3 = db.exec(query);
+
     //Remote Database
     if (rdb.isOpen())
     {
@@ -84,6 +91,15 @@ void MainWindow::create_sqltables()
 
     TRAIN.exec("CREATE TABLE Trains(ID TEXT, START TEXT, Direction TEXT,Destination TEXT,next TEXT,pathID INT);");
     TRAIN.exec("SELECT * FROM Trains;");
+
+    TrainSW1.exec("CREATE TABLE Trains1(switch TEXT, position INT);");
+    TrainSW1.exec("SELECT * FROM Trains1;");
+
+    TrainSW2.exec("CREATE TABLE Trains2(switch TEXT, position INT);");
+    TrainSW2.exec("SELECT * FROM Trains2;");
+
+    TrainSW3.exec("CREATE TABLE Trains3(switch TEXT, position INT);");
+    TrainSW3.exec("SELECT * FROM Trains3;");
 
      o.exec("CREATE TABLE DS_Connectivity (Current TEXT, NumberOfConnections INT, Connection1 TEXT, Connection2 TEXT, Connection3 TEXT);");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('1-1',2,'2-1','2-2','Null');");
@@ -109,8 +125,8 @@ void MainWindow::create_sqltables()
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('4-11',2,'4-10','5-1','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('4-12',2,'U-2','5-2','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5-1',2,'4-11','5-3','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5-2',3,'5-3','4-12','4-9');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5-3',3,'5-13','5-1','5-2');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5-2',3,'5-3','4-9','4-12');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5-3',3,'5-13','5-2','5-1');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5-4',2,'5-13','U-9','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5-13',3,'5-4','5-14','5-3');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('5-14',2,'5-13','5-15','Null');");
@@ -151,9 +167,9 @@ void MainWindow::create_sqltables()
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U-33',2,'U-44','U-31','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U-34',3,'U-32','1-3R','U-44');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U-35',3,'U-62','U-26','U-36');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U-36',3,'U-35','U-27','U-37');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U-37',3,'U-36','U-27','U-38');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U-38',3,'U-37','U-42','U-39');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U-36',3,'U-35','U-37','U-27');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U-37',3,'U-36','U-38','U-27');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U-38',3,'U-37','U-39','U-42');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U-39',3,'U-38','U-40','U-41');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U-40',2,'U-39','U-30','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('U-41',2,'U-39','U-29','Null');");
@@ -281,38 +297,20 @@ void MainWindow::create_sqltables()
             //qq.exec(smpms1);
             QString smpms2 = QString("INSERT INTO switchInfoTable (switch,position,straight,openPOS,closedPOS) VALUES ('%1',0,'%2','%3','%4');").arg(COL0).arg(COL1).arg(COL2).arg(COL3);
             p.exec(smpms2);
+            /*
+            QString SW_IT1 = QString("INSERT INTO Trains1 (switch, position) VALUES (%1,0);").arg(COL0);
+            TrainSW1.exec(SW_IT1);
+            QString SW_IT2 = QString("INSERT INTO Trains2 (switch, position) VALUES (%1,0);").arg(COL0);
+            TrainSW2.exec(SW_IT2);
+            QString SW_IT3 = QString("INSERT INTO Trains3 (switch, position) VALUES (%1,0);").arg(COL0);
+            TrainSW3.exec(SW_IT3);
+            */
         }
         //}
         }
         }
 
     }
-
-    /*
-    QString tqtps1 = QString("SELECT currentnode,nextnode,weight FROM trackInfoTable");
-    qq = db.exec(tqtps1);
-
-    for(;qq.next() == 1;) //If it is 1 it contains data
-    {
-        int sts1 = qq.value(0).toInt();
-        int sts2 = qq.value(1).toInt();
-        int sts3 = qq.value(2).toInt();
-        QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
-        p = db.exec(tqtps1);
-
-        for(;p.next() == 1;) //If it is 1 it contains data
-        {
-            int stts1 = p.value(0).toInt();
-            int stts2 = p.value(1).toInt();
-            int stts3 = p.value(2).toInt();
-            int stts4 = p.value(3).toInt();
-            int stts5 = p.value(4).toInt();
-
-            QString ttps1 = QString("DELETE FROM trackInfoTable WHERE currentnode=%1").arg(stts1);
-            qq = db.exec(ttps1);
-        }
-    }
-    */
 
     //Create Throttle_Info Table
     //CURRENTLY NOT IMPORTANT

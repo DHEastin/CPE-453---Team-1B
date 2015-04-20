@@ -36,13 +36,13 @@ private:
     QString Start;
     QString direction;
     int path_ID;
-    QSqlDatabase db,rdb,T2;
+    QSqlDatabase db,rdb,LOCONET;
     int CHECKER;
     void initializeModel(QSqlTableModel *model);
     QTableView *createView(QSqlTableModel *model, const QString &title = "");
     QSqlTableModel *table1;
     QSqlQueryModel *qmodel;
-    QSqlQuery q,j,k,l,m,n,q1,k1,m1,n1,o,p,INFO,INFO2,nn,mm,qq,TRAIN,TRAIN2,LOAD,Path,Path2,r1,r2,r3,r4,r5;
+    QSqlQuery q,j,k,l,m,n,q1,k1,m1,n1,o,p,INFO,INFO2,nn,mm,qq,TRAIN,TRAIN2,LOAD,Path,Path2,r1,r2,r3,r4,r5,Train1,Train2,Train3,TrainSW1,TrainSW2,TrainSW3;
     std::vector<std::string> vertex_names;
     int count;
     int count2;
@@ -95,6 +95,9 @@ private slots:
     void Throttle_req();
     void Switch_req();
     void Switch_info();
+    void Trains1_Table();
+    void Trains2_Table();
+    void Trains3_Table();
 };
 
 #endif // MAINWINDOW_H
