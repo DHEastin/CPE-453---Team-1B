@@ -1455,7 +1455,9 @@ void MainWindow::check_sched()
                 if(currentStart == currentDestination)//If the train is already at its destination, do nothing
                     break;
 
-
+                //req_switch controls switches, col1 = ID (is the # for switch), col2 = position (1 or 0 NOTE 1 is through, 0 is bypass);
+                //req_macro controls trains, col1 = macro (use TRAIN_REQ), col2 = arg1 (train#), col3 = arg2 (speed% is -100 to +100)
+                //track_ds for detection sections, col1 = id (ds style), col2 = status (1 = occupied, 0 = empty), col3 = ds_from (ignore), col4 = ds_to (ignore)
             }
         }
     }
