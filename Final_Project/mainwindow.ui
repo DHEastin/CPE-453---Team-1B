@@ -346,6 +346,8 @@
      <addaction name="actionView_Trains1"/>
      <addaction name="actionView_Trains2"/>
      <addaction name="actionView_Trains3"/>
+     <addaction name="actionView_Trains4"/>
+     <addaction name="actionView_Trains5"/>
     </widget>
     <widget class="QMenu" name="menuRemote_Tables">
      <property name="title">
@@ -466,6 +468,16 @@
   <action name="actionView_Trains3">
    <property name="text">
     <string>View Trains3</string>
+   </property>
+  </action>
+  <action name="actionView_Trains4">
+   <property name="text">
+    <string>View Trains4</string>
+   </property>
+  </action>
+  <action name="actionView_Trains5">
+   <property name="text">
+    <string>View Trains5</string>
    </property>
   </action>
  </widget>

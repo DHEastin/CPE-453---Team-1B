@@ -71,6 +71,15 @@ void MainWindow::create_sqltables()
     TrainSW1 = db.exec(query);
     TrainSW2 = db.exec(query);
     TrainSW3 = db.exec(query);
+    TrainSW4 = db.exec(query);
+    TrainSW5 = db.exec(query);
+    runSchedQuery = db.exec(query);
+
+    l1 = db.exec(query);
+    l2 = db.exec(query);
+    l3 = db.exec(query);
+    l4 = db.exec(query);
+    l5 = db.exec(query);
 
     //Remote Database
     if (rdb.isOpen())
@@ -80,6 +89,7 @@ void MainWindow::create_sqltables()
     r3 = rdb.exec(query);
     r4 = rdb.exec(query);
     r5 = rdb.exec(query);
+    overrideCheck = rdb.exec(query);
     }
 
 
@@ -100,6 +110,12 @@ void MainWindow::create_sqltables()
 
     TrainSW3.exec("CREATE TABLE Trains3(switch TEXT, position INT);");
     TrainSW3.exec("SELECT * FROM Trains3;");
+
+    TrainSW4.exec("CREATE TABLE Trains4(switch TEXT, position INT);");
+    TrainSW4.exec("SELECT * FROM Trains4;");
+
+    TrainSW5.exec("CREATE TABLE Trains5(switch TEXT, position INT);");
+    TrainSW5.exec("SELECT * FROM Trains5;");
 
      o.exec("CREATE TABLE DS_Connectivity (Current TEXT, NumberOfConnections INT, Connection1 TEXT, Connection2 TEXT, Connection3 TEXT);");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3) VALUES ('1-1',2,'2-1','2-2','Null');");
@@ -297,14 +313,6 @@ void MainWindow::create_sqltables()
             //qq.exec(smpms1);
             QString smpms2 = QString("INSERT INTO switchInfoTable (switch,position,straight,openPOS,closedPOS) VALUES ('%1',0,'%2','%3','%4');").arg(COL0).arg(COL1).arg(COL2).arg(COL3);
             p.exec(smpms2);
-            /*
-            QString SW_IT1 = QString("INSERT INTO Trains1 (switch, position) VALUES (%1,0);").arg(COL0);
-            TrainSW1.exec(SW_IT1);
-            QString SW_IT2 = QString("INSERT INTO Trains2 (switch, position) VALUES (%1,0);").arg(COL0);
-            TrainSW2.exec(SW_IT2);
-            QString SW_IT3 = QString("INSERT INTO Trains3 (switch, position) VALUES (%1,0);").arg(COL0);
-            TrainSW3.exec(SW_IT3);
-            */
         }
         //}
         }

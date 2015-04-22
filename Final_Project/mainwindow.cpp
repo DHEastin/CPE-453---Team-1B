@@ -136,6 +136,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionView_Trains1,SIGNAL(triggered()),this,SLOT(Trains1_Table()));
     connect(ui->actionView_Trains2,SIGNAL(triggered()),this,SLOT(Trains2_Table()));
     connect(ui->actionView_Trains3,SIGNAL(triggered()),this,SLOT(Trains3_Table()));
+    connect(ui->actionView_Trains4,SIGNAL(triggered()),this,SLOT(Trains4_Table()));
+    connect(ui->actionView_Trains5,SIGNAL(triggered()),this,SLOT(Trains5_Table()));
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(check_sched()));
@@ -154,7 +156,7 @@ MainWindow::~MainWindow()
 void MainWindow::Add_Train()
 {
     items.clear();
-    ID = QInputDialog::getInt(this, tr("Input Train Address"),tr("TrainID:"),1, 1, 3, 1, &ok);
+    ID = QInputDialog::getInt(this, tr("Input Train Address"),tr("TrainID:"),1, 1, 5, 1, &ok);
     if (ok)
     {
 
@@ -717,6 +719,37 @@ void MainWindow::Trains3_Table()
 }
 
 /*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of Trains4 Table
+/*-------------------------------------------------------------------------------------------------------------*/
+
+void MainWindow::Trains4_Table()
+{
+    tmodel = new QSqlTableModel( this, db );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("Trains4");
+    tmodel->select();
+    view->setWindowTitle("Trains4");
+    view->show();
+}
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of Trains5 Table
+/*-------------------------------------------------------------------------------------------------------------*/
+
+void MainWindow::Trains5_Table()
+{
+    tmodel = new QSqlTableModel( this, db );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("Trains5");
+    tmodel->select();
+    view->setWindowTitle("Trains5");
+    view->show();
+}
+
+
+/*-------------------------------------------------------------------------------------------------------------*/
 //Allows viewing of pathinfo Table
 /*-------------------------------------------------------------------------------------------------------------*/
 
@@ -852,6 +885,16 @@ void MainWindow::Update_ScheduleTable()
         QString SW_IT3 = QString("DELETE FROM Trains3");
         TrainSW3.exec(SW_IT3);
     }
+    if(ui->trainBox->currentText() == "4")
+    {
+        QString SW_IT4 = QString("DELETE FROM Trains4");
+        TrainSW4.exec(SW_IT4);
+    }
+    if(ui->trainBox->currentText() == "5")
+    {
+        QString SW_IT5 = QString("DELETE FROM Trains5");
+        TrainSW5.exec(SW_IT5);
+    }
 
     //Update Personal Track Table with switches that need to be switches for that train's path
     PATH.begin();
@@ -904,6 +947,16 @@ void MainWindow::Update_ScheduleTable()
             QString SW_IT6 = QString("INSERT INTO Trains3 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
             TrainSW3.exec(SW_IT6);
         }
+        if(ui->trainBox->currentText() == "4")
+        {
+            QString SW_IT7 = QString("INSERT INTO Trains4 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            TrainSW4.exec(SW_IT7);
+        }
+        if(ui->trainBox->currentText() == "5")
+        {
+            QString SW_IT8 = QString("INSERT INTO Trains5 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            TrainSW5.exec(SW_IT8);
+        }
         }
 
         QString tqtps3 = QString("SELECT switch,openPOS,closedPOS FROM switchInfoTable WHERE openPOS=%1").arg(sts0);
@@ -939,7 +992,16 @@ void MainWindow::Update_ScheduleTable()
             QString SW_IT6 = QString("INSERT INTO Trains3 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
             TrainSW3.exec(SW_IT6);
         }
-
+        if(ui->trainBox->currentText() == "4")
+        {
+            QString SW_IT7 = QString("INSERT INTO Trains4 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            TrainSW4.exec(SW_IT7);
+        }
+        if(ui->trainBox->currentText() == "5")
+        {
+            QString SW_IT8 = QString("INSERT INTO Trains5 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            TrainSW5.exec(SW_IT8);
+        }
         }      
         }
 
@@ -1394,9 +1456,13 @@ void MainWindow::check_sched()
     tmodel->setTable("pathInfoTable");
     tmodel->select();
 
+    if(rdb.isOpen())
+    {
     overrideCheck = rdb.exec("SELECT * FROM override_status WHERE mode;"); //check team 5 for override, if overriden, do nothing
+    }
 
     bool stateCheck = false;
+
 
     while(overrideCheck.next() == 1)
     {
@@ -1408,25 +1474,36 @@ void MainWindow::check_sched()
     {
         if(overrideStatus)
         {
+            QString DEL_1,DEL_2,DEL_3;
+
             //If returning from override, state of track must be re-established.
             QMessageBox clearWarning;
             clearWarning.setText("Notice: Returning from override. The state of the track is now unknown and will be cleared.");
             clearWarning.exec();
 
+            //These variables have to be initialized in sql.cpp
+            //l1-l5 are used for db.exec
+            //r1-r5 are used for rdb.exec
+
+            //Remote Databases
+            if(rdb.isOpen())
+            {
             //Clear State from databases
-            QString DEL_1 = QString("DELETE FROM schedule_train_info");
-            QString DEL_2 = QString("DELETE FROM scheduled_routes");
-            QString DEL_3 = QString("DELETE FROM scheduled_train_info");
+            DEL_1 = QString("DELETE FROM schedule_train_info");
+            DEL_2 = QString("DELETE FROM scheduled_routes");
+            DEL_3 = QString("DELETE FROM scheduled_train_info");
             r1=rdb.exec(DEL_1);
             r2=rdb.exec(DEL_2);
             r3=rdb.exec(DEL_3);
+            }
 
+            //Local Databases
             DEL_1 = QString("DELETE FROM Trains");
             DEL_2 = QString("DELETE FROM trainInfoTable");
             DEL_3 = QString("DELETE FROM pathInfoTable");
-            r1=db.exec(DEL_1);
-            r2=db.exec(DEL_2);
-            r3=db.exec(DEL_3);
+            l1=db.exec(DEL_1);
+            l2=db.exec(DEL_2);
+            l3=db.exec(DEL_3);
 
             //Clear State from program variables
             PATH.clear();
@@ -1441,16 +1518,19 @@ void MainWindow::check_sched()
         }
         else
         {//----------------------------------------------------------THIS IS IT BOYS WHERE WE MAKE THE TRAINS MOVE----------------------------------------------------------------------------------------------------------------
-            runSchedQuery = db.exec("SELECT ID FROM Trains");
-            while(runSchedQuery.next())
+            QString currentStart,currentDirection,currentDestination,currentNext,currentPath;
+
+            QString BLAH = QString("SELECT ID, START, Direction, Destination, next, PathID FROM Trains WHERE ID='%1'").arg(ui->trainBox->currentText());
+            runSchedQuery = db.exec(BLAH);
+
+            //Will enter this when there is something selected in runSchedQuery
+            while(runSchedQuery.next()==1)
             {
-                QString currentID = runSchedQuery.value(0).toString();
-                runSchedQuery1 = db.exec("SELECT START, Direction, Destination, next, PathID FROM Trains WHERE ID=" + currentID);
-                QString currentStart = runSchedQuery1.value(0).toString();
-                QString currentDirection = runSchedQuery1.value(1).toString();
-                QString currentDestination = runSchedQuery1.value(2).toString();
-                QString currentNext = runSchedQuery1.value(3).toString();
-                QString currentPath = runSchedQuery1.value(4).toString();
+                currentStart = runSchedQuery.value(0).toString();
+                currentDirection = runSchedQuery.value(1).toString();
+                currentDestination = runSchedQuery.value(2).toString();
+                currentNext = runSchedQuery.value(3).toString();
+                currentPath = runSchedQuery.value(4).toString();
 
                 if(currentStart == currentDestination)//If the train is already at its destination, do nothing
                     break;
