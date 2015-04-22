@@ -20,8 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowTitle("Train Scheduling Application");
     path_ID = 1;
 
-    //Team 4B
-    //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33158 --user=root --password=drabroig
+    //Team 4A
+    //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33153 --user=root --password=cstrapwi
     //TEAM 1B
     //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33155 --user=root --password=rychakkn
     //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33155 --user=1BUser --password=TEAM1bUSER
@@ -35,16 +35,21 @@ MainWindow::MainWindow(QWidget *parent) :
     rdb.setUserName("1BUser");
     rdb.setPassword("TEAM1bUSER");
 
-    LOCONET = QSqlDatabase::addDatabase( "QMYSQL" ,"Loconet" );
+    //Team1A for interoperability
+    /*
+    rdb = QSqlDatabase::addDatabase( "QMYSQL" ,"Remote" );
     //rdb.addDatabase( "QMYSQL", "Remote" );
-    LOCONET.setHostName("pavelow.eng.uah.edu");
-    LOCONET.setPort(33153);
-    LOCONET.setDatabaseName("cpe453");
-    LOCONET.setUserName("root");
-    LOCONET.setPassword("cstrapwi");
+    rdb.setHostName("pavelow.eng.uah.edu");
+    rdb.setPort(33153);
+    rdb.setDatabaseName("cpe453");
+    rdb.setUserName("root");
+    rdb.setPassword("cstrapwi");
+    */
+
 
     //override_status
     //st    mode    estop
+    overrideStatus = false;
 
     QPalette* palette = new QPalette();
     palette->setColor(QPalette::WindowText,Qt::blue);
@@ -149,7 +154,7 @@ MainWindow::~MainWindow()
 void MainWindow::Add_Train()
 {
     items.clear();
-    ID = QInputDialog::getInt(this, tr("Create Train ID"),tr("TrainID:"),1, 1, 3, 1, &ok);
+    ID = QInputDialog::getInt(this, tr("Input Train Address"),tr("TrainID:"),1, 1, 3, 1, &ok);
     if (ok)
     {
 
@@ -1384,7 +1389,88 @@ void MainWindow::check_sched()
     tmodel3->setTable("Trains");
     tmodel3->select();
 
-//check team 2 SQL for track shutdowns. If any new ones, check schedules, trigger reroutes if necessary
+    tmodel = new QSqlTableModel( this, db );
+    ui->tableView->setModel(tmodel);
+    tmodel->setTable("pathInfoTable");
+    tmodel->select();
+
+    overrideCheck = rdb.exec("SELECT * FROM override_status WHERE mode;"); //check team 5 for override, if overriden, do nothing
+
+    bool stateCheck = false;
+
+    while(overrideCheck.next() == 1)
+    {
+        if (overrideCheck.value(0).isValid())
+            stateCheck = overrideCheck.value(0).toBool();
+    }
+
+    if(!stateCheck) //not overridden, operate normally
+    {
+        if(overrideStatus)
+        {
+            //If returning from override, state of track must be re-established.
+            QMessageBox clearWarning;
+            clearWarning.setText("Notice: Returning from override. The state of the track is now unknown and will be cleared.");
+            clearWarning.exec();
+
+            //Clear State from databases
+            QString DEL_1 = QString("DELETE FROM schedule_train_info");
+            QString DEL_2 = QString("DELETE FROM scheduled_routes");
+            QString DEL_3 = QString("DELETE FROM scheduled_train_info");
+            r1=rdb.exec(DEL_1);
+            r2=rdb.exec(DEL_2);
+            r3=rdb.exec(DEL_3);
+
+            DEL_1 = QString("DELETE FROM Trains");
+            DEL_2 = QString("DELETE FROM trainInfoTable");
+            DEL_3 = QString("DELETE FROM pathInfoTable");
+            r1=db.exec(DEL_1);
+            r2=db.exec(DEL_2);
+            r3=db.exec(DEL_3);
+
+            //Clear State from program variables
+            PATH.clear();
+            ui->trainBox->clear();
+
+            QPalette* overridePalette = new QPalette();
+            overridePalette->setColor(QPalette::WindowText,Qt::blue);
+            ui->overwrite_statusLabel->setPalette(*overridePalette);
+            ui->overwrite_statusLabel->setText("Normal");
+
+            overrideStatus = false;
+        }
+        else
+        {//----------------------------------------------------------THIS IS IT BOYS WHERE WE MAKE THE TRAINS MOVE----------------------------------------------------------------------------------------------------------------
+            runSchedQuery = db.exec("SELECT ID FROM Trains");
+            while(runSchedQuery.next())
+            {
+                QString currentID = runSchedQuery.value(0).toString();
+                runSchedQuery1 = db.exec("SELECT START, Direction, Destination, next, PathID FROM Trains WHERE ID=" + currentID);
+                QString currentStart = runSchedQuery1.value(0).toString();
+                QString currentDirection = runSchedQuery1.value(1).toString();
+                QString currentDestination = runSchedQuery1.value(2).toString();
+                QString currentNext = runSchedQuery1.value(3).toString();
+                QString currentPath = runSchedQuery1.value(4).toString();
+
+                if(currentStart == currentDestination)//If the train is already at its destination, do nothing
+                    break;
+
+
+            }
+        }
+    }
+    else
+    {
+        if(!overrideStatus)  //just now entering override status, change display
+        {
+            QPalette* overridePalette = new QPalette();
+            overridePalette->setColor(QPalette::WindowText,Qt::red);
+            ui->overwrite_statusLabel->setPalette(*overridePalette);
+            ui->overwrite_statusLabel->setText("Overriden");
+
+            overrideStatus = true;
+        }
+    }
 
 //check occupancy data and adjust throttles accordingly,
     //If a schedule cannot be made up with throttle adjustments, trigger reroute
