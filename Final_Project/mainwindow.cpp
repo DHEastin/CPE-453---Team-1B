@@ -1140,15 +1140,15 @@ void MainWindow::Update_ScheduleTable()
             if(ok == 1)
             {
                 tot = 22;
-                tot2 = 33;
+                tot2 = 32;
             }
             else
             {
                 tot = 11;
-                tot2 = 22;
+                tot2 = 21;
             }
             int LEFT = TOT_LEFT - tot;
-            QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
+            QString qtts01 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
             QString qtts0tw = "INSERT INTO scheduled_routes (pathid,next2,next3,next4,next5,next6,next7,next8,next9,next10,next11,nextpath) VALUES (";
             for (LEN= LEN;LEN != tot;LEN++)
             {
@@ -1156,8 +1156,8 @@ void MainWindow::Update_ScheduleTable()
             {
                 QString I_D;
                 I_D = QString("%1").arg(path_ID);
-                qtts0.append(I_D);
-                qtts0.append(",");
+                qtts01.append(I_D);
+                qtts01.append(",");
                 qtts0tw.append(I_D);
                 qtts0tw.append(",");
 
@@ -1174,8 +1174,8 @@ void MainWindow::Update_ScheduleTable()
             {
                 QString I_D;
                 I_D = QString("'%1'").arg(PATH.value(LEN));
-                qtts0.append(I_D);
-                qtts0.append(",");
+                qtts01.append(I_D);
+                qtts01.append(",");
                 qtts0tw.append(I_D);
                 qtts0tw.append(",");
             }
@@ -1183,66 +1183,63 @@ void MainWindow::Update_ScheduleTable()
             QString I_D;
             path_ID++;
             I_D = QString("%1").arg(path_ID);
-            qtts0.append(I_D);
-            qtts0.append(")");
+            qtts01.append(I_D);
+            qtts01.append(")");
             qtts0tw.append(I_D);
             qtts0tw.append(")");
-            //qDebug() << qtts0;
+            qDebug() << qtts01;
 
-            o = db.exec(qtts0);
+            o = db.exec(qtts01);
             if(rdb.isOpen())
             {
             r3 = rdb.exec(qtts0tw);
             }
 
-        //qDebug() <<"LEFT= "<< LEFT;
+        qDebug() <<"LEFT= "<< LEFT;
         if(LEFT <= 11) //Less than 10 points between source and destination
         {
             int LENL = 0;
-            //qDebug() <<"LEN= "<< LEN <<"PATH.length()= "<<PATH.length();
-            QString qtts0 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
+            qDebug() <<"LEN= "<< LEN <<"PATH.length()= "<<PATH.length();
+            QString qtts02 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
             QString qtts0te = "INSERT INTO scheduled_routes (pathid,next2,next3,next4,next5,next6,next7,next8,next9,next10,next11,nextpath) VALUES (";
+            if(LENL == 0)
+            {
+                QString I_D;
+                I_D = QString("%1").arg(path_ID);
+                qtts02.append(I_D);
+                qtts02.append(",");
+                qtts0te.append(I_D);
+                qtts0te.append(",");
+            }
             for (LEN = LEN;LEN != PATH.length();LEN++ )
             {
-                if(LENL == 0)
-                {
-                    QString I_D;
-                    I_D = QString("%1").arg(path_ID);
-                    qtts0.append(I_D);
-                    qtts0.append(",");
-                    qtts0te.append(I_D);
-                    qtts0te.append(",");
-                }
-                else
-                {
                     QString I_D;
                     I_D = QString("'%1'").arg(PATH.value(LEN));
-                    qtts0.append(I_D);
-                    qtts0.append(",");
+                    qtts02.append(I_D);
+                    qtts02.append(",");
                     qtts0te.append(I_D);
                     qtts0te.append(",");
-                }
-                LENL++;
+                    LENL++;
             }
 
             //qDebug() <<"LEN= "<< LEN;
                 for (int C_ID = LEN;C_ID != tot2; C_ID++)
                 {
-                    //qDebug() <<"C_ID= "<< C_ID;
-                    qtts0.append("'NULL'");
-                    qtts0.append(",");
+                    qDebug() <<"C_ID= "<< C_ID;
+                    qtts02.append("'NULL'");
+                    qtts02.append(",");
                     qtts0te.append("'NULL'");
                     qtts0te.append(",");
                 }
             QString I_D;
             I_D = QString("%1").arg(path_ID);
-            qtts0.append(I_D);
-            qtts0.append(")");
+            qtts02.append(I_D);
+            qtts02.append(")");
             qtts0te.append(I_D);
             qtts0te.append(")");
-            //qDebug() << qtts0;
+            qDebug() << qtts02;
 
-            o = db.exec(qtts0);
+            o = db.exec(qtts02);
             if(rdb.isOpen())
             {
             r3 = rdb.exec(qtts0te);
