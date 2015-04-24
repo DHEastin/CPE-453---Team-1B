@@ -69,7 +69,7 @@ private:
     int a;
     int MIN_DISTANCE;
     QString SwitchDIR;
-    QString CLOCK;
+    QString CLOCK,PATH_DIR;
     //OPTIONS
     bool Testing_path;
 

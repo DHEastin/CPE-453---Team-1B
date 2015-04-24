@@ -646,7 +646,22 @@ void MainWindow::Schedule()
     Set_Schedule();
 
     PATH.clear();
-    dij_mainprogram();
+
+    QString Edit_ID = QString("SELECT DIR from %1 WHERE ID='%2'").arg("Trains").arg(ui->trainBox->currentText());
+    TRAIN = db.exec(Edit_ID);
+    TRAIN.next();
+    QString Dir = TRAIN.value(0).toString();
+    if(Dir == "C")
+    {
+        PATH_DIR = "Clockwise";
+        dij_mainprogram_copy();
+    }
+    if(Dir == "CC")
+    {
+        PATH_DIR = "C-Clockwise";
+        dij_mainprogram();
+    }
+
     if (ERROR == 1)
     {
          qDebug() <<"Error, No Destination Found OR Already at Destination!";

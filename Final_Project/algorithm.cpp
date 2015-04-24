@@ -569,7 +569,7 @@ void MainWindow::dij_mainprogram_copy() //Main Program
     /*-------------------------------------------------------------------*/
 
     //Reads data for each track and how its connected along with its weight
-    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable2");
     qq = db.exec(t2);
 
     /*-------------------------------------------------------------------*/
@@ -617,7 +617,7 @@ void MainWindow::dij_mainprogram_copy() //Main Program
       /*-------------------------------------------------------------------*/
 
     //Reads data for each track and how its connected along with its weight
-    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable2");
     qq = db.exec(t3);
 
     /*-------------------------------------------------------------------*/
@@ -676,7 +676,7 @@ void MainWindow::dij_mainprogram_copy() //Main Program
     /*-------------------------------------------------------------------*/
 
     //Reads data for each track and how its connected along with its weight
-    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable2");
     qq = db.exec(t2);
 
     /*-------------------------------------------------------------------*/
@@ -725,7 +725,7 @@ void MainWindow::dij_mainprogram_copy() //Main Program
 
 
     //Reads data for each track and how its connected along with its weight
-    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable2");
     qq = db.exec(t3);
 
     //For each switch in trackInfoTable execute the following:
@@ -783,7 +783,7 @@ void MainWindow::dij_mainprogram_copy() //Main Program
     /*-------------------------------------------------------------------*/
 
     //Reads data for each track and how its connected along with its weight
-    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable2");
     qq = db.exec(t2);
 
     /*-------------------------------------------------------------------*/
@@ -831,7 +831,7 @@ void MainWindow::dij_mainprogram_copy() //Main Program
 
 
     //Reads data for each track and how its connected along with its weight
-    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable2");
     qq = db.exec(t3);
 
     //For each switch in trackInfoTable execute the following:
@@ -889,7 +889,7 @@ void MainWindow::dij_mainprogram_copy() //Main Program
     /*-------------------------------------------------------------------*/
 
     //Reads data for each track and how its connected along with its weight
-    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable2");
     qq = db.exec(t2);
 
     /*-------------------------------------------------------------------*/
@@ -937,7 +937,7 @@ void MainWindow::dij_mainprogram_copy() //Main Program
 
 
     //Reads data for each track and how its connected along with its weight
-    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable2");
     qq = db.exec(t3);
 
     //For each switch in trackInfoTable execute the following:
@@ -965,7 +965,7 @@ void MainWindow::dij_mainprogram_copy() //Main Program
         CHECKER = 0;
     }
     }
-    //qDebug() << "End of dij_mainprogram";
+    //qDebug() << "End of dij_mainprogram_copy";
 }
 }
 
