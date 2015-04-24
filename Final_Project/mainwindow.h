@@ -68,6 +68,7 @@ private:
     bool ERROR;
     int a;
     int MIN_DISTANCE;
+    QString SwitchDIR;
 
 private slots:
     void sql_query();
@@ -82,6 +83,7 @@ private slots:
     void Train_Table();
     void dij_main();
     void dij_mainprogram();
+    void dij_mainprogram_copy();
     void DS_Connectivity_Table();
     void Tracklisting_Table();
     void Trackinfo_Table();
