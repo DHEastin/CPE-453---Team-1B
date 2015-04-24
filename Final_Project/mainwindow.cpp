@@ -1918,7 +1918,7 @@ void MainWindow::check_sched()
                         {
                             r3 = rdb.exec("SELECT status FROM `track_ds` WHERE `id`='"+currentNext+"';");
                             r3.next();
-                            move_on = r3.value(0).toString().toInt();
+                            move_on = (r3.value(0).toString()=="1");
                         }
                         else
                             move_on=false;
@@ -2234,15 +2234,27 @@ void MainWindow::check_sched()
                         {
                             r3 = rdb.exec("SELECT status FROM `track_ds` WHERE `id`='"+currentStart+"';");
                             r3.next();
-                            move_on = r3.value(0).toString().toInt();
+                            move_on = (r3.value(0).toString()=="1");
                         }
                         else
                             move_on=false;
 
                         if(move_on)
                         {
-                            BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('TRAIN_REQ', '%1', '50';").arg(currentID);
-                            runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                            if(currentDirection==currentNext)
+                            {
+                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('TRAIN_REQ', '%1', '50';").arg(currentID);
+                                runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                                if(!runSchedQuery.isValid())
+                                    qDebug() << "Error: Throttle write failed\n";
+                            }
+                            else
+                            {
+                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('TRAIN_REQ', '%1', '-50';").arg(currentID);
+                                runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                                if(!runSchedQuery.isValid())
+                                     qDebug() << "Error: Throttle write failed\n";
+                            }
                         }
 
                     }
