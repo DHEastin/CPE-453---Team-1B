@@ -1214,7 +1214,7 @@ void MainWindow::Update_ScheduleTable()
             qtts01.append(")");
             qtts0tw.append(I_D);
             qtts0tw.append(")");
-            qDebug() << qtts01;
+            //qDebug() << qtts01;
 
             o = db.exec(qtts01);
             if(rdb.isOpen())
@@ -1222,11 +1222,11 @@ void MainWindow::Update_ScheduleTable()
             r3 = rdb.exec(qtts0tw);
             }
 
-        qDebug() <<"LEFT= "<< LEFT;
+       // qDebug() <<"LEFT= "<< LEFT;
         if(LEFT <= 11) //Less than 10 points between source and destination
         {
             int LENL = 0;
-            qDebug() <<"LEN= "<< LEN <<"PATH.length()= "<<PATH.length();
+            //qDebug() <<"LEN= "<< LEN <<"PATH.length()= "<<PATH.length();
             QString qtts02 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
             QString qtts0te = "INSERT INTO scheduled_routes (pathid,next2,next3,next4,next5,next6,next7,next8,next9,next10,next11,nextpath) VALUES (";
             if(LENL == 0)
@@ -1252,17 +1252,14 @@ void MainWindow::Update_ScheduleTable()
             //qDebug() <<"LEN= "<< LEN;
                 for (int C_ID = LEN;C_ID != tot2; C_ID++)
                 {
-//<<<<<<< HEAD
                     //qDebug() <<"C_ID= "<< C_ID;
                     qtts01.append("NULL");
                     qtts01.append(",");
                     qtts0te.append("NULL");
-//=======
-                    qDebug() <<"C_ID= "<< C_ID;
+                   // qDebug() <<"C_ID= "<< C_ID;
                     qtts02.append("'NULL'");
                     qtts02.append(",");
                     qtts0te.append("'NULL'");
-//>>>>>>> 40b290a270c4f3749d4f614a37e3e8d2339ab01f
                     qtts0te.append(",");
                 }
             QString I_D;
@@ -1271,7 +1268,7 @@ void MainWindow::Update_ScheduleTable()
             qtts02.append(")");
             qtts0te.append(I_D);
             qtts0te.append(")");
-            qDebug() << qtts02;
+            //qDebug() << qtts02;
 
             o = db.exec(qtts02);
             if(rdb.isOpen())
@@ -2261,7 +2258,7 @@ void MainWindow::check_sched()
                 }
                 else
                 {//The only situation where a path doesn't exist, and the break isn't reached, is when the next space IS destination
-                    if(currentDestination == currentNext)
+                    if(currentDestination == currentNext) // if next piece is the destination
                     {
                         //check if destination detection section is occupied, if so, throttle 0, clear next, and set start to destination. DONE BABY.
                         BLAH1 = QString("SELECT status FROM track_ds WHERE id='%1'").arg(currentDestination);
@@ -2280,17 +2277,27 @@ void MainWindow::check_sched()
 
                                     if(currentDirection==currentDestination)
                                     {
-                                        //currentDirection=WAT;
-
-                                        //NOAH!!!! This is where I need to find out what the new direction facing piece is...
-
+                                        //Set Start to old Destination
+                                        //No new path -- set next piece to Null
                                         currentStart=currentDestination;
                                         currentNext="NULL";
+                                                                                                     //Next Piece //Prev Piece
+                                        QString Sts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current='%2'").arg("DS_Connectivity").arg(currentDestination);
+                                        o = db.exec(Sts1);
+                                        o.next();
+                                        //Next
+                                        QString sts1 = o.value(2).toString();
+                                        //Backward
+                                        QString sts2 = o.value(3).toString();
+                                        qDebug() << sts1 << sts2;
 
-                                        l2 = db.exec("UPDATE `Trains` SET `START`='"+currentStart+"', `Direction`='"+currentDirection+"', `next`=NULL WHERE `ID`='"+currentID+"';");
+                                        //Set currentDirection
+                                        currentDirection = sts1; //Next Piece
+
+                                        l2 = db.exec("UPDATE Train SET START='"+currentStart+"',Direction='"+currentDirection+"', next='NULL' WHERE ID='"+currentID+"';");
                                         if(rdb.isOpen())
                                         {
-                                            r2 = rdb.exec("UPDATE `Trains` SET `current`='"+currentStart+"', `next`=NULL WHERE `id`='"+currentID+"';");
+                                            r2 = rdb.exec("UPDATE `Trains` SET `current`='"+currentStart+"', `next`='NULL' WHERE `id`='"+currentID+"';");
                                         }
                                     }
                                     else
