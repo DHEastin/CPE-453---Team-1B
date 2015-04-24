@@ -1252,17 +1252,17 @@ void MainWindow::Update_ScheduleTable()
             //qDebug() <<"LEN= "<< LEN;
                 for (int C_ID = LEN;C_ID != tot2; C_ID++)
                 {
-<<<<<<< HEAD
+//<<<<<<< HEAD
                     //qDebug() <<"C_ID= "<< C_ID;
-                    qtts0.append("NULL");
-                    qtts0.append(",");
+                    qtts01.append("NULL");
+                    qtts01.append(",");
                     qtts0te.append("NULL");
-=======
+//=======
                     qDebug() <<"C_ID= "<< C_ID;
                     qtts02.append("'NULL'");
                     qtts02.append(",");
                     qtts0te.append("'NULL'");
->>>>>>> 40b290a270c4f3749d4f614a37e3e8d2339ab01f
+//>>>>>>> 40b290a270c4f3749d4f614a37e3e8d2339ab01f
                     qtts0te.append(",");
                 }
             QString I_D;
