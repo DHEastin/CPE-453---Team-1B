@@ -60,6 +60,7 @@ void MainWindow::create_sqltables()
     mm = db.exec(query);
     nn = db.exec(query);
     qq = db.exec(query);
+    kk = db.exec(query);
     INFO = db.exec(query);
     INFO2 = db.exec(query);
     TRAIN = db.exec(query);
@@ -99,7 +100,7 @@ void MainWindow::create_sqltables()
      p.exec("CREATE TABLE switchInfoTable (switch TEXT, position INT, straight TEXT, openPOS TEXT, closedPOS TEXT);");
      p.exec("SELECT * FROM switchInfoTable;");
 
-    TRAIN.exec("CREATE TABLE Trains(ID TEXT, START TEXT, Direction TEXT,Destination TEXT,next TEXT,pathID INT);");
+    TRAIN.exec("CREATE TABLE Trains(ID TEXT, START TEXT, Direction TEXT,Destination TEXT,next TEXT,pathID INT,DIR TEXT);");
     TRAIN.exec("SELECT * FROM Trains;");
 
     TrainSW1.exec("CREATE TABLE Trains1(switch TEXT, position INT);");
@@ -173,7 +174,7 @@ void MainWindow::create_sqltables()
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-12',2,'5-2','3-7','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-13',2,'1-11','1-15','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-14',2,'4-15','1-14','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-15',3,'4-14','4-16','1-12','NL');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-15',3,'4-14','4-16','1-12','NLE');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-16',2,'4-15','1-10','Null','Null');");
 
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('5-1',2,'5-3','4-11','Null','Null');");
@@ -200,7 +201,7 @@ void MainWindow::create_sqltables()
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-2',1,'7-1','Null','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-3',1,'5-6','Null','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-4',1,'5-5','Null','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-5',3,'7-7','7-8','8-5','NR');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-5',3,'7-7','7-8','8-5','NRE');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-6',2,'7-13','8-6','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-7',2,'8-11','7-5','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-8',2,'8-2','7-5','Null','Null');");
@@ -243,13 +244,13 @@ void MainWindow::create_sqltables()
 
     qq.exec("CREATE TABLE trackInfoTable (currentnode INT, nextnode INT, weight INT);");
     /*-------------------------------------------------------------------*/
-        QString s9 = QString("SELECT Current,NumberOfConnections,Connection1,Connection2,Connection3,SwitchDIR from %3").arg("DS_Connectivity");
-        o = db.exec(s9);
-        QString smi3 = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+        QString s10 = QString("SELECT Current,NumberOfConnections,Connection1,Connection2,Connection3,SwitchDIR from %3").arg("DS_Connectivity");
+        o = db.exec(s10);
+        QString smi4 = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
 
     for(;o.next() == 1;) //Check DS_Connectivity table for data
     {
-        n = db.exec(smi3);
+        n = db.exec(smi4);
         for(;n.next() == 1;) //Check each track piece
         {
             int trackID = n.value(0).toInt(); //trackID
@@ -301,6 +302,26 @@ void MainWindow::create_sqltables()
         {
             QString smpms = QString("INSERT INTO switchInfoTable (switch,position,straight,openPOS,closedPOS) VALUES ('%1',0,'%2','%3','%4');").arg(COL0).arg(COL1).arg(COL2).arg(COL3);
             p.exec(smpms);
+            if(SwitchDIR == "NLE")
+            {
+                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                //qq.exec(smpms);
+            }
+            if(SwitchDIR == "SLE")
+            {
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                qq.exec(smpms);
+            }
+            if(SwitchDIR == "NRE")
+            {
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                qq.exec(smpms);
+            }
+            if(SwitchDIR == "SRE")
+            {
+                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                //qq.exec(smpms);
+            }
             if(SwitchDIR == "NL")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
@@ -351,55 +372,142 @@ void MainWindow::create_sqltables()
                 //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 //qq.exec(smpms);
             }
+        } 
+    }
+
+    kk.exec("CREATE TABLE trackInfoTable2 (currentnode INT, nextnode INT, weight INT);");
+    /*-------------------------------------------------------------------*/
+        QString s9 = QString("SELECT Current,NumberOfConnections,Connection1,Connection2,Connection3,SwitchDIR from %3").arg("DS_Connectivity");
+        o = db.exec(s9);
+        QString smi3 = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+
+    for(;o.next() == 1;) //Check DS_Connectivity table for data
+    {
+        n = db.exec(smi3);
+        for(;n.next() == 1;) //Check each track piece
+        {
+            int trackID = n.value(0).toInt(); //trackID
+            QString trackNAME = n.value(1).toString();//trackNAME
+
+                QString Current = o.value(0).toString();//Current
+                NumofConn = o.value(1).toInt();   //Connection1
+                QString Conn1 = o.value(2).toString();//Connection2
+                QString Conn2 = o.value(3).toString();//Connection3
+                QString Conn3 = o.value(4).toString();//Connection3
+                SwitchDIR = o.value(5).toString();//Switch Direction
+
+            //Converts strings to int values
+            if(Current == trackNAME)
+            {
+                COL0 = trackID;
+            }
+            if(Conn1 == trackNAME)
+            {
+                COL1 = trackID;
+            }
+            if(Conn2 == trackNAME)
+            {
+                COL2 = trackID;
+            }
+            if(Conn3 == trackNAME)
+            {
+                COL3 = trackID;
+            }
+
         }
 
-        /*
-        if (COL0 < COL1 && COL0 < COL2)
-        {
-                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                qq.exec(smpms);
-                QString smpms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL1).arg(COL0);
-                qq.exec(smpms1);
-                QString smpms2 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL2);
-                qq.exec(smpms2);
-                QString smpms3 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL2).arg(COL0);
-                qq.exec(smpms3);
-        }
-        else
-        {
-        if (COL0 < COL1)
-        {
-        if (COL0 != COL1)
+        //Tested and Works
+        if(NumofConn == 1) //Dead-Ends
         {
             QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-            qq.exec(smpms);
+            kk.exec(smpms);
+            QString smpms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL1).arg(COL0);
+            kk.exec(smpms1);
+        }
 
-        }
-        }
-        if (COL0 < COL2)
+        if(NumofConn == 2)
         {
-        if (COL0 != COL2)
+            QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL2);
+            kk.exec(smpms);
+        }
+
+        if(NumofConn == 3) //Switches
         {
-            QString smpms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL2);
-            qq.exec(smpms1);
+            //QString smpms = QString("INSERT INTO switchInfoTable (switch,position,straight,openPOS,closedPOS) VALUES ('%1',0,'%2','%3','%4');").arg(COL0).arg(COL1).arg(COL2).arg(COL3);
+            //p.exec(smpms);
+            if(SwitchDIR == "NLE")
+            {
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                kk.exec(smpms);
+            }
+            if(SwitchDIR == "SLE")
+            {
+                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                //kk.exec(smpms);
+            }
+            if(SwitchDIR == "NRE")
+            {
+                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                //kk.exec(smpms);
+            }
+            if(SwitchDIR == "SRE")
+            {
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                kk.exec(smpms);
+            }
+            if(SwitchDIR == "NL")
+            {
+                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                //kk.exec(smpms);
+            }
+            if(SwitchDIR == "SL")
+            {
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                kk.exec(smpms);
+            }
+            if(SwitchDIR == "NR")
+            {
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                kk.exec(smpms);
+            }
+            if(SwitchDIR == "SR")
+            {
+                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                //kk.exec(smpms);
+            }
+            if(SwitchDIR == "E")
+            {
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                kk.exec(smpms);
+            }
+            if(SwitchDIR == "W")
+            {
+                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                //kk.exec(smpms);
+            }
+            if(SwitchDIR == "IE")
+            {
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                kk.exec(smpms);
+            }
+            if(SwitchDIR == "IW")
+            {
+                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                //kk.exec(smpms);
+            }
+            if(SwitchDIR == "BE")
+            {
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                kk.exec(smpms);
+            }
+            if(SwitchDIR == "BW")
+            {
+                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                //kk.exec(smpms);
+            }
         }
-        }
-        if (NumofConn == 3)
-        {
-        //if (COL0 < COL3)
-        //{
-        if (COL0 != COL3)
-        {
-            //QString smpms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-            //qq.exec(smpms1);
-            QString smpms2 = QString("INSERT INTO switchInfoTable (switch,position,straight,openPOS,closedPOS) VALUES ('%1',0,'%2','%3','%4');").arg(COL0).arg(COL1).arg(COL2).arg(COL3);
-            p.exec(smpms2);
-        }
-        //}
-        }
-        }
-    */
     }
+    kk.exec("SELECT * FROM trackInfoTable2;");
 
     //Create Throttle_Info Table
     //CURRENTLY NOT IMPORTANT

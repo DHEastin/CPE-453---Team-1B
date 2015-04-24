@@ -345,6 +345,7 @@
      <addaction name="actionView_DS_Connectivity"/>
      <addaction name="actionView_Pathinfo"/>
      <addaction name="actionView_Trackinfo"/>
+     <addaction name="actionView_Trackinfo2"/>
      <addaction name="actionView_Tracklisting"/>
      <addaction name="actionView_Switchinfo"/>
      <addaction name="actionView_Trains1"/>
@@ -482,6 +483,11 @@
   <action name="actionView_Trains5">
    <property name="text">
     <string>View Trains5</string>
+   </property>
+  </action>
+  <action name="actionView_Trackinfo2">
+   <property name="text">
+    <string>View Trackinfo2</string>
    </property>
   </action>
  </widget>

@@ -131,6 +131,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionView_DS_Connectivity,SIGNAL(triggered()),this,SLOT(DS_Connectivity_Table()));
     connect(ui->actionView_Tracklisting,SIGNAL(triggered()),this,SLOT(Tracklisting_Table()));
     connect(ui->actionView_Trackinfo,SIGNAL(triggered()),this,SLOT(Trackinfo_Table()));
+    connect(ui->actionView_Trackinfo2,SIGNAL(triggered()),this,SLOT(Trackinfo2_Table()));
     connect(ui->actionView_Pathinfo,SIGNAL(triggered()),this,SLOT(Pathinfo_Table()));
     connect(ui->actionView_Scheduled_routes,SIGNAL(triggered()),this,SLOT(Scheduled_routes()));
     connect(ui->actionView_Scheduled_train_info,SIGNAL(triggered()),this,SLOT(Scheduled_train_info()));
@@ -184,11 +185,11 @@ void MainWindow::Add_Train()
     QString ts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current='%2'").arg("DS_Connectivity").arg(Start);
     o = db.exec(ts1);
     o.next();
-    QString sts1 = o.value(2).toString();
+    QString sts1 = o.value(2).toString();//Forward -- Counter Clockwise
     items.append(sts1);
 
     //Backward
-    QString sts2 = o.value(3).toString();
+    QString sts2 = o.value(3).toString();//Backward -- Clockwise
     items.append(sts2);
 
     direction = QInputDialog::getItem(this, tr("Choose Direction"),
@@ -196,9 +197,18 @@ void MainWindow::Add_Train()
     if (ok)
     {
         ui->trainBox->addItem(QString::number(ID));
+
+        if(direction == sts1)
+        {
+            CLOCK = "CC";
+        }
+        if(direction == sts2)
+        {
+            CLOCK = "C";
+        }
     }
 
-    QString qtts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination,next,pathID) VALUES ('%1','%2','%3','%4','%5','%6')").arg(ID).arg(Start).arg(direction).arg("EMPTY").arg("EMPTY").arg(999);
+    QString qtts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination,next,pathID,DIR) VALUES ('%1','%2','%3','%4','%5','%6','%7')").arg(ID).arg(Start).arg(direction).arg("EMPTY").arg("EMPTY").arg(999).arg(CLOCK);
     o = db.exec(qtts0);
     o.next();
     if(rdb.isOpen())
@@ -263,7 +273,16 @@ void MainWindow::Edit_Train()
     direction = QInputDialog::getItem(this, tr("Change Direction"),
                                          QString (TITLE2), items, 0, false, &ok);
 
-    QString tts0 = QString("UPDATE Trains SET Start='%1',Direction='%2' WHERE ID='%3'").arg(Start).arg(direction).arg(ID);
+    if(direction == sts1)
+    {
+        CLOCK = "CC";
+    }
+    if(direction == sts2)
+    {
+        CLOCK = "C";
+    }
+
+    QString tts0 = QString("UPDATE Trains SET Start='%1',Direction='%2',DIR='%3' WHERE ID='%4'").arg(Start).arg(direction).arg(CLOCK).arg(ID);
     TRAIN = db.exec(tts0);
     if(rdb.isOpen())
     {
@@ -323,6 +342,7 @@ void MainWindow::Edit_Train()
         layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
         msgBox.exec();
     }
+    DEL_ALL_OLD_PATH();
 }
 
 /*-------------------------------------------------------------------------------------------------------------*/
@@ -702,6 +722,21 @@ void MainWindow::Trackinfo_Table()
     tmodel->setTable("trackInfoTable");
     tmodel->select();
     view->setWindowTitle("trackInfoTable");
+    view->show();
+}
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Allows viewing of trackinfo Table
+/*-------------------------------------------------------------------------------------------------------------*/
+
+void MainWindow::Trackinfo2_Table()
+{
+    tmodel = new QSqlTableModel( this, db );
+    view = new QTableView;
+    view->setModel(tmodel);
+    tmodel->setTable("trackInfoTable2");
+    tmodel->select();
+    view->setWindowTitle("trackInfoTable2");
     view->show();
 }
 
