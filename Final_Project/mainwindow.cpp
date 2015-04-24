@@ -9,13 +9,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //TO DO LIST
     //---------------------------------------
-    //Check Overwrite Status for Team5 -- On Team 4A Database
-    //Allow more than 22 nodes
     //Implement checking for direction by checking nextID1 compared to direction -- if no path found -- MSGBOX FLIP TRAIN
 
     //BUGS
     //---------------------------------------
-    //
+    //When train has reached destination:
+    //  PATHID does not change back to 999
+    //  Old Path is not deleted from Path Table
+    //Issues with path moving when dealing with multiple row paths
+    //When adding a train prevent multiple trains with same ID from showing up in TrainBox
+
+    //OPTIONS
+    Testing_path = 0; //0 -- Path will not change unless connected to Pavelow  //1 -- Path will update even while disconnected from pavelow
 
     this->setWindowTitle("Train Scheduling Application");
     path_ID = 1;
@@ -141,7 +146,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(check_sched()));
-    timer->start(200);
+    timer->start(500);
 }
 
 MainWindow::~MainWindow()
@@ -156,6 +161,7 @@ MainWindow::~MainWindow()
 void MainWindow::Add_Train()
 {
     items.clear();
+    trains.clear();
     ID = QInputDialog::getInt(this, tr("Input Train Address"),tr("TrainID:"),1, 1, 5, 1, &ok);
     if (ok)
     {
@@ -202,7 +208,6 @@ void MainWindow::Add_Train()
     r1.next();
     }
     }
-    //scheduled_train_info
 }
 
 /*-------------------------------------------------------------------------------------------------------------*/
@@ -1361,6 +1366,91 @@ void MainWindow::DEL_OLD_PATH()
     }
 }
 
+/***************************************************************************************************************************/
+
+void MainWindow::DEL_ALL_OLD_PATH()
+{
+    int sts1/*,sts2*/,sts3,sts4/*,sts5*/;
+
+    QString string_s1;
+
+    QString tqtps1 = QString("SELECT pathID FROM Trains");
+    TRAIN = db.exec(tqtps1);
+
+    int Test = sts1+1;
+
+    for(;TRAIN.next() == 1;) //If it is 1 it contains data
+    {
+    sts1 = TRAIN.value(0).toInt();
+
+    QString tqtps2 = QString("SELECT pathID,nextpathID FROM pathInfoTable WHERE pathID=%1").arg(sts1);
+    Path = db.exec(tqtps2);
+
+    for(;Path.next() == 1;) //If it is 1 it contains data
+    {
+    //sts2 = Path.value(0).toInt();
+    sts3 = Path.value(1).toInt();
+    string_s1 = Path.value(2).toString();
+    }
+
+    QString tqtps3 = QString("SELECT pathID,nextID1,nextpathID FROM pathInfoTable WHERE pathID=%1").arg(Test);
+    Path = db.exec(tqtps3);
+
+    for(;Path.next() == 1;) //If it is 1 it contains data
+    {
+    sts4 = Path.value(0).toInt();
+    //string_s1 = Path.value(1).toString();
+    }
+
+    if(string_s1=="")
+    {
+        QString ttps2 = QString("DELETE FROM pathInfoTable WHERE nextID1='%1'").arg("NULL");
+        TRAIN2 = db.exec(ttps2);
+
+        if(rdb.isOpen())
+        {
+        QString qtts0t = QString("DELETE FROM scheduled_routes WHERE next2='%1'").arg("NULL");
+        r2 = rdb.exec(qtts0t);
+        }
+    }
+
+    if(string_s1=="NULL")
+    {
+        QString ttps2 = QString("DELETE FROM pathInfoTable WHERE nextID1='%1'").arg("NULL");
+        TRAIN2 = db.exec(ttps2);
+
+        if(rdb.isOpen())
+        {
+        QString qtts0t = QString("DELETE FROM scheduled_routes WHERE next2='%1'").arg("NULL");
+        r2 = rdb.exec(qtts0t);
+        }
+    }
+
+    //qDebug() << sts1<< sts2<< sts3<<sts4<<sts5;
+
+    QString ttps1 = QString("DELETE FROM pathInfoTable WHERE pathID=%1").arg(sts1);
+    TRAIN2 = db.exec(ttps1);
+
+    if(rdb.isOpen())
+    {
+    QString qtts0t = QString("DELETE FROM scheduled_routes WHERE pathid='%1'").arg(sts1);
+    r2 = rdb.exec(qtts0t);
+    }
+
+    if(sts3 == sts4)
+    {
+        QString ttps1 = QString("DELETE FROM pathInfoTable WHERE pathID=%1").arg(sts4);
+        Path2 = db.exec(ttps1);
+
+        if(rdb.isOpen())
+        {
+        QString qtts0t = QString("DELETE FROM scheduled_routes WHERE pathid=%1").arg(sts4);
+        r2 = rdb.exec(qtts0t);
+        }
+    }
+    }
+}
+
 /*-------------------------------------------------------------------------------------------------------------*/
 //Deletes unused/deleted train paths from pathinfoTable
 /*-------------------------------------------------------------------------------------------------------------*/
@@ -1547,9 +1637,9 @@ void MainWindow::check_sched()
         else
         {//----------------------------------------------------------THIS IS IT BOYS WHERE WE MAKE THE TRAINS MOVE----------------------------------------------------------------------------------------------------------------
             QString currentID, currentStart,currentDirection,currentDestination,currentNext,currentPath;
-            QString nextNext1, nextNext2, nextNext3;
+            QString nextNext1, nextNext2;//, nextNext3;
 
-            QString BLAH1, BLAH2, BLAH3;
+            QString BLAH1, BLAH3;//, BLAH3;
             QString BLAH = QString("SELECT ID FROM Trains");
             runSchedQuery = db.exec(BLAH);
 
@@ -1604,18 +1694,18 @@ void MainWindow::check_sched()
 
                     if(currentNext==nextNext1 || currentNext=="NULL"|| currentNext=="EMPTY")//If they are the same, some shifting needs to happen
                     {
-                        l1 = db.exec("UPDATE `Trains` SET `next`='"+nextNext1+"' WHERE ID='"+currentID+"';");
+                        l1 = db.exec("UPDATE Trains SET next='"+nextNext1+"' WHERE ID='"+currentID+"';");
                         if(rdb.isOpen())
                         {
-                            r2 = rdb.exec("UPDATE `scheduled_train_info` SET `next`='"+nextNext1+"' WHERE `id`='"+currentID+"';");
+                            r2 = rdb.exec("UPDATE scheduled_train_info SET next='"+nextNext1+"' WHERE id='"+currentID+"';");
                         }
 
                         QString thisPath, nextPath;
                         thisPath = currentPath;
-                        l1 = db.exec("UPDATE `pathInfoTable` SET `nextID1`=NULL WHERE pathID='"+thisPath+"';");
+                        l1 = db.exec("UPDATE pathInfoTable SET nextID1='NULL' WHERE pathID='"+thisPath+"';");
                         if(rdb.isOpen())
                         {
-                            r1 = rdb.exec("UPDATE `scheduled_routes` SET `next2`=NULL WHERE pathID='"+thisPath+"';");
+                            r1 = rdb.exec("UPDATE scheduled_routes SET next2='NULL' WHERE pathID='"+thisPath+"';");
                         }
 
 
@@ -1645,36 +1735,36 @@ void MainWindow::check_sched()
 
                         while(1)//the only way out is to earn a break, also the idea here is Matroska style up until entry 10
                         {
-                            l1 = db.exec("SELECT `nextID2` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                            l1 = db.exec("SELECT nextID2 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                             l1.next();
                             if (l1.value(0).isNull())//this row is done. Delete it, change previous row, and if no previous row, remove path from Train table
                             {
                                 if (nextPath==thisPath) //no previous path, remove row from train table
                                 {
-                                    l1 = db.exec("DELETE FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                    l1 = db.exec("DELETE FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                     if(rdb.isOpen())
                                     {
-                                        r1 = rdb.exec("DELETE FROM `scheduled_routes` WHERE pathID='"+thisPath+"';");
+                                        r1 = rdb.exec("DELETE FROM scheduled_routes WHERE pathID='"+thisPath+"';");
                                     }
 
-                                    l1 = db.exec("UPDATE `Trains` SET `pathID`='999' WHERE ID='"+currentID+"';");
+                                    l1 = db.exec("UPDATE Trains SET pathID='999' WHERE ID='"+currentID+"';");
                                     if(rdb.isOpen())
                                     {
-                                        r1 = rdb.exec("UPDATE `scheduled_train_info` SET `pathID`='NULL'999' WHERE pathID='"+currentID+"';");
+                                        r1 = rdb.exec("UPDATE scheduled_train_info SET pathID='999' WHERE pathID='"+currentID+"';");
                                     }
                                 }
                                 else                    //there is a previous row, delete current one, and tie up previous row.
                                 {
-                                    l1 = db.exec("DELETE FROM `pathInfoTable` WHERE pathID='"+nextPath+"';");
+                                    l1 = db.exec("DELETE FROM pathInfoTable WHERE pathID='"+nextPath+"';");
                                     if(rdb.isOpen())
                                     {
-                                        r1 = rdb.exec("DELETE FROM `scheduled_routes` WHERE pathID='"+nextPath+"';");
+                                        r1 = rdb.exec("DELETE FROM scheduled_routes WHERE pathID='"+nextPath+"';");
                                     }
 
-                                    l1 = db.exec("UPDATE `pathInfoTable` SET `nextpathID`='"+thisPath+"' WHERE pathID='"+thisPath+"';");
+                                    l1 = db.exec("UPDATE pathInfoTable SET nextpathID='"+thisPath+"' WHERE pathID='"+thisPath+"';");
                                     if(rdb.isOpen())
                                     {
-                                        r1 = rdb.exec("UPDATE `scheduled_routes` SET `nextpath`='"+thisPath+"' WHERE pathID='"+thisPath+"';");
+                                        r1 = rdb.exec("UPDATE scheduled_routes SET nextpath='"+thisPath+"' WHERE pathID='"+thisPath+"';");
                                     }
                                 }
                                 break;
@@ -1686,171 +1776,171 @@ void MainWindow::check_sched()
                                 nextNext2 = l1.value(0).toString();
 
 
-                                l1 = db.exec("UPDATE `pathInfoTable` SET `nextID1`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                l1 = db.exec("UPDATE pathInfoTable SET nextID1='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                 if(rdb.isOpen())
                                 {
-                                    r1 = rdb.exec("UPDATE `scheduled_routes` SET `next2`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                    r1 = rdb.exec("UPDATE scheduled_routes SET next2='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                 }
 
-                                l1 = db.exec("UPDATE `pathInfoTable` SET `nextID2`=NULL WHERE pathID='"+thisPath+"';");
+                                l1 = db.exec("UPDATE pathInfoTable SET nextID2='NULL' WHERE pathID='"+thisPath+"';");
                                 if(rdb.isOpen())
                                 {
-                                    r1 = rdb.exec("UPDATE `scheduled_routes` SET `next3`=NULL WHERE pathID='"+thisPath+"';");
+                                    r1 = rdb.exec("UPDATE scheduled_routes SET next3='NULL' WHERE pathID='"+thisPath+"';");
                                 }
 
-                                l1 = db.exec("SELECT `nextID3` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                l1 = db.exec("SELECT nextID3 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                 l1.next();
                                 if(l1.value(0).isNull())
                                     break;
                                 else
                                 {
                                     nextNext2 = l1.value(0).toString();
-                                    l1 = db.exec("UPDATE `pathInfoTable` SET `nextID2`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                    l1 = db.exec("UPDATE pathInfoTable SET nextID2='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                     if(rdb.isOpen())
                                     {
-                                        r1 = rdb.exec("UPDATE `scheduled_routes` SET `next3`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                        r1 = rdb.exec("UPDATE scheduled_routes SET next3='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                     }
 
-                                    l1 = db.exec("UPDATE `pathInfoTable` SET `nextID3`=NULL WHERE pathID='"+thisPath+"';");
+                                    l1 = db.exec("UPDATE pathInfoTable SET nextID3 = 'NULL' WHERE pathID='"+thisPath+"';");
                                     if(rdb.isOpen())
                                     {
-                                        r1 = rdb.exec("UPDATE `scheduled_routes` SET `next4`=NULL WHERE pathID='"+thisPath+"';");
+                                        r1 = rdb.exec("UPDATE scheduled_routes SET next4='NULL' WHERE pathID='"+thisPath+"';");
                                     }
 
-                                    l1 = db.exec("SELECT `nextID4` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                    l1 = db.exec("SELECT nextID4 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                     l1.next();
                                     if(l1.value(0).isNull())
                                         break;
                                     else
                                     {
                                         nextNext2 = l1.value(0).toString();
-                                        l1 = db.exec("UPDATE `pathInfoTable` SET `nextID3`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                        l1 = db.exec("UPDATE pathInfoTable SET nextID3='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                         if(rdb.isOpen())
                                         {
-                                            r1 = rdb.exec("UPDATE `scheduled_routes` SET `next4`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                            r1 = rdb.exec("UPDATE scheduled_routes SET next4='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                         }
 
-                                        l1 = db.exec("UPDATE `pathInfoTable` SET `nextID4`=NULL WHERE pathID='"+thisPath+"';");
+                                        l1 = db.exec("UPDATE pathInfoTable SET nextID4='NULL' WHERE pathID='"+thisPath+"';");
                                         if(rdb.isOpen())
                                         {
-                                            r1 = rdb.exec("UPDATE `scheduled_routes` SET `next5`=NULL WHERE pathID='"+thisPath+"';");
+                                            r1 = rdb.exec("UPDATE scheduled_routes SET next5='NULL' WHERE pathID='"+thisPath+"';");
                                         }
 
-                                        l1 = db.exec("SELECT `nextID5` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                        l1 = db.exec("SELECT nextID5 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                         l1.next();
                                         if(l1.value(0).isNull())
                                             break;
                                         else
                                         {
                                             nextNext2 = l1.value(0).toString();
-                                            l1 = db.exec("UPDATE `pathInfoTable` SET `nextID4`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                            l1 = db.exec("UPDATE pathInfoTable SET nextID4='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                             if(rdb.isOpen())
                                             {
-                                                r1 = rdb.exec("UPDATE `scheduled_routes` SET `next5`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                r1 = rdb.exec("UPDATE scheduled_routes SET next5='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                             }
 
-                                            l1 = db.exec("UPDATE `pathInfoTable` SET `nextID5`=NULL WHERE pathID='"+thisPath+"';");
+                                            l1 = db.exec("UPDATE pathInfoTable SET nextID5='NULL' WHERE pathID='"+thisPath+"';");
                                             if(rdb.isOpen())
                                             {
-                                                r1 = rdb.exec("UPDATE `scheduled_routes` SET `next6`=NULL WHERE pathID='"+thisPath+"';");
+                                                r1 = rdb.exec("UPDATE scheduled_routes SET next6='NULL' WHERE pathID='"+thisPath+"';");
                                             }
 
-                                            l1 = db.exec("SELECT `nextID6` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                            l1 = db.exec("SELECT nextID6 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                             l1.next();
                                             if(l1.value(0).isNull())
                                                 break;
                                             else
                                             {
                                                 nextNext2 = l1.value(0).toString();
-                                                l1 = db.exec("UPDATE `pathInfoTable` SET `nextID5`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                l1 = db.exec("UPDATE pathInfoTable SET nextID5='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                 if(rdb.isOpen())
                                                 {
-                                                    r1 = rdb.exec("UPDATE `scheduled_routes` SET `next6`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next6='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                 }
 
-                                                l1 = db.exec("UPDATE `pathInfoTable` SET `nextID6`=NULL WHERE pathID='"+thisPath+"';");
+                                                l1 = db.exec("UPDATE pathInfoTable SET nextID6='NULL' WHERE pathID='"+thisPath+"';");
                                                 if(rdb.isOpen())
                                                 {
-                                                    r1 = rdb.exec("UPDATE `scheduled_routes` SET `next7`=NULL WHERE pathID='"+thisPath+"';");
+                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next7='NULL' WHERE pathID='"+thisPath+"';");
                                                 }
 
-                                                l1 = db.exec("SELECT `nextID7` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                                l1 = db.exec("SELECT nextID7 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                                 l1.next();
                                                 if(l1.value(0).isNull())
                                                     break;
                                                 else
                                                 {
                                                     nextNext2 = l1.value(0).toString();
-                                                    l1 = db.exec("UPDATE `pathInfoTable` SET `nextID6`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                    l1 = db.exec("UPDATE pathInfoTable SET nextID6='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                     if(rdb.isOpen())
                                                     {
-                                                        r1 = rdb.exec("UPDATE `scheduled_routes` SET `next7`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                        r1 = rdb.exec("UPDATE scheduled_routes SET next7='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                     }
 
-                                                    l1 = db.exec("UPDATE `pathInfoTable` SET `nextID7`=NULL WHERE pathID='"+thisPath+"';");
+                                                    l1 = db.exec("UPDATE pathInfoTable SET nextID7='NULL' WHERE pathID='"+thisPath+"';");
                                                     if(rdb.isOpen())
                                                     {
-                                                        r1 = rdb.exec("UPDATE `scheduled_routes` SET `next8`=NULL WHERE pathID='"+thisPath+"';");
+                                                        r1 = rdb.exec("UPDATE scheduled_routes SET next8='NULL' WHERE pathID='"+thisPath+"';");
                                                     }
 
-                                                    l1 = db.exec("SELECT `nextID8` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                                    l1 = db.exec("SELECT nextID8 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                                     l1.next();
                                                     if(l1.value(0).isNull())
                                                         break;
                                                     else
                                                     {
                                                         nextNext2 = l1.value(0).toString();
-                                                        l1 = db.exec("UPDATE `pathInfoTable` SET `nextID7`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                        l1 = db.exec("UPDATE pathInfoTable SET nextID7='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                         if(rdb.isOpen())
                                                         {
-                                                            r1 = rdb.exec("UPDATE `scheduled_routes` SET `next8`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                            r1 = rdb.exec("UPDATE scheduled_routes SET next8='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                         }
 
-                                                        l1 = db.exec("UPDATE `pathInfoTable` SET `nextID8`=NULL WHERE pathID='"+thisPath+"';");
+                                                        l1 = db.exec("UPDATE pathInfoTable SET nextID8='NULL' WHERE pathID='"+thisPath+"';");
                                                         if(rdb.isOpen())
                                                         {
-                                                            r1 = rdb.exec("UPDATE `scheduled_routes` SET `next9`=NULL WHERE pathID='"+thisPath+"';");
+                                                            r1 = rdb.exec("UPDATE scheduled_routes SET next9='NULL' WHERE pathID='"+thisPath+"';");
                                                         }
 
-                                                        l1 = db.exec("SELECT `nextID9` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                                        l1 = db.exec("SELECT nextID9 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                                         l1.next();
                                                         if(l1.value(0).isNull())
                                                             break;
                                                         else
                                                         {
                                                             nextNext2 = l1.value(0).toString();
-                                                            l1 = db.exec("UPDATE `pathInfoTable` SET `nextID8`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                            l1 = db.exec("UPDATE pathInfoTable SET nextID8='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                             if(rdb.isOpen())
                                                             {
-                                                                r1 = rdb.exec("UPDATE `scheduled_routes` SET `next9`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                                r1 = rdb.exec("UPDATE scheduled_routes SET next9='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                             }
 
-                                                            l1 = db.exec("UPDATE `pathInfoTable` SET `nextID9`=NULL WHERE pathID='"+thisPath+"';");
+                                                            l1 = db.exec("UPDATE pathInfoTable SET nextID9='NULL' WHERE pathID='"+thisPath+"';");
                                                             if(rdb.isOpen())
                                                             {
-                                                                r1 = rdb.exec("UPDATE `scheduled_routes` SET `next10`=NULL WHERE pathID='"+thisPath+"';");
+                                                                r1 = rdb.exec("UPDATE scheduled_routes SET next10='NULL' WHERE pathID='"+thisPath+"';");
                                                             }
 
-                                                            l1 = db.exec("SELECT `nextID10` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                                            l1 = db.exec("SELECT nextID10 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                                             l1.next();
                                                             if(l1.value(0).isNull())
                                                                 break;
                                                             else
                                                             {
                                                                 nextNext2 = l1.value(0).toString();
-                                                                l1 = db.exec("UPDATE `pathInfoTable` SET `nextID9`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                                l1 = db.exec("UPDATE pathInfoTable SET nextID9='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                                 if(rdb.isOpen())
                                                                 {
-                                                                    r1 = rdb.exec("UPDATE `scheduled_routes` SET `next10`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next10='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                                 };
 
-                                                                l1 = db.exec("UPDATE `pathInfoTable` SET `nextID10`=NULL WHERE pathID='"+thisPath+"';");
+                                                                l1 = db.exec("UPDATE pathInfoTable SET nextID10='NULL' WHERE pathID='"+thisPath+"';");
                                                                 if(rdb.isOpen())
                                                                 {
-                                                                    r1 = rdb.exec("UPDATE `scheduled_routes` SET `next11`=NULL WHERE pathID='"+thisPath+"';");
+                                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next11='NULL' WHERE pathID='"+thisPath+"';");
                                                                 };
 
-                                                                l1 = db.exec("SELECT `nextpathID` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                                                l1 = db.exec("SELECT nextpathID FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                                                 l1.next();
                                                                 nextPath = l1.value(0).toString();
                                                                 if(thisPath == nextPath)
@@ -1859,39 +1949,39 @@ void MainWindow::check_sched()
                                                                 }
                                                                 else
                                                                 {
-                                                                    l1 = db.exec("SELECT `nextID1` FROM `pathInfoTable` WHERE pathID='"+nextPath+"';");
+                                                                    l1 = db.exec("SELECT nextID1 FROM pathInfoTable WHERE pathID='"+nextPath+"';");
                                                                     l1.next();
                                                                     if(l1.value(0).isValid())
                                                                     {
                                                                         if(l1.value(0).isNull())
                                                                         {
-                                                                            l1 = db.exec("DELETE FROM `pathInfoTable` WHERE pathID='"+nextPath+"';");
+                                                                            l1 = db.exec("DELETE FROM pathInfoTable WHERE pathID='"+nextPath+"';");
                                                                             if(rdb.isOpen())
                                                                             {
-                                                                                r1 = rdb.exec("DELETE FROM `scheduled_routes` WHERE pathID='"+nextPath+"';");
-                                                                            };
+                                                                                r1 = rdb.exec("DELETE FROM scheduled_routes WHERE pathID='"+nextPath+"';");
+                                                                            }
 
-                                                                            l1 = db.exec("UPDATE `pathInfoTable` SET `nextpathID`='"+thisPath+"' WHERE pathID='"+thisPath+"';");
+                                                                            l1 = db.exec("UPDATE pathInfoTable SET nextpathID='"+thisPath+"' WHERE pathID='"+thisPath+"';");
                                                                             if(rdb.isOpen())
                                                                             {
-                                                                                r1 = rdb.exec("UPDATE `scheduled_routes` SET `nextpath`='"+thisPath+"' WHERE pathID='"+thisPath+"';");
+                                                                                r1 = rdb.exec("UPDATE scheduled_routes SET nextpath='"+thisPath+"' WHERE pathID='"+thisPath+"';");
                                                                             }
                                                                         }
                                                                         else
                                                                         {
                                                                             nextNext1 = l1.value(0).toString();
 
-                                                                            l1 = db.exec("UPDATE `pathInfoTable` SET `nextID1`='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
+                                                                            l1 = db.exec("UPDATE pathInfoTable SET nextID1='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
                                                                             if(rdb.isOpen())
                                                                             {
-                                                                                r1 = rdb.exec("UPDATE `scheduled_routes` SET `next2`='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
+                                                                                r1 = rdb.exec("UPDATE scheduled_routes SET next2='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
                                                                             }
 
 
-                                                                            l1 = db.exec("UPDATE `pathInfoTable` SET `nextID1`=NULL WHERE pathID='"+nextPath+"';");
+                                                                            l1 = db.exec("UPDATE pathInfoTable SET nextID1='NULL' WHERE pathID='"+nextPath+"';");
                                                                             if(rdb.isOpen())
                                                                             {
-                                                                                r1 = rdb.exec("UPDATE `scheduled_routes` SET `next2`=NULL WHERE pathID='"+nextPath+"';");
+                                                                                r1 = rdb.exec("UPDATE scheduled_routes SET next2='NULL' WHERE pathID='"+nextPath+"';");
                                                                             }
 
                                                                         }
@@ -1913,39 +2003,41 @@ void MainWindow::check_sched()
                         bool move_on;
                         if(rdb.isOpen())
                         {
-                            r3 = rdb.exec("SELECT status FROM `track_ds` WHERE `id`='"+currentNext+"';");
+                            r3 = rdb.exec("SELECT status FROM track_ds WHERE id='"+currentNext+"';");
                             r3.next();
                             move_on = (r3.value(0).toString()=="1");
                         }
                         else
-                            move_on=false;
-
-                        if(move_on)//If the next piece is occupied, move forward on path
                         {
-                            l1 = db.exec("UPDATE `Trains` SET `next`='"+nextNext1+"' WHERE ID='"+currentID+"';");
+                            move_on=false;
+                        }
+
+                        if(move_on || Testing_path == 1)//If the next piece is occupied, move forward on path
+                        {
+                            l1 = db.exec("UPDATE Trains SET next='"+nextNext1+"' WHERE ID='"+currentID+"';");
                             if(rdb.isOpen())
                             {
-                                r2 = rdb.exec("UPDATE `scheduled_train_info` SET `next`='"+nextNext1+"' WHERE `id`='"+currentID+"';");
+                                r2 = rdb.exec("UPDATE scheduled_train_info SET next='"+nextNext1+"' WHERE `id`='"+currentID+"';");
                             }
 
                             QString thisPath, nextPath;
                             thisPath = currentPath;
-                            l1 = db.exec("UPDATE `pathInfoTable` SET `nextID1`=NULL WHERE pathID='"+thisPath+"';");
+                            l1 = db.exec("UPDATE pathInfoTable SET nextID1='NULL' WHERE pathID='"+thisPath+"';");
                             if(rdb.isOpen())
                             {
-                                r1 = rdb.exec("UPDATE `scheduled_routes` SET `next2`=NULL WHERE pathID='"+thisPath+"';");
+                                r1 = rdb.exec("UPDATE scheduled_routes SET next2='NULL' WHERE pathID='"+thisPath+"';");
                             }
 
 
-                            if(currentDirection==currentNext)//facing foreward
+                            if(currentDirection==currentNext)//facing forward
                             {
                                 currentDirection=nextNext1;
                                 currentStart=currentNext;
 
-                                l2 = db.exec("UPDATE `Trains` SET `START`='"+currentStart+"', `Direction`='"+currentDirection+"' WHERE `ID`='"+currentID+"';");
+                                l2 = db.exec("UPDATE Trains SET START='"+currentStart+"', Direction='"+currentDirection+"' WHERE ID='"+currentID+"';");
                                 if(rdb.isOpen())
                                 {
-                                    r2 = rdb.exec("UPDATE `Trains` SET `current`='"+currentStart+"' WHERE `id`='"+currentID+"';");
+                                    r2 = rdb.exec("UPDATE Trains SET current='"+currentStart+"' WHERE id='"+currentID+"';");
                                 }
                             }
                             else//facing backward
@@ -1953,45 +2045,45 @@ void MainWindow::check_sched()
                                 currentDirection=currentStart;
                                 currentStart=currentNext;
 
-                                l2 = db.exec("UPDATE `Trains` SET `START`='"+currentStart+"', `Direction`='"+currentDirection+"', `next`=NULL WHERE `ID`='"+currentID+"';");
+                                l2 = db.exec("UPDATE Trains SET START='"+currentStart+"', Direction='"+currentDirection+"', next='NULL' WHERE `ID`='"+currentID+"';");
                                 if(rdb.isOpen())
                                 {
-                                    r2 = rdb.exec("UPDATE `Trains` SET `current`='"+currentStart+"', `next`=NULL WHERE `id`='"+currentID+"';");
+                                    r2 = rdb.exec("UPDATE Trains SET current='"+currentStart+"', next='NULL' WHERE id='"+currentID+"';");
                                 }
                             }
 
                             while(1)//the only way out is to earn a break, also the idea here is Matroska style up until entry 10
                             {
-                                l1 = db.exec("SELECT `nextID2` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                l1 = db.exec("SELECT nextID2 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                 l1.next();
                                 if (l1.value(0).isNull())//this row is done. Delete it, change previous row, and if no previous row, remove path from Train table
                                 {
                                     if (nextPath==thisPath) //no previous path, remove row from train table
                                     {
-                                        l1 = db.exec("DELETE FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                        l1 = db.exec("DELETE FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                         if(rdb.isOpen())
                                         {
-                                            r1 = rdb.exec("DELETE FROM `scheduled_routes` WHERE pathID='"+thisPath+"';");
+                                            r1 = rdb.exec("DELETE FROM scheduled_routes WHERE pathID='"+thisPath+"';");
                                         }
 
-                                        l1 = db.exec("UPDATE `Trains` SET `pathID`='999' WHERE ID='"+currentID+"';");
+                                        l1 = db.exec("UPDATE Trains SET pathID='999' WHERE ID='"+currentID+"';");
                                         if(rdb.isOpen())
                                         {
-                                            r1 = rdb.exec("UPDATE `scheduled_train_info` SET `pathID`='NULL'999' WHERE pathID='"+currentID+"';");
+                                            r1 = rdb.exec("UPDATE scheduled_train_info SET pathID='999' WHERE pathID='"+currentID+"';");
                                         }
                                     }
                                     else                    //there is a previous row, delete current one, and tie up previous row.
                                     {
-                                        l1 = db.exec("DELETE FROM `pathInfoTable` WHERE pathID='"+nextPath+"';");
+                                        l1 = db.exec("DELETE FROM pathInfoTable WHERE pathID='"+nextPath+"';");
                                         if(rdb.isOpen())
                                         {
-                                            r1 = rdb.exec("DELETE FROM `scheduled_routes` WHERE pathID='"+nextPath+"';");
+                                            r1 = rdb.exec("DELETE FROM scheduled_routes WHERE pathID='"+nextPath+"';");
                                         }
 
-                                        l1 = db.exec("UPDATE `pathInfoTable` SET `nextpathID`='"+thisPath+"' WHERE pathID='"+thisPath+"';");
+                                        l1 = db.exec("UPDATE pathInfoTable SET nextpathID='"+thisPath+"' WHERE pathID='"+thisPath+"';");
                                         if(rdb.isOpen())
                                         {
-                                            r1 = rdb.exec("UPDATE `scheduled_routes` SET `nextpath`='"+thisPath+"' WHERE pathID='"+thisPath+"';");
+                                            r1 = rdb.exec("UPDATE scheduled_routes SET nextpath='"+thisPath+"' WHERE pathID='"+thisPath+"';");
                                         }
                                     }
                                     break;
@@ -2003,212 +2095,215 @@ void MainWindow::check_sched()
                                     nextNext2 = l1.value(0).toString();
 
 
-                                    l1 = db.exec("UPDATE `pathInfoTable` SET `nextID1`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                    l1 = db.exec("UPDATE pathInfoTable SET nextID1='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                     if(rdb.isOpen())
                                     {
-                                        r1 = rdb.exec("UPDATE `scheduled_routes` SET `next2`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                        r1 = rdb.exec("UPDATE scheduled_routes SET next2='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                     }
 
-                                    l1 = db.exec("UPDATE `pathInfoTable` SET `nextID2`=NULL WHERE pathID='"+thisPath+"';");
+                                    l1 = db.exec("UPDATE pathInfoTable SET nextID2='NULL' WHERE pathID='"+thisPath+"';");
                                     if(rdb.isOpen())
                                     {
-                                        r1 = rdb.exec("UPDATE `scheduled_routes` SET `next3`=NULL WHERE pathID='"+thisPath+"';");
+                                        r1 = rdb.exec("UPDATE scheduled_routes SET next3='NULL' WHERE pathID='"+thisPath+"';");
                                     }
 
-                                    l1 = db.exec("SELECT `nextID3` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                    l1 = db.exec("SELECT nextID3 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                     l1.next();
                                     if(l1.value(0).isNull())
                                         break;
                                     else
                                     {
                                         nextNext2 = l1.value(0).toString();
-                                        l1 = db.exec("UPDATE `pathInfoTable` SET `nextID2`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                        l1 = db.exec("UPDATE pathInfoTable SET nextID2='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                         if(rdb.isOpen())
                                         {
-                                            r1 = rdb.exec("UPDATE `scheduled_routes` SET `next3`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                            r1 = rdb.exec("UPDATE scheduled_routes SET next3='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                         }
 
-                                        l1 = db.exec("UPDATE `pathInfoTable` SET `nextID3`=NULL WHERE pathID='"+thisPath+"';");
+                                        l1 = db.exec("UPDATE pathInfoTable SET nextID3='NULL' WHERE pathID='"+thisPath+"';");
                                         if(rdb.isOpen())
                                         {
-                                            r1 = rdb.exec("UPDATE `scheduled_routes` SET `next4`=NULL WHERE pathID='"+thisPath+"';");
+                                            r1 = rdb.exec("UPDATE scheduled_routes SET next4='NULL' WHERE pathID='"+thisPath+"';");
                                         }
 
-                                        l1 = db.exec("SELECT `nextID4` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                        l1 = db.exec("SELECT nextID4 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                         l1.next();
                                         if(l1.value(0).isNull())
                                             break;
                                         else
                                         {
                                             nextNext2 = l1.value(0).toString();
-                                            l1 = db.exec("UPDATE `pathInfoTable` SET `nextID3`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                            l1 = db.exec("UPDATE pathInfoTable SET nextID3='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                             if(rdb.isOpen())
                                             {
-                                                r1 = rdb.exec("UPDATE `scheduled_routes` SET `next4`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                r1 = rdb.exec("UPDATE scheduled_routes SET next4='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                             }
 
-                                            l1 = db.exec("UPDATE `pathInfoTable` SET `nextID4`=NULL WHERE pathID='"+thisPath+"';");
+                                            l1 = db.exec("UPDATE pathInfoTable SET nextID4='NULL' WHERE pathID='"+thisPath+"';");
                                             if(rdb.isOpen())
                                             {
-                                                r1 = rdb.exec("UPDATE `scheduled_routes` SET `next5`=NULL WHERE pathID='"+thisPath+"';");
+                                                r1 = rdb.exec("UPDATE scheduled_routes SET next5='NULL' WHERE pathID='"+thisPath+"';");
                                             }
 
-                                            l1 = db.exec("SELECT `nextID5` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                            l1 = db.exec("SELECT nextID5 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                             l1.next();
                                             if(l1.value(0).isNull())
                                                 break;
                                             else
                                             {
                                                 nextNext2 = l1.value(0).toString();
-                                                l1 = db.exec("UPDATE `pathInfoTable` SET `nextID4`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                l1 = db.exec("UPDATE pathInfoTable SET nextID4='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                 if(rdb.isOpen())
                                                 {
-                                                    r1 = rdb.exec("UPDATE `scheduled_routes` SET `next5`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next5='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                 }
 
-                                                l1 = db.exec("UPDATE `pathInfoTable` SET `nextID5`=NULL WHERE pathID='"+thisPath+"';");
+                                                l1 = db.exec("UPDATE pathInfoTable SET nextID5='NULL' WHERE pathID='"+thisPath+"';");
                                                 if(rdb.isOpen())
                                                 {
-                                                    r1 = rdb.exec("UPDATE `scheduled_routes` SET `next6`=NULL WHERE pathID='"+thisPath+"';");
+                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next6='NULL' WHERE pathID='"+thisPath+"';");
                                                 }
 
-                                                l1 = db.exec("SELECT `nextID6` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                                l1 = db.exec("SELECT nextID6 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                                 l1.next();
                                                 if(l1.value(0).isNull())
                                                     break;
                                                 else
                                                 {
                                                     nextNext2 = l1.value(0).toString();
-                                                    l1 = db.exec("UPDATE `pathInfoTable` SET `nextID5`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                    l1 = db.exec("UPDATE pathInfoTable SET nextID5='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                     if(rdb.isOpen())
                                                     {
-                                                        r1 = rdb.exec("UPDATE `scheduled_routes` SET `next6`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                        r1 = rdb.exec("UPDATE scheduled_routes SET next6='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                     }
 
-                                                    l1 = db.exec("UPDATE `pathInfoTable` SET `nextID6`=NULL WHERE pathID='"+thisPath+"';");
+                                                    l1 = db.exec("UPDATE pathInfoTable SET nextID6='NULL' WHERE pathID='"+thisPath+"';");
                                                     if(rdb.isOpen())
                                                     {
-                                                        r1 = rdb.exec("UPDATE `scheduled_routes` SET `next7`=NULL WHERE pathID='"+thisPath+"';");
+                                                        r1 = rdb.exec("UPDATE scheduled_routes SET next7='NULL' WHERE pathID='"+thisPath+"';");
                                                     }
 
-                                                    l1 = db.exec("SELECT `nextID7` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                                    l1 = db.exec("SELECT nextID7 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                                     l1.next();
                                                     if(l1.value(0).isNull())
                                                         break;
                                                     else
                                                     {
                                                         nextNext2 = l1.value(0).toString();
-                                                        l1 = db.exec("UPDATE `pathInfoTable` SET `nextID6`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                        l1 = db.exec("UPDATE pathInfoTable SET nextID6='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                         if(rdb.isOpen())
                                                         {
-                                                            r1 = rdb.exec("UPDATE `scheduled_routes` SET `next7`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                            r1 = rdb.exec("UPDATE scheduled_routes SET next7='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                         }
 
-                                                        l1 = db.exec("UPDATE `pathInfoTable` SET `nextID7`=NULL WHERE pathID='"+thisPath+"';");
+                                                        l1 = db.exec("UPDATE pathInfoTable SET nextID7='NULL' WHERE pathID='"+thisPath+"';");
                                                         if(rdb.isOpen())
                                                         {
-                                                            r1 = rdb.exec("UPDATE `scheduled_routes` SET `next8`=NULL WHERE pathID='"+thisPath+"';");
+                                                            r1 = rdb.exec("UPDATE scheduled_routes SET next8='NULL' WHERE pathID='"+thisPath+"';");
                                                         }
 
-                                                        l1 = db.exec("SELECT `nextID8` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                                        l1 = db.exec("SELECT nextID8 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                                         l1.next();
                                                         if(l1.value(0).isNull())
                                                             break;
                                                         else
                                                         {
                                                             nextNext2 = l1.value(0).toString();
-                                                            l1 = db.exec("UPDATE `pathInfoTable` SET `nextID7`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                            l1 = db.exec("UPDATE pathInfoTable SET nextID7='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                             if(rdb.isOpen())
                                                             {
-                                                                r1 = rdb.exec("UPDATE `scheduled_routes` SET `next8`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                                r1 = rdb.exec("UPDATE scheduled_routes SET next8='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                             }
 
-                                                            l1 = db.exec("UPDATE `pathInfoTable` SET `nextID8`=NULL WHERE pathID='"+thisPath+"';");
+                                                            l1 = db.exec("UPDATE pathInfoTable SET nextID8='NULL' WHERE pathID='"+thisPath+"';");
                                                             if(rdb.isOpen())
                                                             {
-                                                                r1 = rdb.exec("UPDATE `scheduled_routes` SET `next9`=NULL WHERE pathID='"+thisPath+"';");
+                                                                r1 = rdb.exec("UPDATE scheduled_routes SET next9='NULL' WHERE pathID='"+thisPath+"';");
                                                             }
 
-                                                            l1 = db.exec("SELECT `nextID9` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                                            l1 = db.exec("SELECT nextID9 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                                             l1.next();
                                                             if(l1.value(0).isNull())
                                                                 break;
                                                             else
                                                             {
                                                                 nextNext2 = l1.value(0).toString();
-                                                                l1 = db.exec("UPDATE `pathInfoTable` SET `nextID8`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                                l1 = db.exec("UPDATE pathInfoTable SET nextID8='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                                 if(rdb.isOpen())
                                                                 {
-                                                                    r1 = rdb.exec("UPDATE `scheduled_routes` SET `next9`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next9='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                                 }
 
-                                                                l1 = db.exec("UPDATE `pathInfoTable` SET `nextID9`=NULL WHERE pathID='"+thisPath+"';");
+                                                                l1 = db.exec("UPDATE pathInfoTable SET nextID9='NULL' WHERE pathID='"+thisPath+"';");
                                                                 if(rdb.isOpen())
                                                                 {
-                                                                    r1 = rdb.exec("UPDATE `scheduled_routes` SET `next10`=NULL WHERE pathID='"+thisPath+"';");
+                                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next10='NULL' WHERE pathID='"+thisPath+"';");
                                                                 }
 
-                                                                l1 = db.exec("SELECT `nextID10` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                                                l1 = db.exec("SELECT nextID10 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                                                 l1.next();
                                                                 if(l1.value(0).isNull())
+                                                                {
                                                                     break;
+                                                                }
                                                                 else
                                                                 {
                                                                     nextNext2 = l1.value(0).toString();
-                                                                    l1 = db.exec("UPDATE `pathInfoTable` SET `nextID9`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                                    l1 = db.exec("UPDATE pathInfoTable SET nextID9='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                                     if(rdb.isOpen())
                                                                     {
-                                                                        r1 = rdb.exec("UPDATE `scheduled_routes` SET `next10`='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
+                                                                        r1 = rdb.exec("UPDATE scheduled_routes SET next10='"+nextNext2+"' WHERE pathID='"+thisPath+"';");
                                                                     };
 
-                                                                    l1 = db.exec("UPDATE `pathInfoTable` SET `nextID10`=NULL WHERE pathID='"+thisPath+"';");
+                                                                    l1 = db.exec("UPDATE pathInfoTable SET nextID10='NULL' WHERE pathID='"+thisPath+"';");
                                                                     if(rdb.isOpen())
                                                                     {
-                                                                        r1 = rdb.exec("UPDATE `scheduled_routes` SET `next11`=NULL WHERE pathID='"+thisPath+"';");
+                                                                        r1 = rdb.exec("UPDATE scheduled_routes SET next11='NULL' WHERE pathID='"+thisPath+"';");
                                                                     };
-
-                                                                    l1 = db.exec("SELECT `nextpathID` FROM `pathInfoTable` WHERE pathID='"+thisPath+"';");
+                                                                    l1 = db.exec("SELECT nextpathID FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                                                     l1.next();
                                                                     nextPath = l1.value(0).toString();
+                                                                    qDebug() << "thisPath" <<thisPath;
+                                                                    qDebug() << "nextPath" <<nextPath;
                                                                     if(thisPath == nextPath)
                                                                     {
                                                                         break;
                                                                     }
                                                                     else
                                                                     {
-                                                                        l1 = db.exec("SELECT `nextID1` FROM `pathInfoTable` WHERE pathID='"+nextPath+"';");
+                                                                        l1 = db.exec("SELECT nextID1 FROM pathInfoTable WHERE pathID='"+nextPath+"';");
                                                                         l1.next();
                                                                         if(l1.value(0).isValid())
                                                                         {
                                                                             if(l1.value(0).isNull())
                                                                             {
-                                                                                l1 = db.exec("DELETE FROM `pathInfoTable` WHERE pathID='"+nextPath+"';");
+                                                                                l1 = db.exec("DELETE FROM pathInfoTable WHERE pathID='"+nextPath+"';");
                                                                                 if(rdb.isOpen())
                                                                                 {
-                                                                                    r1 = rdb.exec("DELETE FROM `scheduled_routes` WHERE pathID='"+nextPath+"';");
+                                                                                    r1 = rdb.exec("DELETE FROM scheduled_routes WHERE pathID='"+nextPath+"';");
                                                                                 };
 
-                                                                                l1 = db.exec("UPDATE `pathInfoTable` SET `nextpathID`='"+thisPath+"' WHERE pathID='"+thisPath+"';");
+                                                                                l1 = db.exec("UPDATE pathInfoTable SET nextpathID='"+thisPath+"' WHERE pathID='"+thisPath+"';");
                                                                                 if(rdb.isOpen())
                                                                                 {
-                                                                                    r1 = rdb.exec("UPDATE `scheduled_routes` SET `nextpath`='"+thisPath+"' WHERE pathID='"+thisPath+"';");
+                                                                                    r1 = rdb.exec("UPDATE scheduled_routes SET nextpath='"+thisPath+"' WHERE pathID='"+thisPath+"';");
                                                                                 }
                                                                             }
                                                                             else
                                                                             {
                                                                                 nextNext1 = l1.value(0).toString();
 
-                                                                                l1 = db.exec("UPDATE `pathInfoTable` SET `nextID1`='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
+                                                                                l1 = db.exec("UPDATE pathInfoTable SET nextID1='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
                                                                                 if(rdb.isOpen())
                                                                                 {
-                                                                                    r1 = rdb.exec("UPDATE `scheduled_routes` SET `next2`='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
+                                                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next2='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
                                                                                 }
 
 
-                                                                                l1 = db.exec("UPDATE `pathInfoTable` SET `nextID1`=NULL WHERE pathID='"+nextPath+"';");
+                                                                                l1 = db.exec("UPDATE pathInfoTable SET nextID1='NULL' WHERE pathID='"+nextPath+"';");
                                                                                 if(rdb.isOpen())
                                                                                 {
-                                                                                    r1 = rdb.exec("UPDATE `scheduled_routes` SET `next2`=NULL WHERE pathID='"+nextPath+"';");
+                                                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next2='NULL' WHERE pathID='"+nextPath+"';");
                                                                                 }
 
                                                                             }
@@ -2226,10 +2321,10 @@ void MainWindow::check_sched()
                             }
                         }
 
-                        move_on;
+                        //move_on;
                         if(rdb.isOpen())
                         {
-                            r3 = rdb.exec("SELECT status FROM `track_ds` WHERE `id`='"+currentStart+"';");
+                            r3 = rdb.exec("SELECT status FROM track_ds WHERE id='"+currentStart+"';");
                             r3.next();
                             move_on = (r3.value(0).toString()=="1");
                         }
@@ -2240,17 +2335,23 @@ void MainWindow::check_sched()
                         {
                             if(currentDirection==currentNext)
                             {
+                                if(rdb.isOpen())
+                                {
                                 BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('TRAIN_REQ', '%1', '50';").arg(currentID);
                                 runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
                                 if(!runSchedQuery.isValid())
                                     qDebug() << "Error: Throttle write failed\n";
+                                }
                             }
                             else
                             {
+                                if(rdb.isOpen())
+                                {
                                 BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('TRAIN_REQ', '%1', '-50';").arg(currentID);
                                 runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
                                 if(!runSchedQuery.isValid())
                                      qDebug() << "Error: Throttle write failed\n";
+                                }
                             }
                         }
 
@@ -2272,8 +2373,11 @@ void MainWindow::check_sched()
 
                                 if(arrival == "1")
                                 {//arrived at destination, stop train, and set tables to know the destination was reached.
+                                    if(rdb.isOpen())
+                                    {
                                     BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('SLOT_REQ', '%1', '0';").arg(currentID);
                                     runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                                    }
 
                                     if(currentDirection==currentDestination)
                                     {
@@ -2297,7 +2401,7 @@ void MainWindow::check_sched()
                                         l2 = db.exec("UPDATE Train SET START='"+currentStart+"',Direction='"+currentDirection+"', next='NULL' WHERE ID='"+currentID+"';");
                                         if(rdb.isOpen())
                                         {
-                                            r2 = rdb.exec("UPDATE `Trains` SET `current`='"+currentStart+"', `next`='NULL' WHERE `id`='"+currentID+"';");
+                                            r2 = rdb.exec("UPDATE Trains SET current='"+currentStart+"', next='NULL' WHERE id='"+currentID+"';");
                                         }
                                     }
                                     else
@@ -2306,21 +2410,24 @@ void MainWindow::check_sched()
                                         currentStart=currentDestination;
                                         currentNext="NULL";
 
-                                        l2 = db.exec("UPDATE `Trains` SET `START`='"+currentStart+"', `Direction`='"+currentDirection+"', `next`=NULL WHERE `ID`='"+currentID+"';");
+                                        l2 = db.exec("UPDATE Trains SET START='"+currentStart+"', Direction='"+currentDirection+"', next='NULL' WHERE ID='"+currentID+"';");
                                         if(rdb.isOpen())
                                         {
-                                            r2 = rdb.exec("UPDATE `Trains` SET `current`='"+currentStart+"', `next`=NULL WHERE `id`='"+currentID+"';");
+                                            r2 = rdb.exec("UPDATE Trains SET current='"+currentStart+"', next='NULL' WHERE id='"+currentID+"';");
                                         }
                                     }
                                 }
                             }
                             else
                             {
+                                if(rdb.isOpen())
+                                {
                                 BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('TRAIN_REQ', '%1', '0';").arg(currentID);
                                 runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
 
                                 BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('TRAIN_REQ', '%1', '0';").arg(currentID);
                                 runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                                }
                                 qDebug() << "Error: Cannot read DS " << currentDestination << ". Stopping train." ;
                             }
                         }
@@ -2328,8 +2435,11 @@ void MainWindow::check_sched()
                     }
                     else
                     {//This section of code should not be possible to reach, so.... stop the train?
+                        if(rdb.isOpen())
+                        {
                         BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('SLOT_REQ', '%1', '0';").arg(currentID);
                         runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                        }
                         qDebug() << "Error: Something has gone horribly awry...";
                     }
                 }
@@ -2348,11 +2458,11 @@ void MainWindow::check_sched()
             QPalette* overridePalette = new QPalette();
             overridePalette->setColor(QPalette::WindowText,Qt::red);
             ui->overwrite_statusLabel->setPalette(*overridePalette);
-            ui->overwrite_statusLabel->setText("Overriden");
+            ui->overwrite_statusLabel->setText("Override Active");
 
             overrideStatus = true;
         }
-    }
+    } 
 
 //check occupancy data and adjust throttles accordingly,
     //If a schedule cannot be made up with throttle adjustments, trigger reroute

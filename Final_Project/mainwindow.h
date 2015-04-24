@@ -56,7 +56,7 @@ private:
     int COL2;
     int COL3;
     int NumofConn;
-    QStringList items;
+    QStringList items,trains;
     bool ok;
     QString Destination;
     int isSave;
@@ -69,6 +69,8 @@ private:
     int a;
     int MIN_DISTANCE;
     QString SwitchDIR;
+    //OPTIONS
+    bool Testing_path;
 
 private slots:
     void sql_query();
@@ -90,6 +92,7 @@ private slots:
     void Update_ScheduleTable();
     void Pathinfo_Table();
     void DEL_OLD_PATH();
+    void DEL_ALL_OLD_PATH();
     void Check_Path_Trains();
     void check_sched();
     void Schedule_train_info();
