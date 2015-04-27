@@ -97,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent) :
        create_sqltables();
        sql_query();
     }
-    QString s9 = QString("SELECT switch,position,straight,openPOS,closedPOS from %3").arg("switchInfoTable");
+    QString s9 = QString("SELECT switch,position,straight,openPOS,closedPOS,SwitchDIR from %3").arg("switchInfoTable");
     p = db.exec(s9);
 
     for(;p.next() == 1;) //Check switchInfoTable table for data
@@ -1168,7 +1168,7 @@ void MainWindow::Update_ScheduleTable()
         int LEN = 0;
         int TOT = PATH.length();
         int TOT_LEFT = TOT - LEN;
-        if (TOT >= 23)
+        if (TOT >= 21)
         {
             ok = 1;
             tot = 11;
@@ -1221,8 +1221,8 @@ void MainWindow::Update_ScheduleTable()
         }
             if(ok == 1)
             {
-                tot = 22;
-                tot2 = 32;
+                tot = 21;
+                tot2 = 31;
             }
             else
             {
@@ -1230,12 +1230,14 @@ void MainWindow::Update_ScheduleTable()
                 tot2 = 21;
             }
             int LEFT = TOT_LEFT - tot;
+            int i = 0;
             QString qtts01 = "INSERT INTO pathInfoTable (pathID,nextID1,nextID2,nextID3,nextID4,nextID5,nextID6,nextID7,nextID8,nextID9,nextID10,nextpathID) VALUES (";
             QString qtts0tw = "INSERT INTO scheduled_routes (pathid,next2,next3,next4,next5,next6,next7,next8,next9,next10,next11,nextpath) VALUES (";
             for (LEN= LEN;LEN != tot;LEN++)
             {
-            if(LEN == 0)
+            if(i == 0)
             {
+                i++;
                 QString I_D;
                 I_D = QString("%1").arg(path_ID);
                 qtts01.append(I_D);
@@ -1782,7 +1784,6 @@ void MainWindow::check_sched()
                                 r2 = rdb.exec("UPDATE `Trains` SET `current`='"+currentStart+"', `next`=NULL WHERE `id`='"+currentID+"';");
                             }
                         }*/
-
                         while(1)//the only way out is to earn a break, also the idea here is Matroska style up until entry 10
                         {
                             l1 = db.exec("SELECT nextID2 FROM pathInfoTable WHERE pathID='"+thisPath+"';");

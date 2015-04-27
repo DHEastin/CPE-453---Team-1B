@@ -101,7 +101,7 @@ std::list<vertex_t> DijkstraGetShortestPathTo(
     return path;
 }
 
-void MainWindow::dij_mainprogram() //Main Program
+void MainWindow::dij_mainprogram() //Main Program -- Counter-Clockwise
 {
     a = 0;
     adjacency_map.clear(); //Clears ajacency_map
@@ -132,7 +132,7 @@ void MainWindow::dij_mainprogram() //Main Program
     /*-------------------------------------------------------------------*/
 
     //Reads data for each track and how its connected along with its weight
-    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable2");
     qq = db.exec(t2);
 
     /*-------------------------------------------------------------------*/
@@ -200,33 +200,92 @@ void MainWindow::dij_mainprogram() //Main Program
     qDebug() <<"End 1st Half of Algorithm";
     }
 
-    //*-------------------------------------------------------------------------------------------------------------------------------------------------
-    //*-------------------------------------------------------------------------------------------------------------------------------------------------
-    //*-------------------------------------------------------------------------------------------------------------------------------------------------
-
-    //Start of Opening Switches
-    if(CHECKER == 1)//Use for checking purposes
+    if(CHECKER == 1)
     {
-        qDebug()<<"Initilize 2nd Part of Algorithm";
-        adjacency_map.clear(); //Clears ajacency_map
-        CHECKER = 0;
+    //Add Switch Positions switch -> openPOS
+    QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS,SwitchDIR FROM switchInfoTable");
+    p = db.exec(tqtps1);
 
-         //Add Switch Positions switch -> closedPOS
-         QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
-         p = db.exec(tqtps1);
+    for(;p.next() == 1;) //If it is 1 it contains data
+    {
+        int ss1 = p.value(0).toInt();//Switch
+        //int ss2 = p.value(1).toInt();//Position
+        //int ss3 = p.value(2).toInt();//Straight
+        int ss4 = p.value(3).toInt();//openPOS
+        int ss5 = p.value(4).toInt();//closedPOS
+        QString Switch_DIR = p.value(5).toString();//SwitchDIR
 
-         for(;p.next() == 1;) //If it is 1 it contains data
-         {
-             int ss1 = p.value(0).toInt();
-             //int ss2 = p.value(1).toInt();
-             //int ss3 = p.value(2).toInt();
-             //int ss4 = p.value(3).toInt();
-             int ss5 = p.value(4).toInt();
-             adjacency_map[ss1].push_back(edge(ss5,  5));
-         }
+        if(Switch_DIR == "E")
+        {
+            adjacency_map[ss1].push_back(edge(ss4,  5)); //Switch to OpenPOS
+        }
+        if(Switch_DIR == "W")
+        {
+            adjacency_map[ss4].push_back(edge(ss1,  5)); //OpenPOS to Switch
+        }
+        if(Switch_DIR == "SL")
+        {
+            adjacency_map[ss1].push_back(edge(ss4,  5)); //Switch to OpenPOS
+        }
+        if(Switch_DIR == "SR")
+        {
+            adjacency_map[ss4].push_back(edge(ss1,  5)); //OpenPOS to Switch
+        }
+        if(Switch_DIR == "NL")
+        {
+            adjacency_map[ss4].push_back(edge(ss1,  5)); //OpenPOS to Switch
+        }
+        if(Switch_DIR == "NR")
+        {
+            adjacency_map[ss1].push_back(edge(ss4,  5)); //Switch to OpenPOS
+        }
+        if(Switch_DIR == "NLE")
+        {
+            adjacency_map[ss1].push_back(edge(ss4,  5)); //Switch to OpenPOS
+        }
+        if(Switch_DIR == "NRE")
+        {
+            adjacency_map[ss4].push_back(edge(ss1,  5)); //OpenPOS to Switch
+        }
+        if(Switch_DIR == "IE")
+        {
+            adjacency_map[ss1].push_back(edge(ss4,  5)); //Switch to OpenPOS
+            adjacency_map[ss5].push_back(edge(ss1,  5)); //ClosedPOS to Switch
+        }
+        if(Switch_DIR == "IW")
+        {
+            adjacency_map[ss1].push_back(edge(ss4,  5)); //Switch to OpenPOS
+            adjacency_map[ss5].push_back(edge(ss1,  5)); //ClosedPOS to Switch
+        }
+        if(Switch_DIR == "IEE")
+        {
+            adjacency_map[ss1].push_back(edge(ss4,  5)); //Switch to OpenPOS
+            adjacency_map[ss5].push_back(edge(ss1,  5)); //ClosedPOS to Switch
+        }
+        if(Switch_DIR == "IWW")
+        {
+            adjacency_map[ss4].push_back(edge(ss1,  5)); //Switch to OpenPOS
+            adjacency_map[ss1].push_back(edge(ss5,  5)); //ClosedPOS to Switch
+        }
+        if(Switch_DIR == "BE")
+        {
+            adjacency_map[ss1].push_back(edge(ss4,  5)); //Switch to OpenPOS
+        }
+        if(Switch_DIR == "BW")
+        {
+            adjacency_map[ss4].push_back(edge(ss1,  5)); //OpenPOS to Switch
+        }
+        if(Switch_DIR == "EE")
+        {
+            adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+        }
+        if(Switch_DIR == "WW")
+        {
+            adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+        }
+     }
 
-
-  //Reads track ids and names for showing the path
+   //Reads track ids and names for showing the path
     /*-------------------------------------------------------------------*/
     QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
     n = db.exec(t);
@@ -252,271 +311,329 @@ void MainWindow::dij_mainprogram() //Main Program
     //qDebug() <<ss1<<",{"<<ss2<<","<<ss3<<"}";
     }
     /*-------------------------------------------------------------------*/
+
     qDebug() <<"BFC"<< CHECKER;
     dij_main();//Call algorithm function
     qDebug() <<"AFC"<< CHECKER;
     }
 
+    //Flip if inf distance
     if (CHECKER == 1)//Use for checking purposes
     {
-    adjacency_map.clear(); //Clears ajacency_map must be done to allow opposite direction of travel
-
-    //Add Switch Positions closedPOS -> switch
-    QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
-    p = db.exec(tqtps1);
-    for(;p.next() == 1;) //If it is 1 it contains data
-    {
-        int ss1 = p.value(0).toInt();
-        //int ss2 = p.value(1).toInt();
-        //int ss3 = p.value(2).toInt();
-        //int ss4 = p.value(3).toInt();
-        int ss5 = p.value(4).toInt();
-        adjacency_map[ss1].push_back(edge(ss5,  5));
-    }
-
-    //Reads track ids and names for showing the path
-      /*-------------------------------------------------------------------*/
-      QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
-      n = db.exec(t);
-
-      for(;n.next() == 1;) //If it is 1 it contains data
-      {
-          QString ss4 = n.value(1).toString();
-          vertex_names.push_back(ss4.toStdString());
-      }
-      /*-------------------------------------------------------------------*/
-
-
-    //Reads data for each track and how its connected along with its weight
-    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
-    qq = db.exec(t3);
-
-    //For each switch in trackInfoTable execute the following:
-    /*-------------------------------------------------------------------*/
-    for(;qq.next() == 1;) //If it is 1 it contains data
-    {
-    int ss1 = qq.value(0).toInt();
-    int ss2 = qq.value(1).toInt();
-    int ss3 = qq.value(2).toInt();
-    adjacency_map[ss2].push_back(edge(ss1,  ss3));
-    //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
-    }
-    /*-------------------------------------------------------------------*/
-    qDebug() <<"BFC"<< CHECKER;
-    dij_main();//Call algorithm function
-    qDebug() <<"AFC"<< CHECKER;
-    }
-
-    //*-------------------------------------------------------------------------------------------------------------------------------------------------
-    //*-------------------------------------------------------------------------------------------------------------------------------------------------
-    //*-------------------------------------------------------------------------------------------------------------------------------------------------
-
-    //Start of Opening Switches
-    if(CHECKER == 1)//Use for checking purposes
-    {
-        qDebug()<<"Initilize 3rd Part of Algorithm";
         adjacency_map.clear(); //Clears ajacency_map
         CHECKER = 0;
 
-         //Add Switch Positions switch -> closedPOS
-         QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
-         p = db.exec(tqtps1);
+        //Add Switch Positions switch -> openPOS
+        QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS,SwitchDIR FROM switchInfoTable");
+        p = db.exec(tqtps1);
 
-         for(;p.next() == 1;) //If it is 1 it contains data
-         {
-             int ss1 = p.value(0).toInt();
-             //int ss2 = p.value(1).toInt();
-             //int ss3 = p.value(2).toInt();
-             int ss4 = p.value(3).toInt();
-             //int ss5 = p.value(4).toInt();
-             adjacency_map[ss4].push_back(edge(ss1,  5));
+        for(;p.next() == 1;) //If it is 1 it contains data
+        {
+            int ss1 = p.value(0).toInt();//Switch
+            //int ss2 = p.value(1).toInt();//Position
+            //int ss3 = p.value(2).toInt();//Straight
+            int ss4 = p.value(3).toInt();//openPOS
+            int ss5 = p.value(4).toInt();//closedPOS
+            QString Switch_DIR = p.value(5).toString();//SwitchDIR
+
+            if(Switch_DIR == "E")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "W")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "SL")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "SR")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "NL")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "NR")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "NLE")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "NRE")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "IE")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "IW")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "BE")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "BW")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "EE")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "WW")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
          }
 
+       //Reads track ids and names for showing the path
+        /*-------------------------------------------------------------------*/
+        QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+        n = db.exec(t);
 
-  //Reads track ids and names for showing the path
-    /*-------------------------------------------------------------------*/
-    QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
-    n = db.exec(t);
+        for(;n.next() == 1;) //If it is 1 it contains data
+        {
+            QString ss4 = n.value(1).toString();
+            vertex_names.push_back(ss4.toStdString());
+        }
+        /*-------------------------------------------------------------------*/
 
-    for(;n.next() == 1;) //If it is 1 it contains data
-    {
-        QString ss4 = n.value(1).toString();
-        vertex_names.push_back(ss4.toStdString());
-    }
-    /*-------------------------------------------------------------------*/
+        //Reads data for each track and how its connected along with its weight
+        QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+        qq = db.exec(t2);
 
-    //Reads data for each track and how its connected along with its weight
-    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
-    qq = db.exec(t2);
+        /*-------------------------------------------------------------------*/
+        for(;qq.next() == 1;) //If it is 1 it contains data
+        {
+        int ss1 = qq.value(0).toInt();
+        int ss2 = qq.value(1).toInt();
+        int ss3 = qq.value(2).toInt();
+        adjacency_map[ss1].push_back(edge(ss2,  ss3));
+        //qDebug() <<ss1<<",{"<<ss2<<","<<ss3<<"}";
+        }
+        /*-------------------------------------------------------------------*/
 
-    /*-------------------------------------------------------------------*/
-    for(;qq.next() == 1;) //If it is 1 it contains data
-    {
-    int ss1 = qq.value(0).toInt();
-    int ss2 = qq.value(1).toInt();
-    int ss3 = qq.value(2).toInt();
-    adjacency_map[ss1].push_back(edge(ss2,  ss3));
-    //qDebug() <<ss1<<",{"<<ss2<<","<<ss3<<"}";
-    }
-    /*-------------------------------------------------------------------*/
     qDebug() <<"BFC"<< CHECKER;
     dij_main();//Call algorithm function
     qDebug() <<"AFC"<< CHECKER;
 
+    }
+
+    //Flip if inf distance
     if (CHECKER == 1)//Use for checking purposes
     {
-    adjacency_map.clear(); //Clears ajacency_map must be done to allow opposite direction of travel
-
-    //Add Switch Positions closedPOS -> switch
-    QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
-    p = db.exec(tqtps1);
-    for(;p.next() == 1;) //If it is 1 it contains data
-    {
-        int ss1 = p.value(0).toInt();
-        //int ss2 = p.value(1).toInt();
-        //int ss3 = p.value(2).toInt();
-        int ss4 = p.value(3).toInt();
-        //int ss5 = p.value(4).toInt();
-        adjacency_map[ss4].push_back(edge(ss1,  5));
-    }
-
-    //Reads track ids and names for showing the path
-      /*-------------------------------------------------------------------*/
-      QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
-      n = db.exec(t);
-
-      for(;n.next() == 1;) //If it is 1 it contains data
-      {
-          QString ss4 = n.value(1).toString();
-          vertex_names.push_back(ss4.toStdString());
-      }
-      /*-------------------------------------------------------------------*/
-
-
-    //Reads data for each track and how its connected along with its weight
-    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
-    qq = db.exec(t3);
-
-    //For each switch in trackInfoTable execute the following:
-    /*-------------------------------------------------------------------*/
-    for(;qq.next() == 1;) //If it is 1 it contains data
-    {
-    int ss1 = qq.value(0).toInt();
-    int ss2 = qq.value(1).toInt();
-    int ss3 = qq.value(2).toInt();
-    adjacency_map[ss2].push_back(edge(ss1,  ss3));
-    //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
-    }
-    /*-------------------------------------------------------------------*/
-    qDebug() <<"BFC"<< CHECKER;
-    dij_main();//Call algorithm function
-    qDebug() <<"AFC"<< CHECKER;
-    }
-
-    //*-------------------------------------------------------------------------------------------------------------------------------------------------
-    //*-------------------------------------------------------------------------------------------------------------------------------------------------
-    //*-------------------------------------------------------------------------------------------------------------------------------------------------
-
-    //Start of Opening Switches
-    if(CHECKER == 1)//Use for checking purposes
-    {
-        qDebug()<<"Initilize 4th Part of Algorithm";
         adjacency_map.clear(); //Clears ajacency_map
         CHECKER = 0;
 
-         //Add Switch Positions switch -> closedPOS
-         QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
-         p = db.exec(tqtps1);
+        //Add Switch Positions switch -> openPOS
+        QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS,SwitchDIR FROM switchInfoTable");
+        p = db.exec(tqtps1);
 
-         for(;p.next() == 1;) //If it is 1 it contains data
-         {
-             int ss1 = p.value(0).toInt();
-             //int ss2 = p.value(1).toInt();
-             //int ss3 = p.value(2).toInt();
-             //int ss4 = p.value(3).toInt();
-             int ss5 = p.value(4).toInt();
-             adjacency_map[ss5].push_back(edge(ss1,  5));
+        for(;p.next() == 1;) //If it is 1 it contains data
+        {
+            int ss1 = p.value(0).toInt();//Switch
+            //int ss2 = p.value(1).toInt();//Position
+            //int ss3 = p.value(2).toInt();//Straight
+            int ss4 = p.value(3).toInt();//openPOS
+            int ss5 = p.value(4).toInt();//closedPOS
+            QString Switch_DIR = p.value(5).toString();//SwitchDIR
+
+            if(Switch_DIR == "E")
+            {
+                adjacency_map[ss1].push_back(edge(ss4,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "W")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "SL")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "SR")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "NL")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "NR")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "NLE")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "NRE")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "IE")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "IW")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "BE")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "BW")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "EE")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "WW")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
          }
 
+       //Reads track ids and names for showing the path
+        /*-------------------------------------------------------------------*/
+        QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+        n = db.exec(t);
 
-  //Reads track ids and names for showing the path
-    /*-------------------------------------------------------------------*/
-    QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
-    n = db.exec(t);
+        for(;n.next() == 1;) //If it is 1 it contains data
+        {
+            QString ss4 = n.value(1).toString();
+            vertex_names.push_back(ss4.toStdString());
+        }
+        /*-------------------------------------------------------------------*/
 
-    for(;n.next() == 1;) //If it is 1 it contains data
-    {
-        QString ss4 = n.value(1).toString();
-        vertex_names.push_back(ss4.toStdString());
-    }
-    /*-------------------------------------------------------------------*/
+        //Reads data for each track and how its connected along with its weight
+        QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+        qq = db.exec(t2);
 
-    //Reads data for each track and how its connected along with its weight
-    QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
-    qq = db.exec(t2);
+        /*-------------------------------------------------------------------*/
+        for(;qq.next() == 1;) //If it is 1 it contains data
+        {
+        int ss1 = qq.value(0).toInt();
+        int ss2 = qq.value(1).toInt();
+        int ss3 = qq.value(2).toInt();
+        adjacency_map[ss1].push_back(edge(ss2,  ss3));
+        //qDebug() <<ss1<<",{"<<ss2<<","<<ss3<<"}";
+        }
+        /*-------------------------------------------------------------------*/
 
-    /*-------------------------------------------------------------------*/
-    for(;qq.next() == 1;) //If it is 1 it contains data
-    {
-    int ss1 = qq.value(0).toInt();
-    int ss2 = qq.value(1).toInt();
-    int ss3 = qq.value(2).toInt();
-    adjacency_map[ss1].push_back(edge(ss2,  ss3));
-    //qDebug() <<ss1<<",{"<<ss2<<","<<ss3<<"}";
-    }
-    /*-------------------------------------------------------------------*/
     qDebug() <<"BFC"<< CHECKER;
     dij_main();//Call algorithm function
     qDebug() <<"AFC"<< CHECKER;
 
+    }
+
+    //Flip if inf distance
     if (CHECKER == 1)//Use for checking purposes
     {
-    adjacency_map.clear(); //Clears ajacency_map must be done to allow opposite direction of travel
+        adjacency_map.clear(); //Clears ajacency_map
+        CHECKER = 0;
 
-    //Add Switch Positions closedPOS -> switch
-    QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS FROM switchInfoTable");
-    p = db.exec(tqtps1);
-    for(;p.next() == 1;) //If it is 1 it contains data
-    {
-        int ss1 = p.value(0).toInt();
-        //int ss2 = p.value(1).toInt();
-        //int ss3 = p.value(2).toInt();
-        //int ss4 = p.value(3).toInt();
-        int ss5 = p.value(4).toInt();
-        adjacency_map[ss5].push_back(edge(ss1,  5));
+        //Add Switch Positions switch -> openPOS
+        QString tqtps1 = QString("SELECT switch,position,straight,openPOS,closedPOS,SwitchDIR FROM switchInfoTable");
+        p = db.exec(tqtps1);
+
+        for(;p.next() == 1;) //If it is 1 it contains data
+        {
+            int ss1 = p.value(0).toInt();//Switch
+            //int ss2 = p.value(1).toInt();//Position
+            //int ss3 = p.value(2).toInt();//Straight
+            int ss4 = p.value(3).toInt();//openPOS
+            int ss5 = p.value(4).toInt();//closedPOS
+            QString Switch_DIR = p.value(5).toString();//SwitchDIR
+
+            if(Switch_DIR == "E")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "W")
+            {
+                adjacency_map[ss4].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "SL")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "SR")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "NL")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "NR")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "NLE")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "NRE")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "IE")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+            if(Switch_DIR == "IW")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "BE")
+            {
+                adjacency_map[ss1].push_back(edge(ss5,  5)); //Switch to OpenPOS
+            }
+            if(Switch_DIR == "BW")
+            {
+                adjacency_map[ss5].push_back(edge(ss1,  5)); //OpenPOS to Switch
+            }
+         }
+
+       //Reads track ids and names for showing the path
+        /*-------------------------------------------------------------------*/
+        QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
+        n = db.exec(t);
+
+        for(;n.next() == 1;) //If it is 1 it contains data
+        {
+            QString ss4 = n.value(1).toString();
+            vertex_names.push_back(ss4.toStdString());
+        }
+        /*-------------------------------------------------------------------*/
+
+        //Reads data for each track and how its connected along with its weight
+        QString t2 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
+        qq = db.exec(t2);
+
+        /*-------------------------------------------------------------------*/
+        for(;qq.next() == 1;) //If it is 1 it contains data
+        {
+        int ss1 = qq.value(0).toInt();
+        int ss2 = qq.value(1).toInt();
+        int ss3 = qq.value(2).toInt();
+        adjacency_map[ss1].push_back(edge(ss2,  ss3));
+        //qDebug() <<ss1<<",{"<<ss2<<","<<ss3<<"}";
+        }
+        /*-------------------------------------------------------------------*/
+
     }
-
-    //Reads track ids and names for showing the path
-      /*-------------------------------------------------------------------*/
-      QString t = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
-      n = db.exec(t);
-
-      for(;n.next() == 1;) //If it is 1 it contains data
-      {
-          QString ss4 = n.value(1).toString();
-          vertex_names.push_back(ss4.toStdString());
-      }
-      /*-------------------------------------------------------------------*/
-
-
-    //Reads data for each track and how its connected along with its weight
-    QString t3 = QString("SELECT currentnode,nextnode,weight from %3").arg("trackInfoTable");
-    qq = db.exec(t3);
-
-    //For each switch in trackInfoTable execute the following:
-    /*-------------------------------------------------------------------*/
-    for(;qq.next() == 1;) //If it is 1 it contains data
-    {
-    int ss1 = qq.value(0).toInt();
-    int ss2 = qq.value(1).toInt();
-    int ss3 = qq.value(2).toInt();
-    adjacency_map[ss2].push_back(edge(ss1,  ss3));
-    //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
-    }
-    /*-------------------------------------------------------------------*/
-    qDebug() <<"BFC"<< CHECKER;
-    dij_main();//Call algorithm function
-    qDebug() <<"AFC"<< CHECKER;
 
         if (CHECKER == 1)
         {
@@ -526,11 +643,8 @@ void MainWindow::dij_mainprogram() //Main Program
         }
         count = 0;
         CHECKER = 0;
-    }
-    }
+}
     //qDebug() << "End of dij_mainprogram";
-}
-}
 
 /*-------------------------------------------------------------------------------------------------------------*/
 //dij_mainprogram is called from mainwindow and is used to determine the path from source to destination

@@ -55,6 +55,7 @@ private:
     int COL1;
     int COL2;
     int COL3;
+    QString COL4;
     int NumofConn;
     QStringList items,trains;
     bool ok;
