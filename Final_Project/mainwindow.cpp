@@ -1742,7 +1742,7 @@ void MainWindow::check_sched()
                     if(runSchedQuery1.value(0).isValid())
                         nextNext1 = runSchedQuery1.value(0).toString();
 
-                    if(currentNext==nextNext1 || currentNext=="NULL"|| currentNext=="EMPTY")//If they are the same, some shifting needs to happen
+                    if(currentNext==nextNext1 || currentNext=="NULL"|| currentNext=="EMPTY"|| currentNext=="")//If they are the same, some shifting needs to happen
                     {
                         l1 = db.exec("UPDATE Trains SET next='"+nextNext1+"' WHERE ID='"+currentID+"';");
                         if(rdb.isOpen())
@@ -2106,7 +2106,7 @@ void MainWindow::check_sched()
                             {
                                 l1 = db.exec("SELECT nextID2 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                 l1.next();
-                                if (l1.value(0).isNull())//this row is done. Delete it, change previous row, and if no previous row, remove path from Train table
+                                if (l1.value(0).isNull()||l1.value(0)==""||!l1.value(0).isValid())//this row is done. Delete it, change previous row, and if no previous row, remove path from Train table
                                 {
                                     if (nextPath==thisPath) //no previous path, remove row from train table
                                     {
