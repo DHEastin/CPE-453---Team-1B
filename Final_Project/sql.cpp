@@ -97,7 +97,7 @@ void MainWindow::create_sqltables()
     // 0 = Open --- 1 = Bypass
     //Create Switch_Info Table
     //Table list switches and Open/Closed status
-     p.exec("CREATE TABLE switchInfoTable (switch TEXT, position INT, straight TEXT, openPOS TEXT, closedPOS TEXT);");
+     p.exec("CREATE TABLE switchInfoTable (switch TEXT, position INT, straight TEXT, openPOS TEXT, closedPOS TEXT, SwitchDIR TEXT);");
      p.exec("SELECT * FROM switchInfoTable;");
 
     TRAIN.exec("CREATE TABLE Trains(ID TEXT, START TEXT, Direction TEXT,Destination TEXT,next TEXT,pathID INT,DIR TEXT);");
@@ -121,8 +121,8 @@ void MainWindow::create_sqltables()
      //SwitchDIR == Direction of Straight part of Switch
 
      o.exec("CREATE TABLE DS_Connectivity (Current TEXT, NumberOfConnections INT, Connection1 TEXT, Connection2 TEXT, Connection3 TEXT, SwitchDIR TEXT);");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-1',2,'2-2','2-1','Null','B');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-2',2,'2-16','2-15','Null','B');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-1',2,'2-2','2-1','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-2',2,'2-16','2-15','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-3',2,'3-16','4-4','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-4',2,'8-16','8-4','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-5',3,'1-6','4-2','3-3','W');");
@@ -140,14 +140,14 @@ void MainWindow::create_sqltables()
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-2',2,'2-3','1-1','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-3',3,'2-4','2-2','2-1','IE');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-4',2,'2-5','2-3','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-5',3,'2-4','2-7','2-6','IW');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-5',3,'2-4','2-7','2-6','IWW');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-6',2,'2-8','2-5','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-7',2,'2-9','2-5','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-8',2,'2-10','2-6','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-9',2,'2-11','2-7','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-10',2,'2-12','2-8','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-11',2,'2-12','2-9','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-12',3,'2-13','2-11','2-10','IE');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-12',3,'2-13','2-11','2-10','IEE');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-13',2,'2-14','2-12','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-14',3,'2-13','2-15','2-16','IW');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-15',2,'1-2','2-14','Null','Null');");
@@ -167,7 +167,7 @@ void MainWindow::create_sqltables()
 
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-2',3,'1-5','5-8','3-1','W');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-3',2,'1-7','6-5','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-4',3,'6-6','1-3','1-7','E');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-4',3,'6-6','1-3','1-7','EE');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-9',2,'5-2','3-5','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-10',2,'4-11','3-6','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-11',2,'5-1','4-10','Null','Null');");
@@ -220,7 +220,7 @@ void MainWindow::create_sqltables()
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-13',2,'6-6','8-16','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-14',2,'6-5','8-9','Null','Null');");
      o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-15',3,'8-4','6-2','6-1','E');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-16',3,'8-13','1-4','8-9','W');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-16',3,'8-13','1-4','8-9','WW');");
 
 
      o.exec("SELECT * FROM DS_Connectivity;");
@@ -300,7 +300,7 @@ void MainWindow::create_sqltables()
 
         if(NumofConn == 3) //Switches
         {
-            QString smpms = QString("INSERT INTO switchInfoTable (switch,position,straight,openPOS,closedPOS) VALUES ('%1',0,'%2','%3','%4');").arg(COL0).arg(COL1).arg(COL2).arg(COL3);
+            QString smpms = QString("INSERT INTO switchInfoTable (switch,position,straight,openPOS,closedPOS,SwitchDIR) VALUES ('%1',0,'%2','%3','%4','%5');").arg(COL0).arg(COL1).arg(COL2).arg(COL3).arg(SwitchDIR);
             p.exec(smpms);
             if(SwitchDIR == "NLE")
             {
@@ -352,12 +352,22 @@ void MainWindow::create_sqltables()
                 QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 qq.exec(smpms);
             }
-            if(SwitchDIR == "IE")
+            if(SwitchDIR == "EE")
+            {
+                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                //qq.exec(smpms);
+            }
+            if(SwitchDIR == "WW")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 qq.exec(smpms);
             }
-            if(SwitchDIR == "IW")
+            if(SwitchDIR == "IE" || SwitchDIR == "IEE")
+            {
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                qq.exec(smpms);
+            }
+            if(SwitchDIR == "IW" || SwitchDIR == "IWW")
             {
                 //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 //qq.exec(smpms);
@@ -462,7 +472,7 @@ void MainWindow::create_sqltables()
             }
             if(SwitchDIR == "SL")
             {
-                QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL1).arg(COL0);
                 kk.exec(smpms);
             }
             if(SwitchDIR == "NR")
@@ -484,6 +494,16 @@ void MainWindow::create_sqltables()
             {
                 //QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 //kk.exec(smpms);
+            }
+            if(SwitchDIR == "EE")
+            {
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                qq.exec(smpms);
+            }
+            if(SwitchDIR == "WW")
+            {
+                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                //qq.exec(smpms);
             }
             if(SwitchDIR == "IE")
             {
