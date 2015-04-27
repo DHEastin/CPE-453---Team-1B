@@ -1567,11 +1567,11 @@ void MainWindow::Check_Path_Trains()
 
     if(string_ts == "")
     {
-        QString ttps1 = QString("DELETE FROM pathInfoTable WHERE nextID1='%1'").arg("NULL");
+        QString ttps1 = QString("DELETE FROM pathInfoTable WHERE nextID1=%1").arg("NULL");
         Path2 = db.exec(ttps1);
         if(rdb.isOpen())
         {
-        QString qtts0t = QString("DELETE FROM scheduled_routes WHERE next2='%1'").arg("NULL");
+        QString qtts0t = QString("DELETE FROM scheduled_routes WHERE next2=%1").arg("NULL");
         r3 = rdb.exec(qtts0t);
         }
     }
