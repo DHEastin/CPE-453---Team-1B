@@ -218,56 +218,71 @@ void MainWindow::Add_Train()
     if (ok)
     {
 
-    QString ts0 = QString("SELECT Current from %1").arg("DS_Connectivity");
-    o = db.exec(ts0);
+        QString ts0 = QString("SELECT Current from %1").arg("DS_Connectivity");
+        o = db.exec(ts0);
 
-    /*-------------------------------------------------------------------*/
-    for(;o.next() == 1;) //If it is 1 it contains data
-    {
-    QString sts0 = o.value(0).toString();
-    items.append(sts0);
-    }
-
-    Start = QInputDialog::getItem(this, tr("Select Starting Point"),
-                                         tr("Starting Point:"), items, 0, false, &ok);
-
-    items.clear();
-    //Forward
-    QString ts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current='%2'").arg("DS_Connectivity").arg(Start);
-    o = db.exec(ts1);
-    o.next();
-    QString sts1 = o.value(2).toString();//Forward -- Counter Clockwise
-    items.append(sts1);
-
-    //Backward
-    QString sts2 = o.value(3).toString();//Backward -- Clockwise
-    items.append(sts2);
-
-    direction = QInputDialog::getItem(this, tr("Choose Direction"),
-                                         tr("Direction:"), items, 0, false, &ok);
-    if (ok)
-    {
-        ui->trainBox->addItem(QString::number(ID));
-
-        if(direction == sts1)
+        /*-------------------------------------------------------------------*/
+        for(;o.next() == 1;) //If it is 1 it contains data
         {
-            CLOCK = "CC";
+        QString sts0 = o.value(0).toString();
+        items.append(sts0);
         }
-        if(direction == sts2)
-        {
-            CLOCK = "C";
-        }
-    }
 
-    QString qtts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination,next,pathID,DIR) VALUES ('%1','%2','%3','%4','%5','%6','%7')").arg(ID).arg(Start).arg(direction).arg("EMPTY").arg("EMPTY").arg(999).arg(CLOCK);
-    o = db.exec(qtts0);
-    o.next();
-    if(rdb.isOpen())
-    {
-    QString qtts0t = QString("INSERT INTO scheduled_train_info (id,current,destination,next,pathid) VALUES ('%1','%2','%3','%4','%5')").arg(ID).arg(Start).arg("EMPTY").arg("EMPTY").arg(999);
-    r1 = rdb.exec(qtts0t);
-    r1.next();
+        Start = QInputDialog::getItem(this, tr("Select Starting Point"),
+                                             tr("Starting Point:"), items, 0, false, &ok);
+        if(ok)
+        {
+
+        items.clear();
+        //Forward
+        QString ts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current='%2'").arg("DS_Connectivity").arg(Start);
+        o = db.exec(ts1);
+        o.next();
+        QString sts1 = o.value(2).toString();//Forward -- Counter Clockwise
+        items.append(sts1);
+
+        //Backward
+        QString sts2 = o.value(3).toString();//Backward -- Clockwise
+        items.append(sts2);
+
+        direction = QInputDialog::getItem(this, tr("Choose Direction"),
+                                             tr("Direction:"), items, 0, false, &ok);
+            if (ok)
+            {
+                ui->trainBox->addItem(QString::number(ID));
+
+                if(direction == sts1)
+                {
+                    CLOCK = "CC";
+                }
+                if(direction == sts2)
+                {
+                    CLOCK = "C";
+                }
+
+                QString qtts0 = QString("INSERT INTO Trains (ID,Start,Direction,Destination,next,pathID,DIR) VALUES ('%1','%2','%3','%4','%5','%6','%7')").arg(ID).arg(Start).arg(direction).arg("EMPTY").arg("EMPTY").arg(999).arg(CLOCK);
+                o = db.exec(qtts0);
+                o.next();
+                if(rdb.isOpen())
+                {
+                QString qtts0t = QString("INSERT INTO scheduled_train_info (id,current,destination,next,pathid) VALUES ('%1','%2','%3','%4','%5')").arg(ID).arg(Start).arg("EMPTY").arg("EMPTY").arg(999);
+                r1 = rdb.exec(qtts0t);
+                r1.next();
+                }
+                else
+                {
+
+                }
+            }
+        }
+        else
+        {
+
+        }
     }
+    else
+    {
+
     }
 }
 
@@ -307,93 +322,107 @@ void MainWindow::Edit_Train()
 
     Start = QInputDialog::getItem(this, tr("Change Start"),
                                          QString(TITLE1), items, 0, false, &ok);
-    items.clear();
-    //Forward
-    QString Sts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current='%2'").arg("DS_Connectivity").arg(Start);
-    o = db.exec(Sts1);
-    o.next();
-    QString sts1 = o.value(2).toString();
-    items.append(sts1);
-
-    //Backward
-    QString sts2 = o.value(3).toString();
-    items.append(sts2);
-
-    QString TITLE2 = QString("Old Direction: '%1' | Select NEW Direction for '%2'").arg(VAL3).arg(ID);;
-
-    direction = QInputDialog::getItem(this, tr("Change Direction"),
-                                         QString (TITLE2), items, 0, false, &ok);
-
-    if(direction == sts1)
+    if(ok)
     {
-        CLOCK = "CC";
-    }
-    if(direction == sts2)
-    {
-        CLOCK = "C";
-    }
+        items.clear();
+        //Forward
+        QString Sts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current='%2'").arg("DS_Connectivity").arg(Start);
+        o = db.exec(Sts1);
+        o.next();
+        QString sts1 = o.value(2).toString();
+        items.append(sts1);
 
-    QString tts0 = QString("UPDATE Trains SET Start='%1',Direction='%2',DIR='%3' WHERE ID='%4'").arg(Start).arg(direction).arg(CLOCK).arg(ID);
-    TRAIN = db.exec(tts0);
-    if(rdb.isOpen())
-    {
-        QString tts0t = QString("UPDATE scheduled_train_info SET current='%1' WHERE ID='%2'").arg(Start).arg(ID);
-        r1=rdb.exec(tts0t);
-    }
+        //Backward
+        QString sts2 = o.value(3).toString();
+        items.append(sts2);
+
+        QString TITLE2 = QString("Old Direction: '%1' | Select NEW Direction for '%2'").arg(VAL3).arg(ID);;
+
+        direction = QInputDialog::getItem(this, tr("Change Direction"),
+                                             QString (TITLE2), items, 0, false, &ok);
+        if(ok)
+        {
+
+            if(direction == sts1)
+            {
+                CLOCK = "CC";
+            }
+            if(direction == sts2)
+            {
+                CLOCK = "C";
+            }
+
+            QString tts0 = QString("UPDATE Trains SET Start='%1',Direction='%2',DIR='%3' WHERE ID='%4'").arg(Start).arg(direction).arg(CLOCK).arg(ID);
+            TRAIN = db.exec(tts0);
+            if(rdb.isOpen())
+            {
+                QString tts0t = QString("UPDATE scheduled_train_info SET current='%1' WHERE ID='%2'").arg(Start).arg(ID);
+                r1=rdb.exec(tts0t);
+            }
 
 
-    QString tqtps1 = QString("SELECT pathID FROM Trains WHERE ID='%1'").arg(ui->trainBox->currentText());
-    TRAIN = db.exec(tqtps1);
+            QString tqtps1 = QString("SELECT pathID FROM Trains WHERE ID='%1'").arg(ui->trainBox->currentText());
+            TRAIN = db.exec(tqtps1);
 
-    int sts22;
+            int sts22;
 
-    for(;TRAIN.next() == 1;) //If it is 1 it contains data
-    {
-    sts22 = TRAIN.value(4).toInt();
-    }
+            for(;TRAIN.next() == 1;) //If it is 1 it contains data
+            {
+            sts22 = TRAIN.value(4).toInt();
+            }
 
-    QString ttps1 = QString("DELETE FROM pathInfoTable WHERE pathID=%1").arg(sts22);
-    TRAIN2 = db.exec(ttps1);
+            QString ttps1 = QString("DELETE FROM pathInfoTable WHERE pathID=%1").arg(sts22);
+            TRAIN2 = db.exec(ttps1);
 
-    if(rdb.isOpen())
-    {
-        QString DEL_1 = QString("DELETE FROM scheduled_routes WHERE id=%1").arg(ui->trainBox->currentText());
-        r1=rdb.exec(DEL_1);
-    }
+            if(rdb.isOpen())
+            {
+                QString DEL_1 = QString("DELETE FROM scheduled_routes WHERE id=%1").arg(ui->trainBox->currentText());
+                r1=rdb.exec(DEL_1);
+            }
 
-    QString ttps2 = QString("DELETE FROM pathInfoTable WHERE nextID1='%1'").arg("NULL");
-    TRAIN2 = db.exec(ttps2);
+            QString ttps2 = QString("DELETE FROM pathInfoTable WHERE nextID1='%1'").arg("NULL");
+            TRAIN2 = db.exec(ttps2);
 
-    if(rdb.isOpen())
-    {
-        QString DEL_1 = QString("DELETE FROM scheduled_routes WHERE id=%1").arg(ui->trainBox->currentText());
-        r2=rdb.exec(DEL_1);
-    }
+            if(rdb.isOpen())
+            {
+                QString DEL_1 = QString("DELETE FROM scheduled_routes WHERE id=%1").arg(ui->trainBox->currentText());
+                r2=rdb.exec(DEL_1);
+            }
 
-    DEL_OLD_PATH();
-    Check_Path_Trains();
-    if(ui->rescheduleBox->isChecked())
-    {
-    Schedule();
-    Update_ScheduleTable();
-    }
+            DEL_OLD_PATH();
+            Check_Path_Trains();
+            if(ui->rescheduleBox->isChecked())
+            {
+            Schedule();
+            Update_ScheduleTable();
+            }
 
-    tmodel = new QSqlTableModel( this, db );
-    ui->tableView->setModel(tmodel);
-    tmodel->setTable("pathInfoTable");
-    tmodel->select();
+            tmodel = new QSqlTableModel( this, db );
+            ui->tableView->setModel(tmodel);
+            tmodel->setTable("pathInfoTable");
+            tmodel->select();
+        }
+        else
+        {
+
+        }
+        }
+        else
+        {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Train Error!");
+            msgBox.setText("No Train to edit!");
+            QSpacerItem* horizontalSpacer = new QSpacerItem(200, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+            QGridLayout* layout = (QGridLayout*)msgBox.layout();
+            layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
+            msgBox.exec();
+        }
+        DEL_ALL_OLD_PATH();
     }
     else
     {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Train Error!");
-        msgBox.setText("No Train to edit!");
-        QSpacerItem* horizontalSpacer = new QSpacerItem(200, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
-        QGridLayout* layout = (QGridLayout*)msgBox.layout();
-        layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
-        msgBox.exec();
+
     }
-    DEL_ALL_OLD_PATH();
 }
 
 /*-------------------------------------------------------------------------------------------------------------*/
