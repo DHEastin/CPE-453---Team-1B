@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33155 --user=1BUser --password=TEAM1bUSER
 
     //Team1b database and user for testing
+    /*
     rdb = QSqlDatabase::addDatabase( "QMYSQL" ,"Remote" );
     //rdb.addDatabase( "QMYSQL", "Remote" );
     rdb.setHostName("pavelow.eng.uah.edu");
@@ -39,9 +40,10 @@ MainWindow::MainWindow(QWidget *parent) :
     rdb.setDatabaseName("Team1B");
     rdb.setUserName("1BUser");
     rdb.setPassword("TEAM1bUSER");
+    */
 
     //Team1A for interoperability
-    /*
+
     rdb = QSqlDatabase::addDatabase( "QMYSQL" ,"Remote" );
     //rdb.addDatabase( "QMYSQL", "Remote" );
     rdb.setHostName("pavelow.eng.uah.edu");
@@ -49,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     rdb.setDatabaseName("cpe453");
     rdb.setUserName("root");
     rdb.setPassword("cstrapwi");
-    */
+
 
 
     //override_status
@@ -1692,6 +1694,7 @@ void MainWindow::check_sched()
         {//----------------------------------------------------------THIS IS IT BOYS WHERE WE MAKE THE TRAINS MOVE----------------------------------------------------------------------------------------------------------------
             QString currentID, currentStart,currentDirection,currentDestination,currentNext,currentPath;
             QString nextNext1, nextNext2;//, nextNext3;
+            QString waitCheck;
 
             QString BLAH1, BLAH3;//, BLAH3;
             QString BLAH = QString("SELECT ID FROM Trains");
@@ -1708,6 +1711,7 @@ void MainWindow::check_sched()
                 runSchedQuery1.next();
 
                 currentStart = runSchedQuery1.value(0).toString();
+                waitCheck = currentStart;
                 currentDirection = runSchedQuery1.value(1).toString();
 
                 if(runSchedQuery1.value(1).isNull())
@@ -2440,7 +2444,13 @@ void MainWindow::check_sched()
                         {
                             r3 = rdb.exec("SELECT status FROM track_ds WHERE id='"+currentStart+"';");
                             r3.next();
-                            move_on = (r3.value(0).toString()=="1");
+                            if (r3.value(0).toString()=="1")
+                            {
+                                if(currentStart!=waitCheck)
+                                    move_on = true; //only set throttle at very start position.
+                            }
+                            else
+                                move_on = false;
                         }
                         else
                             move_on=false;
@@ -2451,18 +2461,19 @@ void MainWindow::check_sched()
                             {
                                 if(rdb.isOpen())
                                 {
-                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('TRAIN_REQ', '%1', '50';").arg(currentID);
-                                runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)"
+                                                "VALUES ('TRAIN_REQ', '"+currentID+"', '35');");//.arg(currentID);
+                                runSchedQuery3 = rdb.exec(BLAH3);
                                 if(!runSchedQuery.isValid())
                                     qDebug() << "Error: Throttle write failed\n";
                                 }
                             }
-                            else
+                            else if (currentNext!="EMPTY"&&currentNext!=""&&currentNext!="NULL")
                             {
                                 if(rdb.isOpen())
                                 {
-                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('TRAIN_REQ', '%1', '-50';").arg(currentID);
-                                runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '-35');").arg(currentID);
+                                runSchedQuery3 = rdb.exec(BLAH3);
                                 if(!runSchedQuery.isValid())
                                      qDebug() << "Error: Throttle write failed\n";
                                 }
@@ -2541,10 +2552,10 @@ void MainWindow::check_sched()
                             {
                                 if(rdb.isOpen())
                                 {
-                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('TRAIN_REQ', '%1', '0';").arg(currentID);
+                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '0');").arg(currentID);
                                 runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
 
-                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('TRAIN_REQ', '%1', '0';").arg(currentID);
+                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '0');").arg(currentID);
                                 runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
                                 }
                                 qDebug() << "Error: Cannot read DS " << currentDestination << ". Stopping train." ;
