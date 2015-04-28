@@ -2034,6 +2034,7 @@ void MainWindow::check_sched()
                                                                             {
                                                                                 r1 = rdb.exec("UPDATE scheduled_routes SET next2='NULL' WHERE pathID='"+nextPath+"';");
                                                                             }
+                                                                            thisPath = nextPath;
 
                                                                         }
                                                                     }
@@ -2047,7 +2048,8 @@ void MainWindow::check_sched()
                                     }
                                 }
                             }
-
+                            //Not sure if this was helping or harming
+                            /*
                             BLAH1 = QString("SELECT START, Direction, Destination, next, PathID FROM Trains WHERE ID='%1'").arg(currentID);
                             runSchedQuery1 = db.exec(BLAH1);
 
@@ -2075,6 +2077,7 @@ void MainWindow::check_sched()
                                 currentPath = "NULL";
                             else
                                 currentPath = runSchedQuery1.value(4).toString();
+                            */
                         }
                     }
                     else
@@ -2384,7 +2387,7 @@ void MainWindow::check_sched()
                                                                                 {
                                                                                     r1 = rdb.exec("UPDATE scheduled_routes SET next2='NULL' WHERE pathID='"+nextPath+"';");
                                                                                 }
-
+                                                                                thisPath = nextPath;
                                                                             }
                                                                         }
                                                                     }
@@ -2397,6 +2400,8 @@ void MainWindow::check_sched()
                                         }
                                     }
                                 }
+                                //Helping or harming?
+                                /*
                                 BLAH1 = QString("SELECT START, Direction, Destination, next, PathID FROM Trains WHERE ID='%1'").arg(currentID);
                                 runSchedQuery1 = db.exec(BLAH1);
 
@@ -2424,6 +2429,7 @@ void MainWindow::check_sched()
                                     currentPath = "NULL";
                                 else
                                     currentPath = runSchedQuery1.value(4).toString();
+                                */
                             }
                         }
 
