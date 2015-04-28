@@ -203,6 +203,7 @@ void MainWindow::dij_mainprogram()
         qDebug() <<"BFC"<< CHECKER;
         dij_main();//Call algorithm function
         qDebug() <<"AFC"<< CHECKER;
+        CHECKER = 1;
     }
 
     //Flip if inf distance
@@ -463,6 +464,7 @@ void MainWindow::dij_mainprogram2()
         qDebug() <<"BFC"<< CHECKER;
         dij_main();//Call algorithm function
         qDebug() <<"AFC"<< CHECKER;
+        CHECKER = 1;
     }
 
     //Flip if inf distance

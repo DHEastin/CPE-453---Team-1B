@@ -340,10 +340,10 @@ void MainWindow::create_sqltables()
             {
                 QString smpms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 qq.exec(smpms1);
-                QString smpms2 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL2).arg(COL1);
-                qq.exec(smpms2);
-                QString smpms3 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL3).arg(COL1);
-                qq.exec(smpms3);
+                //QString smpms2 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL2).arg(COL1);
+                //qq.exec(smpms2);
+                //QString smpms3 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL3).arg(COL1);
+                //qq.exec(smpms3);
             }
             if(SwitchNUM == "23")
             {
@@ -532,7 +532,7 @@ void MainWindow::create_sqltables()
             }
             if(SwitchNUM == "12")
             {
-                QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL2);
+                QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 kk.exec(smpms);
             }
             if(SwitchNUM == "13")
@@ -549,24 +549,24 @@ void MainWindow::create_sqltables()
             }
             if(SwitchNUM == "21")
             {
-                //QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL2);
-                //kk.exec(smpms);
+                QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                kk.exec(smpms);
                 //QString smpms1 = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL3);
                 //kk.exec(smpms1);
             }
             if(SwitchNUM == "22")
             {
-                //QString smpms1 = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                //kk.exec(smpms1);
-                //QString smpms2 = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL2).arg(COL1);
+                QString smpms1 = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                kk.exec(smpms1);
+                //QString smpms2 = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL2);
                 //kk.exec(smpms2);
                 //QString smpms3 = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL3).arg(COL1);
                 //kk.exec(smpms3);
             }
             if(SwitchNUM == "23")
             {
-                QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                kk.exec(smpms);
+                //QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
+                //kk.exec(smpms);
             }
             if(SwitchNUM == "24")
             {
@@ -639,10 +639,10 @@ void MainWindow::create_sqltables()
             {
                 QString smpms1 = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 kk.exec(smpms1);
-                QString smpms2 = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL2).arg(COL1);
-                kk.exec(smpms2);
-                QString smpms3 = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL3).arg(COL1);
-                kk.exec(smpms3);
+                //QString smpms2 = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL2).arg(COL1);
+                //kk.exec(smpms2);
+                //QString smpms3 = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL3).arg(COL1);
+                //kk.exec(smpms3);
             }
             if(SwitchNUM == "73")
             {
