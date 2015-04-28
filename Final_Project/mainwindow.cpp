@@ -2047,6 +2047,34 @@ void MainWindow::check_sched()
                                     }
                                 }
                             }
+
+                            BLAH1 = QString("SELECT START, Direction, Destination, next, PathID FROM Trains WHERE ID='%1'").arg(currentID);
+                            runSchedQuery1 = db.exec(BLAH1);
+
+                            runSchedQuery1.next();
+
+                            currentStart = runSchedQuery1.value(0).toString();
+                            currentDirection = runSchedQuery1.value(1).toString();
+
+                            if(runSchedQuery1.value(1).isNull())
+                                    currentDirection = "NULL";
+                            else
+                                currentDirection = runSchedQuery1.value(1).toString();
+
+                            if(runSchedQuery1.value(2).isNull())
+                                    currentDestination = "NULL";
+                            else
+                                currentDestination = runSchedQuery1.value(2).toString();
+
+                            if(runSchedQuery1.value(3).isNull())
+                                currentNext = "NULL";
+                            else
+                                currentNext = runSchedQuery1.value(3).toString();
+
+                            if (runSchedQuery1.value(4).isNull())
+                                currentPath = "NULL";
+                            else
+                                currentPath = runSchedQuery1.value(4).toString();
                         }
                     }
                     else
@@ -2369,6 +2397,33 @@ void MainWindow::check_sched()
                                         }
                                     }
                                 }
+                                BLAH1 = QString("SELECT START, Direction, Destination, next, PathID FROM Trains WHERE ID='%1'").arg(currentID);
+                                runSchedQuery1 = db.exec(BLAH1);
+
+                                runSchedQuery1.next();
+
+                                currentStart = runSchedQuery1.value(0).toString();
+                                currentDirection = runSchedQuery1.value(1).toString();
+
+                                if(runSchedQuery1.value(1).isNull())
+                                        currentDirection = "NULL";
+                                else
+                                    currentDirection = runSchedQuery1.value(1).toString();
+
+                                if(runSchedQuery1.value(2).isNull())
+                                        currentDestination = "NULL";
+                                else
+                                    currentDestination = runSchedQuery1.value(2).toString();
+
+                                if(runSchedQuery1.value(3).isNull())
+                                    currentNext = "NULL";
+                                else
+                                    currentNext = runSchedQuery1.value(3).toString();
+
+                                if (runSchedQuery1.value(4).isNull())
+                                    currentPath = "NULL";
+                                else
+                                    currentPath = runSchedQuery1.value(4).toString();
                             }
                         }
 
@@ -2434,9 +2489,14 @@ void MainWindow::check_sched()
                                     {
                                         //Set Start to old Destination
                                         //No new path -- set next piece to Null
+                                        QString oldDS;
+                                        oldDS = currentStart;
                                         currentStart=currentDestination;
                                         currentNext="NULL";
-                                                                                                     //Next Piece //Prev Piece
+
+                                        //Next Piece - need to find
+                                        //previous => oldDS
+                                        //current  => current start
                                         QString Sts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current='%2'").arg("DS_Connectivity").arg(currentDestination);
                                         o = db.exec(Sts1);
                                         o.next();
