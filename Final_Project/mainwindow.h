@@ -69,7 +69,7 @@ private:
     bool ERROR;
     int a;
     int MIN_DISTANCE;
-    QString SwitchDIR;
+    QString SwitchNUM;
     QString CLOCK,PATH_DIR;
     //OPTIONS
     bool Testing_path;

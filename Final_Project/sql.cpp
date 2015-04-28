@@ -97,7 +97,7 @@ void MainWindow::create_sqltables()
     // 0 = Open --- 1 = Bypass
     //Create Switch_Info Table
     //Table list switches and Open/Closed status
-     p.exec("CREATE TABLE switchInfoTable (switch TEXT, position INT, straight TEXT, openPOS TEXT, closedPOS TEXT, SwitchDIR TEXT);");
+     p.exec("CREATE TABLE switchInfoTable (switch TEXT, position INT, straight TEXT, openPOS TEXT, closedPOS TEXT, SwitchNUM TEXT);");
      p.exec("SELECT * FROM switchInfoTable;");
 
     TRAIN.exec("CREATE TABLE Trains(ID TEXT, START TEXT, Direction TEXT,Destination TEXT,next TEXT,pathID INT,DIR TEXT);");
@@ -118,109 +118,109 @@ void MainWindow::create_sqltables()
     TrainSW5.exec("CREATE TABLE Trains5(switch TEXT, position INT);");
     TrainSW5.exec("SELECT * FROM Trains5;");
 
-     //SwitchDIR == Direction of Straight part of Switch
+     //SwitchNUM == Direction of Straight part of Switch
 
-     o.exec("CREATE TABLE DS_Connectivity (Current TEXT, NumberOfConnections INT, Connection1 TEXT, Connection2 TEXT, Connection3 TEXT, SwitchDIR TEXT);");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-1',2,'2-2','2-1','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-2',2,'2-16','2-15','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-3',2,'3-16','4-4','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-4',2,'8-16','8-4','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-5',3,'1-6','4-2','3-3','W');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-6',3,'3-16','3-4','1-5','W');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-7',3,'1-8','4-3','4-4','W');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-8',3,'1-7','1-14','1-15','E');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-9',1,'1-12','Null','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-10',2,'4-16','3-15','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-11',2,'3-13','4-13','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-12',2,'4-15','1-9','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-14',2,'4-14','1-8','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('1-15',2,'4-13','1-8','Null','Null');");
+     o.exec("CREATE TABLE DS_Connectivity (Current TEXT, NumberOfConnections INT, Connection1 TEXT, Connection2 TEXT, Connection3 TEXT, SwitchNUM TEXT);");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-1',2,'2-2','2-1','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-2',2,'2-16','2-15','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-3',2,'3-16','4-4','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-4',2,'8-16','8-4','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-5',3,'1-6','4-2','3-3','34');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-6',3,'3-16','3-4','1-5','24');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-7',3,'1-8','4-3','4-4','22');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-8',3,'1-7','1-14','1-15','21');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-9',1,'1-12','Null','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-10',2,'4-16','3-15','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-11',2,'3-13','4-13','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-12',2,'4-15','1-9','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-14',2,'4-14','1-8','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('1-15',2,'4-13','1-8','Null','Null');");
 
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-1',2,'2-3','1-1','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-2',2,'2-3','1-1','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-3',3,'2-4','2-2','2-1','IE');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-4',2,'2-5','2-3','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-5',3,'2-4','2-7','2-6','IWW');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-6',2,'2-8','2-5','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-7',2,'2-9','2-5','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-8',2,'2-10','2-6','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-9',2,'2-11','2-7','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-10',2,'2-12','2-8','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-11',2,'2-12','2-9','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-12',3,'2-13','2-11','2-10','IEE');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-13',2,'2-14','2-12','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-14',3,'2-13','2-15','2-16','IW');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-15',2,'1-2','2-14','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('2-16',2,'1-2','2-14','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-1',2,'2-3','1-1','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-2',2,'2-3','1-1','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-3',3,'2-4','2-2','2-1','43');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-4',2,'2-5','2-3','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-5',3,'2-4','2-7','2-6','14');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-6',2,'2-8','2-5','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-7',2,'2-9','2-5','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-8',2,'2-10','2-6','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-9',2,'2-11','2-7','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-10',2,'2-12','2-8','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-11',2,'2-12','2-9','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-12',3,'2-13','2-11','2-10','84');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-13',2,'2-14','2-12','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-14',3,'2-13','2-15','2-16','52');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-15',2,'1-2','2-14','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('2-16',2,'1-2','2-14','Null','Null');");
 
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('3-1',2,'6-4','4-2','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('3-3',2,'6-3','1-5','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('3-4',2,'6-2','1-6','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('3-5',1,'4-9','Null','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('3-6',3,'3-8','5-16','4-10','BW');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('3-7',1,'4-12','Null','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('3-8',2,'3-6','3-13','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('3-13',3,'1-11','3-8','3-15','SL');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('3-14',2,'1-10','3-15','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('3-15',3,'3-16','3-14','3-13','NL');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('3-16',3,'3-15','1-3','1-6','SL');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('3-1',2,'6-4','4-2','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('3-3',2,'6-3','1-5','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('3-4',2,'6-2','1-6','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('3-5',1,'4-9','Null','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('3-6',3,'3-8','5-16','4-10','41');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('3-7',1,'4-12','Null','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('3-8',2,'3-6','3-13','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('3-13',3,'1-11','3-8','3-15','12');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('3-14',2,'1-10','3-15','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('3-15',3,'3-16','3-14','3-13','13');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('3-16',3,'3-15','1-3','1-6','42');");
 
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-2',3,'1-5','5-8','3-1','W');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-3',2,'1-7','6-5','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-4',3,'6-6','1-3','1-7','EE');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-9',2,'5-2','3-5','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-10',2,'4-11','3-6','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-11',2,'5-1','4-10','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-12',2,'5-2','3-7','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-13',2,'1-11','1-15','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-14',2,'4-15','1-14','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-15',3,'4-14','4-16','1-12','NLE');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('4-16',2,'4-15','1-10','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('4-2',3,'1-5','5-8','3-1','33');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('4-3',2,'1-7','6-5','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('4-4',3,'6-6','1-3','1-7','23');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('4-9',2,'5-2','3-5','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('4-10',2,'4-11','3-6','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('4-11',2,'5-1','4-10','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('4-12',2,'5-2','3-7','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('4-13',2,'1-11','1-15','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('4-14',2,'4-15','1-14','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('4-15',3,'4-14','4-16','1-12','11');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('4-16',2,'4-15','1-10','Null','Null');");
 
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('5-1',2,'4-11','5-3','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('5-2',3,'5-3','4-9','4-12','BE);");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('5-3',3,'5-13','5-2','5-1','BE');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('5-4',2,'8-1','5-13','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('5-5',2,'5-8','7-4','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('5-6',2,'5-7','7-3','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('5-7',3,'5-8','7-1','5-6','W');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('5-8',3,'4-2','5-7','5-5','W');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('5-13',3,'5-4','5-14','5-3','BE');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('5-14',2,'5-13','5-15','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('5-15',2,'5-14','5-16','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('5-16',2,'5-15','3-6','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('5-1',2,'4-11','5-3','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('5-2',3,'5-3','4-9','4-12','63');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('5-3',3,'5-13','5-2','5-1','62');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('5-4',2,'8-1','5-13','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('5-5',2,'5-8','7-4','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('5-6',2,'5-7','7-3','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('5-7',3,'5-8','7-1','5-6','31');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('5-8',3,'4-2','5-7','5-5','32');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('5-13',3,'5-4','5-14','5-3','61');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('5-14',2,'5-13','5-15','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('5-15',2,'5-14','5-16','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('5-16',2,'5-15','3-6','Null','Null');");
 
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('6-1',3,'8-15','6-4','6-3','E');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('6-2',2,'8-15','3-4','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('6-3',2,'6-1','3-3','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('6-4',2,'6-1','3-1','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('6-5',2,'4-3','8-14','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('6-6',2,'4-4','8-13','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('6-1',3,'8-15','6-4','6-3','64');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('6-2',2,'8-15','3-4','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('6-3',2,'6-1','3-3','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('6-4',2,'6-1','3-1','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('6-5',2,'4-3','8-14','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('6-6',2,'4-4','8-13','Null','Null');");
 
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-1',2,'5-7','7-2','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-2',1,'7-1','Null','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-3',1,'5-6','Null','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-4',1,'5-5','Null','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-5',3,'7-7','7-8','8-5','NRE');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-6',2,'7-13','8-6','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-7',2,'8-11','7-5','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-8',2,'8-2','7-5','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('7-13',2,'8-10','7-6','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('7-1',2,'5-7','7-2','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('7-2',1,'7-1','Null','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('7-3',1,'5-6','Null','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('7-4',1,'5-5','Null','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('7-5',3,'7-7','7-8','8-5','81');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('7-6',2,'7-13','8-6','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('7-7',2,'8-11','7-5','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('7-8',2,'8-2','7-5','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('7-13',2,'8-10','7-6','Null','Null');");
 
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-1',3,'8-6','5-4','8-3','SR');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-2',2,'8-3','7-8','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-3',3,'8-4','8-2','8-1','NR');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-4',3,'8-3','1-4','8-9','SR');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-5',2,'7-5','8-8','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-6',2,'7-6','8-1','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-8',1,'8-5','Null','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-9',3,'8-10','8-14','8-16','E');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-10',3,'8-9','8-11','7-13','W');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-11',2,'8-10','7-7','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-13',2,'6-6','8-16','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-14',2,'6-5','8-9','Null','Null');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-15',3,'8-4','6-2','6-1','E');");
-     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchDIR) VALUES ('8-16',3,'8-13','1-4','8-9','WW');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-1',3,'8-6','5-4','8-3','82');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-2',2,'8-3','7-8','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-3',3,'8-4','8-2','8-1','83');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-4',3,'8-3','1-4','8-9','51');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-5',2,'7-5','8-8','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-6',2,'7-6','8-1','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-8',1,'8-5','Null','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-9',3,'8-10','8-14','8-16','72');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-10',3,'8-9','8-11','7-13','71');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-11',2,'8-10','7-7','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-13',2,'6-6','8-16','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-14',2,'6-5','8-9','Null','Null');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-15',3,'8-4','6-2','6-1','74');");
+     o.exec("INSERT INTO DS_Connectivity (Current, NumberOfConnections, Connection1, Connection2, Connection3, SwitchNUM) VALUES ('8-16',3,'8-13','1-4','8-9','73');");
 
 
      o.exec("SELECT * FROM DS_Connectivity;");
@@ -244,7 +244,7 @@ void MainWindow::create_sqltables()
 
     qq.exec("CREATE TABLE trackInfoTable (currentnode INT, nextnode INT, weight INT);");
     /*-------------------------------------------------------------------*/
-        QString s10 = QString("SELECT Current,NumberOfConnections,Connection1,Connection2,Connection3,SwitchDIR from %3").arg("DS_Connectivity");
+        QString s10 = QString("SELECT Current,NumberOfConnections,Connection1,Connection2,Connection3,SwitchNUM from %3").arg("DS_Connectivity");
         o = db.exec(s10);
         QString smi4 = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
 
@@ -261,24 +261,24 @@ void MainWindow::create_sqltables()
                 QString Conn1 = o.value(2).toString();//Connection2
                 QString Conn2 = o.value(3).toString();//Connection3
                 QString Conn3 = o.value(4).toString();//Connection3
-                SwitchDIR = o.value(5).toString();//Switch Direction
+                SwitchNUM = o.value(5).toString();//Switch Direction
 
             //Converts strings to int values
             if(Current == trackNAME)
             {
-                COL0 = trackID;
+                COL0 = trackID;//Switch
             }
             if(Conn1 == trackNAME)
             {
-                COL1 = trackID;
+                COL1 = trackID;//Straight
             }
             if(Conn2 == trackNAME)
             {
-                COL2 = trackID;
+                COL2 = trackID;//OpenPOS
             }
             if(Conn3 == trackNAME)
             {
-                COL3 = trackID;
+                COL3 = trackID;//ClosedPOS
             }
 
         }
@@ -296,98 +296,147 @@ void MainWindow::create_sqltables()
         {
             QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
             qq.exec(smpms);
+            QString smpms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL1).arg(COL0);
+            qq.exec(smpms1);
         }
 
         if(NumofConn == 3) //Switches
         {
-            QString smpms = QString("INSERT INTO switchInfoTable (switch,position,straight,openPOS,closedPOS,SwitchDIR) VALUES ('%1',0,'%2','%3','%4','%5');").arg(COL0).arg(COL1).arg(COL2).arg(COL3).arg(SwitchDIR);
+            QString smpms = QString("INSERT INTO switchInfoTable (switch,position,straight,openPOS,closedPOS,SwitchNUM) VALUES ('%1',0,'%2','%3','%4','%5');").arg(SwitchNUM).arg(COL1).arg(COL2).arg(COL3).arg(COL0);
             p.exec(smpms);
-            if(SwitchDIR == "NLE")
-            {
-                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                //qq.exec(smpms);
-            }
-            if(SwitchDIR == "SLE")
+            if(SwitchNUM == "11")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 qq.exec(smpms);
             }
-            if(SwitchDIR == "NRE")
+            if(SwitchNUM == "12")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 qq.exec(smpms);
             }
-            if(SwitchDIR == "SRE")
+            if(SwitchNUM == "13")
             {
-                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                //qq.exec(smpms);
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL2).arg(COL0);
+                qq.exec(smpms);
+                QString smpms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL3).arg(COL0);
+                qq.exec(smpms1);
             }
-            if(SwitchDIR == "NL")
+            if(SwitchNUM == "14")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 qq.exec(smpms);
             }
-            if(SwitchDIR == "SL")
-            {
-                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                //qq.exec(smpms);
-            }
-            if(SwitchDIR == "NR")
-            {
-                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                //qq.exec(smpms);
-            }
-            if(SwitchDIR == "SR")
+            if(SwitchNUM == "21")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 qq.exec(smpms);
             }
-            if(SwitchDIR == "E")
+            if(SwitchNUM == "22")
             {
-                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                //qq.exec(smpms);
+                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL2).arg(COL0);
+                qq.exec(smpms);
+                QString smpms1 = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL3).arg(COL0);
+                qq.exec(smpms1);
             }
-            if(SwitchDIR == "W")
+            if(SwitchNUM == "23")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 qq.exec(smpms);
             }
-            if(SwitchDIR == "EE")
+            if(SwitchNUM == "24")
             {
-                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                //qq.exec(smpms);
+
             }
-            if(SwitchDIR == "WW")
+            if(SwitchNUM == "31")
             {
-                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                qq.exec(smpms);
+
             }
-            if(SwitchDIR == "IE" || SwitchDIR == "IEE")
+            if(SwitchNUM == "32")
             {
-                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                qq.exec(smpms);
+
             }
-            if(SwitchDIR == "IW" || SwitchDIR == "IWW")
+            if(SwitchNUM == "33")
             {
-                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                //qq.exec(smpms);
+
             }
-            if(SwitchDIR == "BE")
+            if(SwitchNUM == "34")
             {
-                QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                qq.exec(smpms);
+
             }
-            if(SwitchDIR == "BW")
+            if(SwitchNUM == "41")
             {
-                //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
-                //qq.exec(smpms);
+
+            }
+            if(SwitchNUM == "42")
+            {
+
+            }
+            if(SwitchNUM == "43")
+            {
+
+            }
+            if(SwitchNUM == "51")
+            {
+
+            }
+            if(SwitchNUM == "52")
+            {
+
+            }
+            if(SwitchNUM == "61")
+            {
+
+            }
+            if(SwitchNUM == "62")
+            {
+
+            }
+            if(SwitchNUM == "63")
+            {
+
+            }
+            if(SwitchNUM == "64")
+            {
+
+            }
+            if(SwitchNUM == "71")
+            {
+
+            }
+            if(SwitchNUM == "72")
+            {
+
+            }
+            if(SwitchNUM == "73")
+            {
+
+            }
+            if(SwitchNUM == "74")
+            {
+
+            }
+            if(SwitchNUM == "81")
+            {
+
+            }
+            if(SwitchNUM == "82")
+            {
+
+            }
+            if(SwitchNUM == "83")
+            {
+
+            }
+            if(SwitchNUM == "84")
+            {
+
             }
         } 
     }
 
     kk.exec("CREATE TABLE trackInfoTable2 (currentnode INT, nextnode INT, weight INT);");
     /*-------------------------------------------------------------------*/
-        QString s9 = QString("SELECT Current,NumberOfConnections,Connection1,Connection2,Connection3,SwitchDIR from %3").arg("DS_Connectivity");
+        QString s9 = QString("SELECT Current,NumberOfConnections,Connection1,Connection2,Connection3,SwitchNUM from %3").arg("DS_Connectivity");
         o = db.exec(s9);
         QString smi3 = QString("SELECT trackID,trackNAME from %3").arg("tracklistingTable");
 
@@ -404,7 +453,7 @@ void MainWindow::create_sqltables()
                 QString Conn1 = o.value(2).toString();//Connection2
                 QString Conn2 = o.value(3).toString();//Connection3
                 QString Conn3 = o.value(4).toString();//Connection3
-                SwitchDIR = o.value(5).toString();//Switch Direction
+                SwitchNUM = o.value(5).toString();//Switch Direction
 
             //Converts strings to int values
             if(Current == trackNAME)
@@ -445,82 +494,82 @@ void MainWindow::create_sqltables()
         {
             //QString smpms = QString("INSERT INTO switchInfoTable2 (switch,position,straight,openPOS,closedPOS) VALUES ('%1',0,'%2','%3','%4');").arg(COL0).arg(COL1).arg(COL2).arg(COL3);
             //p.exec(smpms);
-            if(SwitchDIR == "NLE")
+            if(SwitchNUM == "NLE")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 kk.exec(smpms);
             }
-            if(SwitchDIR == "SLE")
+            if(SwitchNUM == "SLE")
             {
                 //QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 //kk.exec(smpms);
             }
-            if(SwitchDIR == "NRE")
+            if(SwitchNUM == "NRE")
             {
                 //QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 //kk.exec(smpms);
             }
-            if(SwitchDIR == "SRE")
+            if(SwitchNUM == "SRE")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 kk.exec(smpms);
             }
-            if(SwitchDIR == "NL")
+            if(SwitchNUM == "NL")
             {
                 //QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 //kk.exec(smpms);
             }
-            if(SwitchDIR == "SL")
+            if(SwitchNUM == "SL")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL1).arg(COL0);
                 kk.exec(smpms);
             }
-            if(SwitchDIR == "NR")
+            if(SwitchNUM == "NR")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 kk.exec(smpms);
             }
-            if(SwitchDIR == "SR")
+            if(SwitchNUM == "SR")
             {
                 //QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 //kk.exec(smpms);
             }
-            if(SwitchDIR == "E")
+            if(SwitchNUM == "E")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 kk.exec(smpms);
             }
-            if(SwitchDIR == "W")
+            if(SwitchNUM == "W")
             {
                 //QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 //kk.exec(smpms);
             }
-            if(SwitchDIR == "EE")
+            if(SwitchNUM == "EE")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 qq.exec(smpms);
             }
-            if(SwitchDIR == "WW")
+            if(SwitchNUM == "WW")
             {
                 //QString smpms = QString("INSERT INTO trackInfoTable (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 //qq.exec(smpms);
             }
-            if(SwitchDIR == "IE")
+            if(SwitchNUM == "IE" || SwitchNUM == "IEE")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 kk.exec(smpms);
             }
-            if(SwitchDIR == "IW")
+            if(SwitchNUM == "IW" || SwitchNUM == "IWW")
             {
                 //QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 //kk.exec(smpms);
             }
-            if(SwitchDIR == "BE")
+            if(SwitchNUM == "BE")
             {
                 QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 kk.exec(smpms);
             }
-            if(SwitchDIR == "BW")
+            if(SwitchNUM == "BW")
             {
                 //QString smpms = QString("INSERT INTO trackInfoTable2 (currentnode, nextnode, weight) VALUES (%1,%2,5);").arg(COL0).arg(COL1);
                 //kk.exec(smpms);
