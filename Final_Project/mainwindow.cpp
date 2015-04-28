@@ -146,6 +146,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionView_Trains3,SIGNAL(triggered()),this,SLOT(Trains3_Table()));
     connect(ui->actionView_Trains4,SIGNAL(triggered()),this,SLOT(Trains4_Table()));
     connect(ui->actionView_Trains5,SIGNAL(triggered()),this,SLOT(Trains5_Table()));
+    connect(ui->actionSwap_Train_Direction,SIGNAL(triggered()),this,SLOT(SWAP_TRAIN_DIRECTION()));
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(check_sched()));
@@ -155,6 +156,54 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+/*-------------------------------------------------------------------------------------------------------------*/
+//Swap Train Direction
+/*-------------------------------------------------------------------------------------------------------------*/
+
+void MainWindow::SWAP_TRAIN_DIRECTION()
+{
+    QString CurrentID = ui->trainBox->currentText();
+
+    QString VAL1,VAL2,VAL3,VAL4;
+    items.clear();
+    QString Edit_ID = QString("SELECT ID,Start,Direction,Destination,pathID from %1 WHERE ID=%2").arg("Trains").arg(CurrentID);
+    TRAIN = db.exec(Edit_ID);
+    TRAIN.next();
+    VAL1 = TRAIN.value(0).toInt();
+    VAL2 = TRAIN.value(1).toString();
+    VAL3 = TRAIN.value(2).toString();
+    VAL4 = TRAIN.value(3).toInt();
+
+    QString ts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current='%2'").arg("DS_Connectivity").arg(VAL2);
+    o = db.exec(ts1);
+    o.next();
+
+    //Forward
+    QString sts1 = o.value(2).toString();
+
+    //Backward
+    QString sts2 = o.value(3).toString();
+
+    if(VAL3 == sts1)
+    {
+        direction = sts2;
+        CLOCK = "C";
+    }
+    if(VAL3 == sts2)
+    {
+        direction = sts1;
+        CLOCK = "CC";
+    }
+
+    QString tts0 = QString("UPDATE Trains SET Direction='%1',DIR='%2' WHERE ID='%3'").arg(direction).arg(CLOCK).arg(ID);
+    TRAIN = db.exec(tts0);
+    if(rdb.isOpen())
+    {
+        QString tts0t = QString("UPDATE scheduled_train_info SET current='%1' WHERE ID='%2'").arg(Start).arg(ID);
+        r1=rdb.exec(tts0t);
+    }
 }
 
 /*-------------------------------------------------------------------------------------------------------------*/
@@ -1721,9 +1770,6 @@ void MainWindow::check_sched()
             QString currentID, currentStart,currentDirection,currentDestination,currentNext,currentPath;
             QString nextNext1, nextNext2;//, nextNext3;
             QString waitCheck;
-
-            QString ttps1 = QString("DELETE FROM pathInfoTable WHERE pathID='%1'").arg(" ");
-            Path2 = db.exec(ttps1);
 
             QString BLAH1, BLAH3;//, BLAH3;
             QString BLAH = QString("SELECT ID FROM Trains");

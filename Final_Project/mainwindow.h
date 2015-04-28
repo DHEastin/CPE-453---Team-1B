@@ -110,6 +110,7 @@ private slots:
     void Trains3_Table();
     void Trains4_Table();
     void Trains5_Table();
+    void SWAP_TRAIN_DIRECTION();
 };
 
 #endif // MAINWINDOW_H

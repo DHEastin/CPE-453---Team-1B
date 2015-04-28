@@ -332,6 +332,7 @@
     <addaction name="actionAdd_Train"/>
     <addaction name="actionEdit_Train"/>
     <addaction name="actionDelete_Train"/>
+    <addaction name="actionSwap_Train_Direction"/>
    </widget>
    <widget class="QMenu" name="menuTables">
     <property name="title">
@@ -488,6 +489,11 @@
   <action name="actionView_Trackinfo2">
    <property name="text">
     <string>View Trackinfo2</string>
+   </property>
+  </action>
+  <action name="actionSwap_Train_Direction">
+   <property name="text">
+    <string>Swap Current Train Direction</string>
    </property>
   </action>
  </widget>
