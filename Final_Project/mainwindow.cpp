@@ -2395,7 +2395,7 @@ void MainWindow::check_sched()
                                                                                 {
                                                                                     r1 = rdb.exec("UPDATE scheduled_routes SET next2='FILL' WHERE pathID='"+nextPath+"';");
                                                                                 }
-                                                                                thisPath=nextPath
+                                                                                thisPath=nextPath;
                                                                             }
                                                                         }
                                                                     }
