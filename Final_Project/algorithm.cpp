@@ -195,7 +195,7 @@ void MainWindow::dij_mainprogram()
     int ss1 = qq.value(0).toInt();
     int ss2 = qq.value(1).toInt();
     int ss3 = qq.value(2).toInt();
-    adjacency_map[ss2].push_back(edge(ss1,  ss3));
+    adjacency_map[ss1].push_back(edge(ss2,  ss3));
     //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
     }
     /*-------------------------------------------------------------------*/
@@ -304,7 +304,7 @@ void MainWindow::dij_mainprogram()
     int ss1 = qq.value(0).toInt();
     int ss2 = qq.value(1).toInt();
     int ss3 = qq.value(2).toInt();
-    adjacency_map[ss2].push_back(edge(ss1,  ss3));
+    adjacency_map[ss1].push_back(edge(ss2,  ss3));
     //qDebug() <<ss2<<",{"<<ss1<<","<<ss3<<"}";
     }
     /*-------------------------------------------------------------------*/
