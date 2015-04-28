@@ -1170,9 +1170,9 @@ void MainWindow::Update_ScheduleTable()
         //Must use # of paths for # of full rows of data *each row is 10 nodes
 
         int LEN = 0;
-        int TOT = PATH.length();
+        int TOT = PATH.length()-1;
         int TOT_LEFT = TOT - LEN;
-        if (TOT >= 21)
+        if (TOT > 20)
         {
             ok = 1;
             tot = 11;
@@ -1215,7 +1215,7 @@ void MainWindow::Update_ScheduleTable()
             qtts0.append(")");
             qtts0tw.append(I_D);
             qtts0tw.append(")");
-            //qDebug() << qtts0;
+            qDebug() << qtts0;
 
             o = db.exec(qtts0);
             if(rdb.isOpen())
@@ -1225,8 +1225,8 @@ void MainWindow::Update_ScheduleTable()
         }
             if(ok == 1)
             {
-                tot = 21;
-                tot2 = 31;
+                tot = 22;
+                tot2 = 32;
             }
             else
             {
@@ -1275,7 +1275,7 @@ void MainWindow::Update_ScheduleTable()
             qtts01.append(")");
             qtts0tw.append(I_D);
             qtts0tw.append(")");
-            //qDebug() << qtts01;
+            qDebug() << qtts01;
 
             o = db.exec(qtts01);
             if(rdb.isOpen())
@@ -1329,7 +1329,7 @@ void MainWindow::Update_ScheduleTable()
             qtts02.append(")");
             qtts0te.append(I_D);
             qtts0te.append(")");
-            //qDebug() << qtts02;
+            qDebug() << qtts02;
 
             o = db.exec(qtts02);
             if(rdb.isOpen())
