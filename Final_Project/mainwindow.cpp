@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33155 --user=1BUser --password=TEAM1bUSER
 
     //Team1b database and user for testing
-    /*
+
     rdb = QSqlDatabase::addDatabase( "QMYSQL" ,"Remote" );
     //rdb.addDatabase( "QMYSQL", "Remote" );
     rdb.setHostName("pavelow.eng.uah.edu");
@@ -40,10 +40,10 @@ MainWindow::MainWindow(QWidget *parent) :
     rdb.setDatabaseName("Team1B");
     rdb.setUserName("1BUser");
     rdb.setPassword("TEAM1bUSER");
-    */
+
 
     //Team1A for interoperability
-
+/*
     rdb = QSqlDatabase::addDatabase( "QMYSQL" ,"Remote" );
     //rdb.addDatabase( "QMYSQL", "Remote" );
     rdb.setHostName("pavelow.eng.uah.edu");
@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     rdb.setDatabaseName("cpe453");
     rdb.setUserName("root");
     rdb.setPassword("cstrapwi");
-
+*/
 
 
     //override_status
@@ -2023,24 +2023,26 @@ void MainWindow::check_sched()
                                                                             {
                                                                                 r1 = rdb.exec("UPDATE scheduled_routes SET nextpath='"+thisPath+"' WHERE pathID='"+thisPath+"';");
                                                                             }
+                                                                            break;
                                                                         }
                                                                         else
                                                                         {
                                                                             nextNext1 = l1.value(0).toString();
 
-                                                                            l1 = db.exec("UPDATE pathInfoTable SET nextID1='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
+                                                                            l1 = db.exec("UPDATE pathInfoTable SET nextID10='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
                                                                             if(rdb.isOpen())
                                                                             {
-                                                                                r1 = rdb.exec("UPDATE scheduled_routes SET next2='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
+                                                                                r1 = rdb.exec("UPDATE scheduled_routes SET next11='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
                                                                             }
 
 
-                                                                            l1 = db.exec("UPDATE pathInfoTable SET nextID1='NULL' WHERE pathID='"+nextPath+"';");
+                                                                            l1 = db.exec("UPDATE pathInfoTable SET nextID1='FILL' WHERE pathID='"+nextPath+"';");
                                                                             if(rdb.isOpen())
                                                                             {
-                                                                                r1 = rdb.exec("UPDATE scheduled_routes SET next2='NULL' WHERE pathID='"+nextPath+"';");
+                                                                                r1 = rdb.exec("UPDATE scheduled_routes SET next2='FILL' WHERE pathID='"+nextPath+"';");
                                                                             }
                                                                             thisPath = nextPath;
+                                                                            //break;
 
                                                                         }
                                                                     }
@@ -2381,19 +2383,19 @@ void MainWindow::check_sched()
                                                                             {
                                                                                 nextNext1 = l1.value(0).toString();
 
-                                                                                l1 = db.exec("UPDATE pathInfoTable SET nextID1='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
+                                                                                l1 = db.exec("UPDATE pathInfoTable SET nextID10='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
                                                                                 if(rdb.isOpen())
                                                                                 {
-                                                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next2='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
+                                                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next11='"+nextNext1+"' WHERE pathID='"+thisPath+"';");
                                                                                 }
 
 
-                                                                                l1 = db.exec("UPDATE pathInfoTable SET nextID1='NULL' WHERE pathID='"+nextPath+"';");
+                                                                                l1 = db.exec("UPDATE pathInfoTable SET nextID1='FILL' WHERE pathID='"+nextPath+"';");
                                                                                 if(rdb.isOpen())
                                                                                 {
-                                                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next2='NULL' WHERE pathID='"+nextPath+"';");
+                                                                                    r1 = rdb.exec("UPDATE scheduled_routes SET next2='FILL' WHERE pathID='"+nextPath+"';");
                                                                                 }
-                                                                                thisPath = nextPath;
+                                                                                thisPath=nextPath
                                                                             }
                                                                         }
                                                                     }
@@ -2457,7 +2459,11 @@ void MainWindow::check_sched()
 
                         if(move_on)
                         {
-                            if(currentDirection==currentNext)
+                            if (currentNext=="EMPTY" || currentNext=="" || currentNext!="NULL")
+                            {
+                                ;
+                            }
+                            else if(currentDirection==currentNext)
                             {
                                 if(rdb.isOpen())
                                 {
@@ -2468,7 +2474,7 @@ void MainWindow::check_sched()
                                     qDebug() << "Error: Throttle write failed\n";
                                 }
                             }
-                            else if (currentNext!="EMPTY"&&currentNext!=""&&currentNext!="NULL")
+                            else
                             {
                                 if(rdb.isOpen())
                                 {
