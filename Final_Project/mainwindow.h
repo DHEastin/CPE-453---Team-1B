@@ -87,6 +87,7 @@ private slots:
     void Train_Table();
     void dij_main();
     void dij_mainprogram();
+    void dij_mainprogram2();
     void dij_mainprogram_copy();
     void DS_Connectivity_Table();
     void Tracklisting_Table();

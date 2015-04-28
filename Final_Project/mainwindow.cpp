@@ -656,7 +656,7 @@ void MainWindow::Schedule()
     if(Dir == "C")
     {
         PATH_DIR = "Clockwise";
-        dij_mainprogram_copy();
+        dij_mainprogram2();
     }
     if(Dir == "CC")
     {
@@ -1351,10 +1351,14 @@ void MainWindow::Update_ScheduleTable()
 
 void MainWindow::DEL_OLD_PATH()
 {
-    int sts1/*,sts2*/,sts3,sts4/*,sts5*/;
+    int sts1/*,sts2*/,sts3,sts4,sts5;
 
     QString string_s1;
 
+    QString ttps23 = QString("DELETE FROM pathInfoTable WHERE pathID='%1'").arg("");
+    TRAIN2 = db.exec(ttps23);
+
+    //Start of Path
     QString tqtps1 = QString("SELECT pathID FROM Trains WHERE ID='%1'").arg(ui->trainBox->currentText());
     TRAIN = db.exec(tqtps1);
 
@@ -1364,6 +1368,7 @@ void MainWindow::DEL_OLD_PATH()
     }
 
     int Test = sts1+1;
+    int Test2 = sts1+2;
 
     //qDebug() <<sts1<<Test;
 
@@ -1383,6 +1388,15 @@ void MainWindow::DEL_OLD_PATH()
     for(;Path.next() == 1;) //If it is 1 it contains data
     {
     sts4 = Path.value(0).toInt();
+    //string_s1 = Path.value(1).toString();
+    }
+
+    QString tqtps4 = QString("SELECT pathID,nextID1,nextpathID FROM pathInfoTable WHERE pathID=%1").arg(Test2);
+    Path = db.exec(tqtps4);
+
+    for(;Path.next() == 1;) //If it is 1 it contains data
+    {
+    sts5 = Path.value(0).toInt();
     //string_s1 = Path.value(1).toString();
     }
 
@@ -1407,6 +1421,18 @@ void MainWindow::DEL_OLD_PATH()
     {
     QString qtts0t = QString("DELETE FROM scheduled_routes WHERE pathid='%1'").arg(sts1);
     r2 = rdb.exec(qtts0t);
+    }
+
+    if(sts3 == sts4)
+    {
+        QString ttps1 = QString("DELETE FROM pathInfoTable WHERE pathID=%1").arg(sts4);
+        Path2 = db.exec(ttps1);
+
+        if(rdb.isOpen())
+        {
+        QString qtts0t = QString("DELETE FROM scheduled_routes WHERE pathid=%1").arg(sts4);
+        r2 = rdb.exec(qtts0t);
+        }
     }
 
     if(sts3 == sts4)
@@ -1695,6 +1721,9 @@ void MainWindow::check_sched()
             QString currentID, currentStart,currentDirection,currentDestination,currentNext,currentPath;
             QString nextNext1, nextNext2;//, nextNext3;
             QString waitCheck;
+
+            QString ttps1 = QString("DELETE FROM pathInfoTable WHERE pathID='%1'").arg(" ");
+            Path2 = db.exec(ttps1);
 
             QString BLAH1, BLAH3;//, BLAH3;
             QString BLAH = QString("SELECT ID FROM Trains");
@@ -2522,7 +2551,7 @@ void MainWindow::check_sched()
                                         //Next Piece - need to find
                                         //previous => oldDS
                                         //current  => current start
-                                        QString Sts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current='%2'").arg("DS_Connectivity").arg(currentDestination);
+                                        QString Sts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current='%2'").arg("DS_Connectivity").arg(currentStart);
                                         o = db.exec(Sts1);
                                         o.next();
                                         //Next
