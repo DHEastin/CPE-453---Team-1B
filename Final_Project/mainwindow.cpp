@@ -983,7 +983,7 @@ void MainWindow::Update_ScheduleTable()
     int tt = 0;
     for (tt = tt; tt != PATH.length(); tt++)
     {
-        QString PATH_VALUE;
+        QString PATH_VALUE,ss1;
         int sts0,sts1,sts2,sts3,SWITCH;
 
         PATH_VALUE = PATH.value(tt);
@@ -996,7 +996,7 @@ void MainWindow::Update_ScheduleTable()
         sts0 = n.value(0).toInt(); //trackID
 
         //Check each switch along PATH
-        QString tqtps2 = QString("SELECT switch,openPOS,closedPOS FROM switchInfoTable WHERE closedPOS=%1").arg(sts0);
+        QString tqtps2 = QString("SELECT switch,openPOS,closedPOS,SwitchNUM FROM switchInfoTable WHERE closedPOS=%1").arg(sts0);
         p = db.exec(tqtps2);
 
         for(;p.next() == 1;)
@@ -1004,6 +1004,7 @@ void MainWindow::Update_ScheduleTable()
         sts1 = p.value(0).toInt();
         sts2 = p.value(1).toInt(); //Open Position
         sts3 = p.value(2).toInt(); //Closed Position
+        ss1 = p.value(3).toString(); //SwitchNUM
 
         if(sts0 == sts3)
         {
@@ -1016,32 +1017,32 @@ void MainWindow::Update_ScheduleTable()
 
         if(ui->trainBox->currentText() == "1")
         {
-            QString SW_IT4 = QString("INSERT INTO Trains1 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            QString SW_IT4 = QString("INSERT INTO Trains1 (switch, position) VALUES ('%1',%2);").arg(ss1).arg(SWITCH);
             TrainSW1.exec(SW_IT4);
         }
         if(ui->trainBox->currentText() == "2")
         {
-            QString SW_IT5 = QString("INSERT INTO Trains2 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            QString SW_IT5 = QString("INSERT INTO Trains2 (switch, position) VALUES ('%1',%2);").arg(ss1).arg(SWITCH);
             TrainSW2.exec(SW_IT5);
         }
         if(ui->trainBox->currentText() == "3")
         {
-            QString SW_IT6 = QString("INSERT INTO Trains3 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            QString SW_IT6 = QString("INSERT INTO Trains3 (switch, position) VALUES ('%1',%2);").arg(ss1).arg(SWITCH);
             TrainSW3.exec(SW_IT6);
         }
         if(ui->trainBox->currentText() == "4")
         {
-            QString SW_IT7 = QString("INSERT INTO Trains4 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            QString SW_IT7 = QString("INSERT INTO Trains4 (switch, position) VALUES ('%1',%2);").arg(ss1).arg(SWITCH);
             TrainSW4.exec(SW_IT7);
         }
         if(ui->trainBox->currentText() == "5")
         {
-            QString SW_IT8 = QString("INSERT INTO Trains5 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            QString SW_IT8 = QString("INSERT INTO Trains5 (switch, position) VALUES ('%1',%2);").arg(ss1).arg(SWITCH);
             TrainSW5.exec(SW_IT8);
         }
         }
 
-        QString tqtps3 = QString("SELECT switch,openPOS,closedPOS FROM switchInfoTable WHERE openPOS=%1").arg(sts0);
+        QString tqtps3 = QString("SELECT switch,openPOS,closedPOS,SwitchNUM FROM switchInfoTable WHERE openPOS=%1").arg(sts0);
         p = db.exec(tqtps3);
 
         for(;p.next() == 1;)
@@ -1049,6 +1050,7 @@ void MainWindow::Update_ScheduleTable()
         sts1 = p.value(0).toInt();
         sts2 = p.value(1).toInt(); //Open Position
         sts3 = p.value(2).toInt(); //Closed Position
+        ss1 = p.value(3).toString(); //SwitchNUM
 
         if(sts0 == sts3)
         {
@@ -1061,27 +1063,27 @@ void MainWindow::Update_ScheduleTable()
 
         if(ui->trainBox->currentText() == "1")
         {
-            QString SW_IT4 = QString("INSERT INTO Trains1 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            QString SW_IT4 = QString("INSERT INTO Trains1 (switch, position) VALUES ('%1',%2);").arg(ss1).arg(SWITCH);
             TrainSW1.exec(SW_IT4);
         }
         if(ui->trainBox->currentText() == "2")
         {
-            QString SW_IT5 = QString("INSERT INTO Trains2 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            QString SW_IT5 = QString("INSERT INTO Trains2 (switch, position) VALUES ('%1',%2);").arg(ss1).arg(SWITCH);
             TrainSW2.exec(SW_IT5);
         }
         if(ui->trainBox->currentText() == "3")
         {
-            QString SW_IT6 = QString("INSERT INTO Trains3 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            QString SW_IT6 = QString("INSERT INTO Trains3 (switch, position) VALUES ('%1',%2);").arg(ss1).arg(SWITCH);
             TrainSW3.exec(SW_IT6);
         }
         if(ui->trainBox->currentText() == "4")
         {
-            QString SW_IT7 = QString("INSERT INTO Trains4 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            QString SW_IT7 = QString("INSERT INTO Trains4 (switch, position) VALUES ('%1',%2);").arg(ss1).arg(SWITCH);
             TrainSW4.exec(SW_IT7);
         }
         if(ui->trainBox->currentText() == "5")
         {
-            QString SW_IT8 = QString("INSERT INTO Trains5 (switch, position) VALUES (%1,%2);").arg(sts1).arg(SWITCH);
+            QString SW_IT8 = QString("INSERT INTO Trains5 (switch, position) VALUES ('%1',%2);").arg(ss1).arg(SWITCH);
             TrainSW5.exec(SW_IT8);
         }
         }      
