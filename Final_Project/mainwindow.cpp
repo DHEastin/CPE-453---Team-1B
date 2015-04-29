@@ -1756,7 +1756,7 @@ void MainWindow::check_sched()
 
     if(rdb.isOpen())
     {
-    overrideCheck = rdb.exec("SELECT * FROM override_status WHERE mode;"); //check team 5 for override, if overriden, do nothing
+        overrideCheck = rdb.exec("SELECT * FROM override_status WHERE mode;"); //check team 5 for override, if overriden, do nothing
     }
 
     bool stateCheck = false;
@@ -2596,7 +2596,7 @@ void MainWindow::check_sched()
                             currentPath = runSchedQuery1.value(4).toString();
 
 
-                        //move_on;
+//move_on This section of code is responsible for sending throttle commands to the track.
                         if(rdb.isOpen())
                         {
                             r3 = rdb.exec("SELECT status FROM track_ds WHERE id='"+currentStart+"';");
@@ -2660,7 +2660,7 @@ void MainWindow::check_sched()
                         BLAH1 = QString("SELECT status FROM track_ds WHERE id='%1'").arg(currentDestination);
                         r1 = db.exec(BLAH1);
 
-                        while(r1.next()==1)
+                        if(r1.next()==1)
                         {
                             if(r1.value(0).isValid())
                             {
@@ -2731,6 +2731,31 @@ void MainWindow::check_sched()
                                 qDebug() << "Error: Cannot read DS " << currentDestination << ". Stopping train." ;
                             }
                         }
+                        else
+                        {
+                            if (currentDirection==currentNext)
+                            {
+                                if(rdb.isOpen())
+                                {
+                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '10');").arg(currentID);
+                                runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+
+                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '10');").arg(currentID);
+                                runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                                }
+                            }
+                            else if (currentNext != "NULL" && currentNext != "" && currentNext != "EMPTY")
+                            {
+                                if(rdb.isOpen())
+                                {
+                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '-10');").arg(currentID);
+                                runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+
+                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '-10');").arg(currentID);
+                                runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                                }
+                            }
+                        }
                         ;//if destination is not occupied, throttle to 10. TOO CLOSE FOR CONFORT YO...
                     }
                     else
@@ -2744,7 +2769,9 @@ void MainWindow::check_sched()
                     }
                 }
 
-
+//Switch Determination
+                ;
+                ;
                 //req_switch controls switches, col1 = ID (is the # for switch), col2 = position (1 or 0 NOTE 1 is through, 0 is bypass);
                 //req_macro controls trains, col1 = macro (use TRAIN_REQ), col2 = arg1 (train#), col3 = arg2 (speed% is -100 to +100)
                 //track_ds for detection sections, col1 = id (ds style), col2 = status (1 = occupied, 0 = empty), col3 = ds_from (ignore), col4 = ds_to (ignore)
