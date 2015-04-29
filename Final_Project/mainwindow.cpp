@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->setWindowTitle("Train Scheduling Application");
     path_ID = 1;
+    CHECK_FOR_TRAIN = 0;
 
     //Team 4A
     //mysql --host=pavelow.eng.uah.edu --protocol=tcp --port=33153 --user=root --password=cstrapwi
@@ -164,6 +165,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::SWAP_TRAIN_DIRECTION()
 {
+    if(CHECK_FOR_TRAIN == 1)
+    {
     QString CurrentID = ui->trainBox->currentText();
 
     QString VAL1,VAL2,VAL3,VAL4;
@@ -203,6 +206,7 @@ void MainWindow::SWAP_TRAIN_DIRECTION()
     {
         QString tts0t = QString("UPDATE scheduled_train_info SET current='%1' WHERE ID='%2'").arg(Start).arg(ID);
         r1=rdb.exec(tts0t);
+    }
     }
 }
 
@@ -249,6 +253,7 @@ void MainWindow::Add_Train()
                                              tr("Direction:"), items, 0, false, &ok);
             if (ok)
             {
+                CHECK_FOR_TRAIN = 1;
                 ui->trainBox->addItem(QString::number(ID));
 
                 if(direction == sts1)
@@ -483,6 +488,7 @@ void MainWindow::Delete_Train()
    }
    else
    {
+       CHECK_FOR_TRAIN = 0;
        QMessageBox msgBox;
        msgBox.setWindowTitle("Train Error!");
        msgBox.setText("No Train to delete!");
@@ -1064,7 +1070,7 @@ void MainWindow::Update_ScheduleTable()
     for (tt = tt; tt != PATH.length(); tt++)
     {
         QString PATH_VALUE,ss1;
-        int sts0,sts1,sts2,sts3,SWITCH;
+        int sts0,sts3,SWITCH;//sts1,sts2
 
         PATH_VALUE = PATH.value(tt);
 
@@ -1081,8 +1087,8 @@ void MainWindow::Update_ScheduleTable()
 
         for(;p.next() == 1;)
         {
-        sts1 = p.value(0).toInt();
-        sts2 = p.value(1).toInt(); //Open Position
+        //sts1 = p.value(0).toInt();
+        //sts2 = p.value(1).toInt(); //Open Position
         sts3 = p.value(2).toInt(); //Closed Position
         ss1 = p.value(3).toString(); //SwitchNUM
 
@@ -1127,8 +1133,8 @@ void MainWindow::Update_ScheduleTable()
 
         for(;p.next() == 1;)
         {
-        sts1 = p.value(0).toInt();
-        sts2 = p.value(1).toInt(); //Open Position
+        //sts1 = p.value(0).toInt();
+        //sts2 = p.value(1).toInt(); //Open Position
         sts3 = p.value(2).toInt(); //Closed Position
         ss1 = p.value(3).toString(); //SwitchNUM
 
@@ -1429,7 +1435,7 @@ void MainWindow::Update_ScheduleTable()
 
 void MainWindow::DEL_OLD_PATH()
 {
-    int sts1/*,sts2*/,sts3,sts4,sts5;
+    int sts1/*,sts2*/,sts3,sts4;//,sts5;
 
     QString string_s1;
 
@@ -1474,7 +1480,7 @@ void MainWindow::DEL_OLD_PATH()
 
     for(;Path.next() == 1;) //If it is 1 it contains data
     {
-    sts5 = Path.value(0).toInt();
+    //sts5 = Path.value(0).toInt();
     //string_s1 = Path.value(1).toString();
     }
 
@@ -1537,8 +1543,6 @@ void MainWindow::DEL_ALL_OLD_PATH()
     QString tqtps1 = QString("SELECT pathID FROM Trains");
     TRAIN = db.exec(tqtps1);
 
-    int Test = sts1+1;
-
     for(;TRAIN.next() == 1;) //If it is 1 it contains data
     {
     sts1 = TRAIN.value(0).toInt();
@@ -1553,7 +1557,7 @@ void MainWindow::DEL_ALL_OLD_PATH()
     string_s1 = Path.value(2).toString();
     }
 
-    QString tqtps3 = QString("SELECT pathID,nextID1,nextpathID FROM pathInfoTable WHERE pathID=%1").arg(Test);
+    QString tqtps3 = QString("SELECT pathID,nextID1,nextpathID FROM pathInfoTable WHERE pathID=%1").arg(sts1+1);
     Path = db.exec(tqtps3);
 
     for(;Path.next() == 1;) //If it is 1 it contains data
@@ -1698,6 +1702,7 @@ void MainWindow::check_sched()
     {
         path_ID = 1;
     }
+
 /*
     QString stqs1,stqs2;
     int sts1,sts2;
@@ -1800,7 +1805,7 @@ void MainWindow::check_sched()
             QString nextNext1, nextNext2;//, nextNext3;
             QString waitCheck;
 
-            QString BLAH1, BLAH3;//, BLAH3;
+            QString BLAH1,BLAH3;//, BLAH2;
             QString BLAH = QString("SELECT ID FROM Trains");
             runSchedQuery = db.exec(BLAH);
 
@@ -1833,6 +1838,8 @@ void MainWindow::check_sched()
                 else
                     currentNext = runSchedQuery1.value(3).toString();
 
+                QString NULLCHECK = runSchedQuery1.value(4).toString();
+                qDebug() << NULLCHECK;
                 if (runSchedQuery1.value(4).isNull())
                     currentPath = "NULL";
                 else
@@ -1841,11 +1848,11 @@ void MainWindow::check_sched()
 
                 if(currentStart == currentDestination || ((currentNext == "NULL" || currentNext == "") && (currentPath == "NULL" || currentPath == "999" || currentPath =="0")))//If the train is already at its destination, do nothing
                 {
-                    break;
                     qDebug() << "WAWAWA";
+                    break;
                 }
 
-                if(currentPath != "NULL" && currentPath != "999" && currentPath !="0")//if a path exists, check it for details
+                if(currentPath != "NULL" && currentPath != "999" && currentPath !="0" && currentPath != "")//if a path exists, check it for details
                 {
                     BLAH1 = QString("SELECT nextID1 FROM pathInfoTable WHERE pathID='%1'").arg(currentPath);
                     runSchedQuery1 = db.exec(BLAH1);//fix path table order problem
@@ -1856,20 +1863,19 @@ void MainWindow::check_sched()
 
                     if(currentNext==nextNext1 || currentNext=="NULL"|| currentNext=="EMPTY"|| currentNext=="")//If they are the same, some shifting needs to happen
                     {
+                        QString thisPath, nextPath;
                         l1 = db.exec("UPDATE Trains SET next='"+nextNext1+"' WHERE ID='"+currentID+"';");
                         if(rdb.isOpen())
                         {
                             r2 = rdb.exec("UPDATE scheduled_train_info SET next='"+nextNext1+"' WHERE id='"+currentID+"';");
                         }
 
-                        QString thisPath, nextPath;
                         thisPath = currentPath;
                         l1 = db.exec("UPDATE pathInfoTable SET nextID1='NULL' WHERE pathID='"+thisPath+"';");
                         if(rdb.isOpen())
                         {
                             r1 = rdb.exec("UPDATE scheduled_routes SET next2='NULL' WHERE pathID='"+thisPath+"';");
                         }
-
 
                         /*if(currentDirection==nextNext1)
                         {

@@ -71,6 +71,7 @@ private:
     int MIN_DISTANCE;
     QString SwitchNUM;
     QString CLOCK,PATH_DIR;
+    bool CHECK_FOR_TRAIN;
     //OPTIONS
     bool Testing_path;
 
