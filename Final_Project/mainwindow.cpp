@@ -2551,6 +2551,36 @@ void MainWindow::check_sched()
                             }
                         }
 
+
+                        BLAH1 = QString("SELECT START, Direction, Destination, next, PathID FROM Trains WHERE ID='%1'").arg(currentID);
+                        runSchedQuery1 = db.exec(BLAH1);
+
+                        runSchedQuery1.next();
+
+                        currentStart = runSchedQuery1.value(0).toString();
+                        currentDirection = runSchedQuery1.value(1).toString();
+
+                        if(runSchedQuery1.value(1).isNull())
+                                currentDirection = "NULL";
+                        else
+                            currentDirection = runSchedQuery1.value(1).toString();
+
+                        if(runSchedQuery1.value(2).isNull())
+                                currentDestination = "NULL";
+                        else
+                            currentDestination = runSchedQuery1.value(2).toString();
+
+                        if(runSchedQuery1.value(3).isNull())
+                            currentNext = "NULL";
+                        else
+                            currentNext = runSchedQuery1.value(3).toString();
+
+                        if (runSchedQuery1.value(4).isNull())
+                            currentPath = "NULL";
+                        else
+                            currentPath = runSchedQuery1.value(4).toString();
+
+
                         //move_on;
                         if(rdb.isOpen())
                         {
@@ -2558,18 +2588,27 @@ void MainWindow::check_sched()
                             r3.next();
                             if (r3.value(0).toString()=="1")
                             {
-                                if(currentStart!=waitCheck)
+                                if(currentStart==waitCheck)
                                     move_on = true; //only set throttle at very start position.
                             }
                             else
                                 move_on = false;
+
+                            qDebug() << "Original Start: " << waitCheck << endl
+                                     << "Current: " << currentStart << endl
+                                     << "Move on: " << move_on;
                         }
                         else
                             move_on=false;
 
                         if(move_on)
                         {
-                            if (currentNext=="EMPTY" || currentNext=="" || currentNext!="NULL")
+                            if(runSchedQuery1.value(3).isNull())
+                                currentNext = "NULL";
+                            else
+                                currentNext = runSchedQuery1.value(3).toString();
+
+                            if (currentNext=="EMPTY" || currentNext=="" || currentNext=="NULL")
                             {
                                 ;
                             }
