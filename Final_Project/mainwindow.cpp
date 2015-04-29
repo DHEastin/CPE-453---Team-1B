@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //When adding a train prevent multiple trains with same ID from showing up in TrainBox
 
     //OPTIONS
-    Testing_path = 0; //0 -- Path will not change unless connected to Pavelow  //1 -- Path will update even while disconnected from pavelow
+    Testing_path = 1; //0 -- Path will not change unless connected to Pavelow  //1 -- Path will update even while disconnected from pavelow
 
     this->setWindowTitle("Train Scheduling Application");
     path_ID = 1;
@@ -2244,26 +2244,85 @@ void MainWindow::check_sched()
                             }
 
 
-                            if(currentDirection==currentNext)//facing forward
+                            if(currentDirection==currentNext)//facing forward -- Causes Direction to be changed back to NULL
                             {
-                                currentDirection=nextNext1;
-                                currentStart=currentNext;
+                                QString CUR_DIR = currentDirection;
+                            currentDirection=nextNext1;
+                            currentStart=currentNext;
 
-                                l2 = db.exec("UPDATE Trains SET START='"+currentStart+"', Direction='"+currentDirection+"' WHERE ID='"+currentID+"';");
-                                if(rdb.isOpen())
-                                {
-                                    r2 = rdb.exec("UPDATE Trains SET current='"+currentStart+"' WHERE id='"+currentID+"';");
-                                }
+                            if(currentDirection != "NULL"&&!currentDirection.isNull())
+                            {
+                            l2 = db.exec("UPDATE Trains SET START='"+currentStart+"', Direction='"+currentDirection+"' WHERE ID='"+currentID+"';");
+                            if(rdb.isOpen())
+                            {
+                            r2 = rdb.exec("UPDATE Trains SET current='"+currentStart+"' WHERE id='"+currentID+"';");
+                            }
+                            }
+                            else
+                            {
+                            l2 = db.exec("UPDATE Trains SET START='"+currentStart+"' WHERE ID='"+currentID+"';");
+                            if(rdb.isOpen())
+                            {
+                            r2 = rdb.exec("UPDATE Trains SET current='"+currentStart+"' WHERE id='"+currentID+"';");
+                            }
+
+
+                            //Next Piece - need to find
+                            //previous => oldDS
+                            //current  => current start
+                            QString Sts1 = QString("SELECT Current, NumberOfConnections, Connection1, Connection2, Connection3 from %1 WHERE Current='%2'").arg("DS_Connectivity").arg(currentDestination);
+                            o = db.exec(Sts1);
+                            o.next();
+                            //Next
+                            QString sts1 = o.value(3).toString();
+                            //Backward
+                            QString sts2 = o.value(4).toString();
+
+                            if(CUR_DIR == sts1)
+                            {
+                                currentDirection = sts2;
+                            }
+                            if(CUR_DIR == sts2)
+                            {
+                                currentDirection = sts1;
+                            }
+                            //qDebug() << sts1 << sts2;
+
+                            //Set currentDirection
+                            //currentDirection = sts1; //Next Piece
+
+                            l2 = db.exec("UPDATE Train SET START='"+currentStart+"',Direction='"+currentDirection+"', next='NULL' WHERE ID='"+currentID+"';");
+                            if(rdb.isOpen())
+                            {
+                                r2 = rdb.exec("UPDATE Trains SET current='"+currentStart+"', next='NULL' WHERE id='"+currentID+"';");
+                            }
+
+
+
+
+
+                            }
                             }
                             else//facing backward
                             {
                                 currentDirection=currentStart;
                                 currentStart=currentNext;
 
-                                l2 = db.exec("UPDATE Trains SET START='"+currentStart+"', Direction='"+currentDirection+"', next='NULL' WHERE `ID`='"+currentID+"';");
-                                if(rdb.isOpen())
+                                if(currentDirection != "NULL" || !currentDirection.isNull())
                                 {
-                                    r2 = rdb.exec("UPDATE Trains SET current='"+currentStart+"', next='NULL' WHERE id='"+currentID+"';");
+                                    l2 = db.exec("UPDATE Trains SET START='"+currentStart+"', Direction='"+currentDirection+"', next='NULL' WHERE `ID`='"+currentID+"';");
+                                    if(rdb.isOpen())
+                                    {
+                                        r2 = rdb.exec("UPDATE Trains SET current='"+currentStart+"', next='NULL' WHERE id='"+currentID+"';");
+                                    }
+                                }
+                                else
+                                {
+                                    l2 = db.exec("UPDATE Trains SET START='"+currentStart+"' next='NULL' WHERE `ID`='"+currentID+"';");
+                                    if(rdb.isOpen())
+                                    {
+                                        r2 = rdb.exec("UPDATE Trains SET current='"+currentStart+"', next='NULL' WHERE id='"+currentID+"';");
+                                    }
                                 }
                             }
 
