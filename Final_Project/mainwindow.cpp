@@ -151,7 +151,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(check_sched()));
-    timer->start(500);
+    timer->start(400);
 }
 
 MainWindow::~MainWindow()
@@ -1701,6 +1701,21 @@ void MainWindow::check_sched()
     if (CT_Train == "")
     {
         path_ID = 1;
+    }
+
+    //Deletes Empty PathID Rows
+    QString tqtps4 = QString("SELECT pathID,nextID1,nextpathID FROM pathInfoTable");
+    Path = db.exec(tqtps4);
+
+    for(;Path.next() == 1;) //If it is 1 it contains data
+    {
+        QString TEST = Path.value(0).toString();
+        qDebug() <<"pathID="<< TEST;
+
+        QString tqtps5 = QString("DELETE FROM pathInfoTable WHERE pathID IS NULL");
+        Path = db.exec(tqtps5);
+        QString tqtps6 = QString("DELETE FROM pathInfoTable WHERE pathID='""'");
+        Path = db.exec(tqtps6);
     }
 
 /*
