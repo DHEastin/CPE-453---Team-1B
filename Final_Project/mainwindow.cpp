@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -1697,6 +1698,8 @@ void MainWindow::Check_Path_Trains()
 
 void MainWindow::check_sched()
 {
+    static int throttleCount[6] = {0,0,0,0,0,0};
+
     QString CT_Train = ui->trainBox->currentText();
     if (CT_Train == "")
     {
@@ -1854,7 +1857,7 @@ void MainWindow::check_sched()
                     currentNext = runSchedQuery1.value(3).toString();
 
                 QString NULLCHECK = runSchedQuery1.value(4).toString();
-                qDebug() << NULLCHECK;
+                //qDebug() << NULLCHECK;
                 if (runSchedQuery1.value(4).isNull())
                     currentPath = "NULL";
                 else
@@ -1863,7 +1866,17 @@ void MainWindow::check_sched()
 
                 if(currentStart == currentDestination || ((currentNext == "NULL" || currentNext == "") && (currentPath == "NULL" || currentPath == "999" || currentPath =="0")))//If the train is already at its destination, do nothing
                 {
-                    qDebug() << "WAWAWA";
+                    if(rdb.isOpen())
+                    {
+                    BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '0');").arg(currentID);
+                    runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+
+                    BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '0');").arg(currentID);
+                    runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                    }
+                    qDebug() << "Error: Cannot read DS " << currentDestination << ". Stopping train." ;
+
+                    throttleCount[currentID.toInt()]=0;
                     break;
                 }
 
@@ -1919,9 +1932,19 @@ void MainWindow::check_sched()
                         {
                             l1 = db.exec("SELECT nextID2 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                             l1.next();
-                            if (l1.value(0).isNull())//this row is done. Delete it, change previous row, and if no previous row, remove path from Train table
+
+                            l5 = db.exec("SELECT nextPathID FROM pathInfoTable WHERE pathID='"+thisPath+"';");
+                            if(l5.next()==1)
                             {
-                                if (nextPath==thisPath) //no previous path, remove row from train table
+                                nextPath = l5.value(0).toString();
+                            }
+                            else
+                                nextPath = "NULL";
+
+
+                            if (l1.value(0).isNull()||l1.value(0).toString()=="NULL"||l1.value(0).toString()=="")//this row is done. Delete it, change previous row, and if no previous row, remove path from Train table
+                            {
+                                if (nextPath==thisPath||nextPath=="NULL") //no previous path, remove row from train table
                                 {
                                     l1 = db.exec("DELETE FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                     if(rdb.isOpen())
@@ -2330,7 +2353,16 @@ void MainWindow::check_sched()
                             {
                                 l1 = db.exec("SELECT nextID2 FROM pathInfoTable WHERE pathID='"+thisPath+"';");
                                 l1.next();
-                                if (l1.value(0).isNull()||l1.value(0)==""||!l1.value(0).isValid())//this row is done. Delete it, change previous row, and if no previous row, remove path from Train table
+
+                                l5 = db.exec("SELECT nextPathID FROM pathInfoTable WHERE pathID='"+thisPath+"';");
+                                if(l5.next()==1)
+                                {
+                                    nextPath = l5.value(0).toString();
+                                }
+                                else
+                                    nextPath = "NULL";
+
+                                if (l1.value(0).isNull()||l1.value(0)==""||!l1.value(0).isValid()||l1.value(0).toString()=="NULL")//this row is done. Delete it, change previous row, and if no previous row, remove path from Train table
                                 {
                                     if (nextPath==thisPath) //no previous path, remove row from train table
                                     {
@@ -2688,23 +2720,25 @@ void MainWindow::check_sched()
                             }
                             else if(currentDirection==currentNext)
                             {
-                                if(rdb.isOpen())
+                                if(rdb.isOpen()&&(throttleCount[currentID.toInt()]<3))
                                 {
                                 BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)"
                                                 "VALUES ('TRAIN_REQ', '"+currentID+"', '35');");//.arg(currentID);
                                 runSchedQuery3 = rdb.exec(BLAH3);
                                 if(!runSchedQuery.isValid())
                                     qDebug() << "Error: Throttle write failed\n";
+                                throttleCount[currentID.toInt()]++;
                                 }
                             }
                             else
                             {
-                                if(rdb.isOpen())
+                                if(rdb.isOpen()&&(throttleCount[currentID.toInt()]<3))
                                 {
                                 BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '-35');").arg(currentID);
                                 runSchedQuery3 = rdb.exec(BLAH3);
                                 if(!runSchedQuery.isValid())
                                      qDebug() << "Error: Throttle write failed\n";
+                                throttleCount[currentID.toInt()]++;
                                 }
                             }
                         }
@@ -2713,11 +2747,11 @@ void MainWindow::check_sched()
                 }
                 else
                 {//The only situation where a path doesn't exist, and the break isn't reached, is when the next space IS destination
-                    if(currentDestination == currentNext) // if next piece is the destination
+                    if(currentDestination == currentNext && currentDestination != "NULL" && currentDestination != "EMPTY") // if next piece is the destination
                     {
                         //check if destination detection section is occupied, if so, throttle 0, clear next, and set start to destination. DONE BABY.
-                        BLAH1 = QString("SELECT status FROM track_ds WHERE id='%1'").arg(currentDestination);
-                        r1 = db.exec(BLAH1);
+                        BLAH1 = QString("SELECT status FROM track_ds WHERE id='"+currentDestination+"';");
+                        r1 = rdb.exec(BLAH1);
 
                         if(r1.next()==1)
                         {
@@ -2729,8 +2763,9 @@ void MainWindow::check_sched()
                                 {//arrived at destination, stop train, and set tables to know the destination was reached.
                                     if(rdb.isOpen())
                                     {
-                                    BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('SLOT_REQ', '%1', '0';").arg(currentID);
+                                    BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('TRAIN_REQ', '%1', '0';").arg(currentID);
                                     runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                                    throttleCount[currentID.toInt()]=0;
                                     }
 
                                     if(currentDirection==currentDestination)
@@ -2757,7 +2792,11 @@ void MainWindow::check_sched()
                                         //Set currentDirection
                                         currentDirection = sts1; //Next Piece
 
-                                        l2 = db.exec("UPDATE Train SET START='"+currentStart+"',Direction='"+currentDirection+"', next='NULL' WHERE ID='"+currentID+"';");
+                                        l2 = db.exec("UPDATE Train SET START='"+currentStart+"' WHERE ID='"+currentID+"';");
+                                        l2 = db.exec("UPDATE Train SET Direction='"+currentDirection+"' WHERE ID='"+currentID+"';");
+                                        l2 = db.exec("UPDATE Train SET next='NULL' WHERE ID='"+currentID+"';");
+                                        l2 = db.exec("UPDATE Train SET Destination='NULL' WHERE ID='"+currentID+"';");
+                                        l2 = db.exec("UPDATE Train SET PathID='999' WHERE ID='"+currentID+"';");
                                         if(rdb.isOpen())
                                         {
                                             r2 = rdb.exec("UPDATE Trains SET current='"+currentStart+"', next='NULL' WHERE id='"+currentID+"';");
@@ -2769,10 +2808,43 @@ void MainWindow::check_sched()
                                         currentStart=currentDestination;
                                         currentNext="NULL";
 
-                                        l2 = db.exec("UPDATE Trains SET START='"+currentStart+"', Direction='"+currentDirection+"', next='NULL' WHERE ID='"+currentID+"';");
+                                        l2 = db.exec("UPDATE Train SET START='"+currentStart+"' WHERE ID='"+currentID+"';");
+                                        l2 = db.exec("UPDATE Train SET Direction='"+currentDirection+"' WHERE ID='"+currentID+"';");
+                                        l2 = db.exec("UPDATE Train SET next='NULL' WHERE ID='"+currentID+"';");
+                                        l2 = db.exec("UPDATE Train SET Destination='NULL' WHERE ID='"+currentID+"';");
+                                        l2 = db.exec("UPDATE Train SET PathID='999' WHERE ID='"+currentID+"';");
                                         if(rdb.isOpen())
                                         {
                                             r2 = rdb.exec("UPDATE Trains SET current='"+currentStart+"', next='NULL' WHERE id='"+currentID+"';");
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (currentDirection==currentNext&&currentDirection!=currentStart)
+                                    {
+                                        if(rdb.isOpen()&&(throttleCount[currentID.toInt()]<5))
+                                        {
+                                        BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '10');").arg(currentID);
+                                        runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+
+                                        BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '10');").arg(currentID);
+                                        runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+
+                                        throttleCount[currentID.toInt()]++;
+                                        }
+                                    }
+                                    else if (currentNext != "NULL" && currentNext != "" && currentNext != "EMPTY" &&currentDirection!=currentStart)
+                                    {
+                                        if(rdb.isOpen()&&(throttleCount[currentID.toInt()]<5))
+                                        {
+                                        BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '-10');").arg(currentID);
+                                        runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+
+                                        BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '-10');").arg(currentID);
+                                        runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+
+                                        throttleCount[currentID.toInt()]++;
                                         }
                                     }
                                 }
@@ -2788,31 +2860,51 @@ void MainWindow::check_sched()
                                 runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
                                 }
                                 qDebug() << "Error: Cannot read DS " << currentDestination << ". Stopping train." ;
+
+                                throttleCount[currentID.toInt()]=0;
                             }
                         }
                         else
                         {
-                            if (currentDirection==currentNext)
+                            if (currentDirection==currentNext&&currentDirection!=currentStart)
                             {
-                                if(rdb.isOpen())
+                                if(rdb.isOpen()&&(throttleCount[currentID.toInt()]<5))
                                 {
                                 BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '10');").arg(currentID);
                                 runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
 
                                 BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '10');").arg(currentID);
                                 runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+
+                                throttleCount[currentID.toInt()]++;
                                 }
                             }
-                            else if (currentNext != "NULL" && currentNext != "" && currentNext != "EMPTY")
+                            else if (currentNext != "NULL" && currentNext != "" && currentNext != "EMPTY" &&currentDirection!=currentStart)
                             {
-                                if(rdb.isOpen())
+                                if(rdb.isOpen()&&(throttleCount[currentID.toInt()]<5))
                                 {
                                 BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '-10');").arg(currentID);
                                 runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
 
                                 BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '-10');").arg(currentID);
                                 runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+
+                                throttleCount[currentID.toInt()]++;
                                 }
+                            }
+                            else
+                            {
+                                if(rdb.isOpen())
+                                {
+                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '0');").arg(currentID);
+                                runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+
+                                BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`) VALUES ('TRAIN_REQ', '%1', '0');").arg(currentID);
+                                runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                                }
+                                qDebug() << "Error: Cannot read DS " << currentDestination << ". Stopping train." ;
+
+                                throttleCount[currentID.toInt()]=0;
                             }
                         }
                         ;//if destination is not occupied, throttle to 10. TOO CLOSE FOR CONFORT YO...
@@ -2821,15 +2913,149 @@ void MainWindow::check_sched()
                     {//This section of code should not be possible to reach, so.... stop the train?
                         if(rdb.isOpen())
                         {
-                        BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('SLOT_REQ', '%1', '0';").arg(currentID);
+                        BLAH3 = QString("INSERT INTO req_macro (`macro`, `arg1`, `arg2`)\nVALUES ('TRAIN_REQ', '%1', '0';").arg(currentID);
                         runSchedQuery3 = rdb.exec(BLAH3);//throttle zero
+                        throttleCount[currentID.toInt()]=0;
                         }
                         qDebug() << "Error: Something has gone horribly awry...";
                     }
                 }
 
 //Switch Determination
-                ;
+                /*if (rdb.isOpen())
+                {
+                    QString firstPath, switchNumber, swNext1, swNext2, swNext3;
+                    runSchedQuery1 = db.exec("SELECT pathID from `Trains` WHERE ID='"+currentID+"';");
+                    if(runSchedQuery1.next()==1)
+                    {
+                        firstPath = runSchedQuery1.value(0).toString();
+
+                        if (firstPath=="NULL"||firstPath=="999"||firstPath=="")
+                            continue;//If this situation is encountered, no switch determination is needed
+
+                        runSchedQuery2 = db.exec("SELECT nextID1 from `pathInfoTable` WHERE pathID='"+firstPath+"';");
+                        runSchedQuery2.next();
+                        if(runSchedQuery2.value(0).isNull())
+                            continue;//If this situation is encountered, no switch determination is needed
+                        swNext1 = runSchedQuery2.value(0).toString();
+
+                        runSchedQuery2 = db.exec("SELECT nextID2 from `pathInfoTable` WHERE pathID='"+firstPath+"';");
+                        runSchedQuery2.next();
+                        if(runSchedQuery2.value(0).isNull())
+                            continue;//If this situation is encountered, no switch determination is needed
+                        swNext2 = runSchedQuery2.value(0).toString();
+
+                        runSchedQuery2 = db.exec("SELECT nextID3 from `pathInfoTable` WHERE pathID='"+firstPath+"';");
+                        runSchedQuery2.next();
+                        if(runSchedQuery2.value(0).isNull())
+                            swNext3 = "NULL";
+                        else
+                            swNext3 = runSchedQuery2.value(0).toString();
+
+                        runSchedQuery2 = db.exec("SELECT trackID FROM tracklistingTable WHERE trackname='"+swNext2+"';");
+                        runSchedQuery2.next();
+                        qDebug() << runSchedQuery2.value(0).toString();
+
+                        runSchedQuery2 = db.exec("SELECT switchNUM FROM switchInfoTable WHERE straight IN(SELECT trackID FROM tracklistingTable WHERE trackname='"+swNext2+"');");
+                        while(runSchedQuery2.next()==1)
+                        {
+                            switchNumber = runSchedQuery2.value(0).toString();
+
+                        //situations that require switch open
+                            runSchedQuery3 = db.exec("SELECT closedPOS FROM switchInfoTable WHERE switchNUM='"+switchNumber+"' AND openPOS IN(SELECT trackID FROM tracklistingTable WHERE trackname='"+swNext1+"');");
+                            if(runSchedQuery3.next())
+                            {
+                                if(!runSchedQuery3.value(0).isNull())
+                                {
+                                    runSchedQuery3 = rdb.exec("INSERT INTO `req_switch` (`id`, `position`) VALUES ('"+switchNumber+"', '1');");
+                                    break;
+                                }
+                            }
+                            runSchedQuery3 = db.exec("SELECT closedPOS FROM switchInfoTable WHERE switchNUM='"+switchNumber+"' AND openPOS IN(SELECT trackID FROM tracklistingTable WHERE trackname='"+swNext3+"');");
+                            if(runSchedQuery3.next())
+                            {
+                                if(!runSchedQuery3.value(0).isNull())
+                                {
+                                    runSchedQuery3 = rdb.exec("INSERT INTO `req_switch` (`id`, `position`) VALUES ('"+switchNumber+"', '1');");
+                                    break;
+                                }
+                            }
+
+                       //situations that require switch closed
+                            runSchedQuery3 = db.exec("SELECT openPOS FROM switchInfoTable WHERE switchNUM='"+switchNumber+"' AND closedPOS IN(SELECT trackID FROM tracklistingTable WHERE trackname='"+swNext1+"');");
+                            if(runSchedQuery3.next())
+                            {
+                                if(!runSchedQuery3.value(0).isNull())
+                                {
+                                    runSchedQuery3 = rdb.exec("INSERT INTO `req_switch` (`id`, `position`) VALUES ('"+switchNumber+"', '0');");
+                                    break;
+                                }
+                            }
+                            runSchedQuery3 = db.exec("SELECT openPOS FROM switchInfoTable WHERE switchNUM='"+switchNumber+"' AND closedPOS IN(SELECT trackID FROM tracklistingTable WHERE trackname='"+swNext3+"');");
+                            if(runSchedQuery3.next())
+                            {
+                                if(!runSchedQuery3.value(0).isNull())
+                                {
+                                    runSchedQuery3 = rdb.exec("INSERT INTO `req_switch` (`id`, `position`) VALUES ('"+switchNumber+"', '0');");
+                                    break;
+                                }
+                            }
+                        }
+
+
+                        runSchedQuery2 = db.exec("SELECT switchNUM FROM switchInfoTable WHERE openPOS IN(SELECT trackID FROM tracklistingTable WHERE trackname='"+swNext2+"');");
+                        while(runSchedQuery2.next()==1)
+                        {
+                            switchNumber = runSchedQuery2.value(0).toString();
+
+                        //situations that require switch open
+                            runSchedQuery3 = db.exec("SELECT closedPOS FROM switchInfoTable WHERE switchNUM='"+switchNumber+"' AND straight IN(SELECT trackID FROM tracklistingTable WHERE trackname='"+swNext1+"');");
+                            if(runSchedQuery3.next())
+                            {
+                                if(!runSchedQuery3.value(0).isNull())
+                                {
+                                    runSchedQuery3 = rdb.exec("INSERT INTO `req_switch` (`id`, `position`) VALUES ('"+switchNumber+"', '1');");
+                                    break;
+                                }
+                            }
+                            runSchedQuery3 = db.exec("SELECT closedPOS FROM switchInfoTable WHERE switchNUM='"+switchNumber+"' AND straight IN(SELECT trackID FROM tracklistingTable WHERE trackname='"+swNext3+"');");
+                            if(runSchedQuery3.next())
+                            {
+                                if(!runSchedQuery3.value(0).isNull())
+                                {
+                                    runSchedQuery3 = rdb.exec("INSERT INTO `req_switch` (`id`, `position`) VALUES ('"+switchNumber+"', '1');");
+                                    break;
+                                }
+                            }
+                        }
+
+                        runSchedQuery2 = db.exec("SELECT switchNUM FROM switchInfoTable WHERE closedPOS IN(SELECT trackID FROM tracklistingTable WHERE trackname='"+swNext2+"');");
+                        while(runSchedQuery2.next()==1)
+                        {
+                            switchNumber = runSchedQuery2.value(0).toString();
+
+                        //situations that require switch closed
+                            runSchedQuery3 = db.exec("SELECT closedPOS FROM switchInfoTable WHERE switchNUM='"+switchNumber+"' AND straight IN(SELECT trackID FROM tracklistingTable WHERE trackname='"+swNext1+"');");
+                            if(runSchedQuery3.next())
+                            {
+                                if(!runSchedQuery3.value(0).isNull())
+                                {
+                                    runSchedQuery3 = rdb.exec("INSERT INTO `req_switch` (`id`, `position`) VALUES ('"+switchNumber+"', '0');");
+                                    break;
+                                }
+                            }
+                            runSchedQuery3 = db.exec("SELECT closedPOS FROM switchInfoTable WHERE switchNUM='"+switchNumber+"' AND straight IN(SELECT trackID FROM tracklistingTable WHERE trackname='"+swNext3+"');");
+                            if(runSchedQuery3.next())
+                            {
+                                if(!runSchedQuery3.value(0).isNull())
+                                {
+                                    runSchedQuery3 = rdb.exec("INSERT INTO `req_switch` (`id`, `position`) VALUES ('"+switchNumber+"', '0');");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }*/
                 ;
                 //req_switch controls switches, col1 = ID (is the # for switch), col2 = position (1 or 0 NOTE 1 is through, 0 is bypass);
                 //req_macro controls trains, col1 = macro (use TRAIN_REQ), col2 = arg1 (train#), col3 = arg2 (speed% is -100 to +100)
